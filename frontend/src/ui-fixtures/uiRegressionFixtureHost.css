@@ -1,0 +1,1601 @@
+:root {
+  color-scheme: dark;
+}
+
+* {
+  animation: none !important;
+  transition: none !important;
+}
+
+html,
+body,
+#ui-regression-root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.ui-fixture-root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.ui-fixture-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.ui-fixture-anchor {
+  position: fixed;
+  top: 14px;
+  left: 24px;
+  width: 34px;
+  height: 28px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ui-fixture-split {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  gap: 8px;
+}
+
+.ui-fixture-split.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ui-fixture-split.quad {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.ui-fixture-pane {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.ui-fixture-pane.active {
+  border-color: var(--primary);
+}
+
+.ui-fixture-pane.terminal-pane {
+  display: grid;
+  place-items: stretch;
+  border-color: var(--border);
+  background: #07111f;
+}
+
+.ui-fixture-compact-monitor {
+  width: 310px;
+  height: min(720px, 100%);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ui-fixture-compact-monitor .compact-monitor-sidebar {
+  width: 100%;
+  height: 100%;
+}
+
+.ui-fixture-local-workspace {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.ui-fixture-local-workspace .right-workspace {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 10px 240px;
+  overflow: hidden;
+}
+
+.ui-fixture-local-workspace .terminal-stage {
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  background: #07111f;
+}
+
+.ui-fixture-local-workspace .local-terminal-view-stub {
+  width: min(520px, calc(100% - 48px));
+  display: grid;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 20px;
+}
+
+.ui-fixture-local-workspace .local-terminal-view-stub input {
+  height: 34px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+}
+
+.ui-fixture-settings-nav {
+  width: 180px;
+  min-height: 360px;
+}
+
+.ui-fixture-settings-profile-spacing {
+  width: min(760px, 100%);
+}
+
+.ui-fixture-topbar-shell {
+  width: 100%;
+  height: 96px;
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--border);
+}
+
+.ui-fixture-tabs-close-count {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-settings {
+  width: min(960px, 100%);
+  height: 100%;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  overflow: auto;
+}
+
+.ui-fixture-settings .settings-page-overlay {
+  position: relative;
+  height: auto;
+  min-height: 0;
+}
+
+.ui-fixture-settings-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.ui-fixture-security-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ui-fixture-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.ui-fixture-security-shell .modal,
+.ui-fixture-security-shell .connection-modal,
+.ui-fixture-security-shell .auth-modal,
+.ui-fixture-security-shell .key-vault-modal,
+.ui-fixture-security-shell .host-key-trust-dialog {
+  box-sizing: border-box;
+}
+
+.ui-fixture-security-shell .connection-modal {
+  height: min(620px, calc(100vh - 32px));
+  max-height: min(620px, calc(100vh - 32px));
+  display: grid;
+  overflow: hidden;
+}
+
+.ui-fixture-security-shell .connection-dialog-rail,
+.ui-fixture-security-shell .connection-form,
+.ui-fixture-security-shell .connection-field,
+.ui-fixture-security-shell .connection-key-control {
+  min-width: 0;
+}
+
+.ui-fixture-security-shell .connection-dialog-rail {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+}
+
+.ui-fixture-security-shell .connection-form {
+  min-height: 0;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.ui-fixture-security-shell .connection-field input,
+.ui-fixture-security-shell .connection-field select,
+.ui-fixture-security-shell .connection-field textarea,
+.ui-fixture-security-shell .form-grid input,
+.ui-fixture-security-shell .form-grid textarea {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.ui-fixture-security-shell .host-key-trust-dialog {
+  width: min(600px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+}
+
+.host-key-fingerprints {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.host-key-fingerprints div {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.host-key-fingerprints dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.host-key-fingerprints dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--mono-font, "Cascadia Mono", Consolas, monospace);
+  font-size: 12px;
+}
+
+.host-key-actions {
+  flex-wrap: wrap;
+}
+
+.ui-fixture-key-vault-shell {
+  display: grid;
+  align-content: start;
+}
+
+.ui-fixture-key-vault-shell .key-vault-card {
+  width: min(860px, 100%);
+  max-height: min(600px, 100%);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.ui-fixture-key-vault-shell .key-vault-list {
+  min-height: 0;
+  overflow: auto;
+  padding-inline: 12px;
+}
+
+.ui-fixture-key-vault-shell .key-vault-row {
+  min-width: 0;
+}
+
+.ui-fixture-key-vault-shell .empty-state {
+  margin: 0 12px 10px;
+}
+
+.settings-security-fixture {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.settings-security-fixture span,
+.settings-security-fixture input {
+  min-width: 0;
+}
+
+.ui-fixture-alert-shell {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ui-fixture-alert-shell .alert-center-panel {
+  position: relative;
+  width: min(500px, 100%);
+  height: min(608px, 100%);
+  max-height: 100%;
+  min-height: 0;
+  left: auto;
+  top: auto;
+}
+
+.ui-fixture-alert-shell .alert-row-title,
+.ui-fixture-alert-shell .alert-row-main,
+.ui-fixture-alert-shell .alert-row-actions {
+  min-width: 0;
+}
+
+.ui-fixture-alert-shell .alert-row-title strong,
+.ui-fixture-alert-shell .alert-row-main p,
+.ui-fixture-alert-shell .alert-row-main small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-fixture-alert-shell .alert-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ui-fixture-monitor-alert-shell {
+  display: grid;
+  align-content: start;
+}
+
+.ui-fixture-monitor-panel {
+  width: min(980px, 100%);
+  height: min(600px, 100%);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel-soft);
+}
+
+.ui-fixture-monitor-panel .monitor-dashboard {
+  height: 100%;
+}
+
+.ui-fixture-app-logs {
+  width: min(940px, 100%);
+  height: min(600px, 100%);
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel-soft);
+}
+
+.ui-fixture-app-logs .log-filters {
+  min-width: 0;
+}
+
+.ui-fixture-app-logs .log-table {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.ui-fixture-app-logs .log-row {
+  min-width: 760px;
+}
+
+.ui-fixture-command-shell .command-palette-backdrop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: start end;
+  padding: 58px 18px 44px;
+  box-sizing: border-box;
+}
+
+.ui-fixture-command-shell .command-palette {
+  max-height: min(520px, calc(100vh - 104px));
+}
+
+.ui-fixture-command-shell .command-list {
+  min-height: 0;
+  overflow: auto;
+}
+
+.ui-fixture-command-shell .command-row,
+.ui-fixture-command-shell .command-row > div:first-child {
+  min-width: 0;
+}
+
+.ui-fixture-command-shell .command-row-actions {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.ui-fixture-transfer-stage {
+  height: 100%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 36px;
+  gap: 8px;
+}
+
+.ui-fixture-terminal-area,
+.ui-fixture-terminal-input-reserved {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.ui-fixture-terminal-input-reserved {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-service-manager {
+  width: min(920px, 100%);
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(190px, 260px) minmax(0, 1fr);
+  gap: 10px;
+  overflow: hidden;
+}
+
+.ui-fixture-service-manager-narrow {
+  width: min(760px, 100%);
+}
+
+.ui-fixture-sftp-shell {
+  width: min(1180px, 100%);
+  height: min(620px, 100%);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  align-self: start;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.ui-fixture-sftp-shell.narrow {
+  width: min(760px, 100%);
+}
+
+.ui-fixture-sftp-shell .sftp-panel {
+  grid-row: auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.ui-fixture-sftp-shell .sftp-content {
+  min-width: 0;
+  min-height: 0;
+}
+
+.sftp-fixture-main {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  overflow: hidden;
+}
+
+.sftp-fixture-main .sftp-table {
+  min-width: 0;
+  min-height: 0;
+}
+
+.sftp-selection-actions {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.sftp-selection-actions strong,
+.sftp-selection-actions button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.sftp-fixture-transfer-list {
+  min-width: 0;
+  max-height: 112px;
+  overflow: auto;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.sftp-fixture-error {
+  min-height: 72px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ui-fixture-manager-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ui-fixture-manager-shell .docker-dialog-backdrop,
+.ui-fixture-manager-shell .tunnel-dialog-backdrop,
+.ui-fixture-manager-shell .process-dialog-backdrop,
+.ui-fixture-manager-shell .network-diagnostics-backdrop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(2, 6, 23, 0.64);
+  box-sizing: border-box;
+}
+
+.ui-fixture-manager-shell .docker-dialog,
+.ui-fixture-manager-shell .process-dialog,
+.ui-fixture-manager-shell .tunnel-dialog {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.36);
+}
+
+.ui-fixture-manager-shell .docker-dialog {
+  width: min(1120px, calc(100vw - 48px));
+  height: min(700px, calc(100vh - 48px));
+  display: grid;
+  grid-template-rows: auto auto auto auto minmax(0, auto) minmax(0, 1fr);
+}
+
+.ui-fixture-manager-shell .docker-dialog-header,
+.ui-fixture-manager-shell .docker-toolbar,
+.ui-fixture-manager-shell .docker-list-header,
+.ui-fixture-manager-shell .docker-select-all,
+.ui-fixture-manager-shell .docker-batch-bar,
+.ui-fixture-manager-shell .container-actions,
+.ui-fixture-manager-shell .detail-tabs,
+.ui-fixture-manager-shell .docker-mode-tabs,
+.ui-fixture-manager-shell .docker-compose-section-header,
+.ui-fixture-manager-shell .detail-actions,
+.ui-fixture-manager-shell .tunnel-dialog-header,
+.ui-fixture-manager-shell .tunnel-dialog-toolbar,
+.ui-fixture-manager-shell .tunnel-card-actions,
+.ui-fixture-manager-shell .tunnel-form-actions,
+.ui-fixture-manager-shell .process-dialog-header,
+.ui-fixture-manager-shell .process-toolbar,
+.ui-fixture-manager-shell .process-toolbar-actions,
+.ui-fixture-manager-shell .process-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ui-fixture-manager-shell .docker-dialog-header,
+.ui-fixture-manager-shell .tunnel-dialog-header,
+.ui-fixture-manager-shell .process-dialog-header {
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ui-fixture-manager-shell h2,
+.ui-fixture-manager-shell h3,
+.ui-fixture-manager-shell p {
+  margin: 0;
+}
+
+.ui-fixture-manager-shell .docker-dialog-header p,
+.ui-fixture-manager-shell .tunnel-dialog-header p,
+.ui-fixture-manager-shell .process-dialog-header p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .docker-toolbar,
+.ui-fixture-manager-shell .tunnel-dialog-toolbar,
+.ui-fixture-manager-shell .process-toolbar {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.ui-fixture-manager-shell .docker-toolbar label,
+.ui-fixture-manager-shell .detail-actions label:not(.detail-tail-control),
+.ui-fixture-manager-shell .tunnel-dialog-toolbar label,
+.ui-fixture-manager-shell .tunnel-profile-form label,
+.ui-fixture-manager-shell .process-toolbar label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .docker-server-select-field,
+.ui-fixture-manager-shell .server-select-field {
+  flex: 0 1 320px;
+  min-width: 220px;
+}
+
+.ui-fixture-manager-shell .docker-search-field,
+.ui-fixture-manager-shell .process-search {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.ui-fixture-manager-shell .docker-filter-field {
+  flex: 0 0 120px;
+}
+
+.ui-fixture-manager-shell select,
+.ui-fixture-manager-shell input {
+  width: 100%;
+  min-width: 0;
+}
+
+.ui-fixture-manager-shell .docker-status-line {
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .docker-mode-tabs {
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ui-fixture-manager-shell .docker-mode-tabs .command-light-action {
+  min-height: 30px;
+  font-size: 14px;
+  padding: 3px 8px;
+}
+
+.ui-fixture-manager-shell .docker-mode-tabs .command-light-action.active,
+.ui-fixture-manager-shell .detail-tabs .command-light-action.active {
+  color: var(--text);
+  background: rgba(37, 99, 235, 0.18);
+  box-shadow: inset 0 -2px 0 var(--primary);
+}
+
+.ui-fixture-manager-shell .docker-compose-panel {
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 18px 16px;
+  overflow: auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.ui-fixture-manager-shell .docker-compose-sidebar,
+.ui-fixture-manager-shell .docker-compose-detail {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel-2);
+  padding: 10px;
+}
+
+.ui-fixture-manager-shell .docker-compose-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .docker-compose-detail {
+  display: grid;
+  grid-template-rows: auto auto auto auto minmax(120px, 1fr);
+  align-content: start;
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .docker-compose-section-header {
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.ui-fixture-manager-shell .docker-compose-section-header > div:not(.docker-compose-action-row),
+.ui-fixture-manager-shell .docker-compose-project-row {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.ui-fixture-manager-shell .docker-compose-project-row {
+  text-align: left;
+}
+
+.ui-fixture-manager-shell .docker-compose-project-row.selected {
+  border-color: var(--primary);
+  background: var(--input);
+}
+
+.ui-fixture-manager-shell .docker-compose-section-header strong,
+.ui-fixture-manager-shell .docker-compose-project-row strong,
+.ui-fixture-manager-shell .docker-compose-project-row span,
+.ui-fixture-manager-shell .docker-compose-project-row small,
+.ui-fixture-manager-shell .docker-compose-service-row strong,
+.ui-fixture-manager-shell .docker-compose-service-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .docker-compose-section-header span,
+.ui-fixture-manager-shell .docker-compose-project-row span,
+.ui-fixture-manager-shell .docker-compose-project-row small,
+.ui-fixture-manager-shell .docker-compose-service-row span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .docker-compose-tail {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .docker-compose-section-header > .docker-compose-action-row {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.ui-fixture-manager-shell .docker-compose-filter {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .docker-compose-project-filter {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+.ui-fixture-manager-shell .docker-compose-service-toolbar {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ui-fixture-manager-shell .docker-compose-service-count {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .docker-compose-service-toolbar .docker-compose-filter {
+  flex: 1 1 240px;
+  max-width: 520px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+.ui-fixture-manager-shell .docker-compose-tail-select {
+  width: 82px;
+}
+
+.ui-fixture-manager-shell .docker-compose-services {
+  min-height: 0;
+  max-height: 118px;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  overflow: auto;
+}
+
+.ui-fixture-manager-shell .docker-compose-service-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(92px, 1fr) minmax(120px, 1fr) 70px minmax(96px, 1fr) minmax(86px, 1fr);
+  gap: 7px;
+  align-items: center;
+  padding: 7px 8px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.ui-fixture-manager-shell .docker-compose-service-detail {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) minmax(120px, 1.2fr) 80px minmax(100px, 1fr) minmax(90px, 1fr);
+  gap: 7px;
+  align-items: center;
+  padding: 7px 8px;
+  border: 1px solid rgba(96, 165, 250, 0.24);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.ui-fixture-manager-shell .docker-compose-service-detail span,
+.ui-fixture-manager-shell .docker-compose-service-detail strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .docker-compose-log-actions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.ui-fixture-manager-shell .docker-compose-logs {
+  min-height: 120px;
+  height: 100%;
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  border-radius: 10px;
+  background: #050816;
+  color: #dbeafe;
+  font-family: var(--mono-font, "Cascadia Mono", Consolas, monospace);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.ui-fixture-manager-shell .docker-body {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(260px, 340px);
+  gap: 12px;
+  overflow: hidden;
+  padding: 12px 18px 16px;
+}
+
+@media (max-width: 840px) {
+  .ui-fixture-manager-shell .docker-compose-panel {
+    grid-template-columns: 1fr;
+    max-height: 430px;
+    overflow: auto;
+  }
+
+  .ui-fixture-manager-shell .docker-compose-service-row {
+    grid-template-columns: minmax(120px, 1fr) minmax(150px, 1fr);
+  }
+
+  .ui-fixture-manager-shell .docker-compose-services {
+    min-height: 68px;
+  }
+}
+
+.ui-fixture-manager-shell .docker-list-panel,
+.ui-fixture-manager-shell .docker-detail-panel {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel-2);
+  padding: 10px;
+}
+
+.ui-fixture-manager-shell .docker-list-panel {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.ui-fixture-manager-shell .docker-list-header {
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .docker-batch-bar {
+  flex-wrap: wrap;
+  padding: 7px 8px;
+  border: 1px solid rgba(96, 165, 250, 0.24);
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.ui-fixture-manager-shell .docker-container-card {
+  display: grid;
+  grid-template-columns: 24px minmax(150px, 1fr) minmax(94px, 110px) minmax(86px, 96px) minmax(154px, 164px);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 70px;
+  padding: 8px 10px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.ui-fixture-manager-shell .docker-container-card.selected {
+  border-color: rgba(96, 165, 250, 0.62);
+}
+
+.ui-fixture-manager-shell .container-main,
+.ui-fixture-manager-shell .container-meta,
+.ui-fixture-manager-shell .container-stats {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.ui-fixture-manager-shell .container-main strong,
+.ui-fixture-manager-shell .container-main span,
+.ui-fixture-manager-shell .container-meta span,
+.ui-fixture-manager-shell .container-stats span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .container-main span,
+.ui-fixture-manager-shell .container-meta span,
+.ui-fixture-manager-shell .container-stats span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .container-state {
+  justify-self: start;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.ui-fixture-manager-shell .container-state.running,
+.ui-fixture-manager-shell .tunnel-status.running {
+  color: #86efac;
+}
+
+.ui-fixture-manager-shell .container-state.stopped,
+.ui-fixture-manager-shell .tunnel-status.stopped {
+  color: #cbd5e1;
+}
+
+.ui-fixture-manager-shell .container-actions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.ui-fixture-manager-shell .container-actions button,
+.ui-fixture-manager-shell .detail-actions button,
+.ui-fixture-manager-shell .docker-batch-bar button {
+  min-height: 26px;
+  padding: 3px 8px;
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .detail-actions {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.ui-fixture-manager-shell .detail-tail-control {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .detail-tail-control input {
+  width: 72px;
+}
+
+.ui-fixture-manager-shell .docker-detail-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+}
+
+.ui-fixture-manager-shell .detail-tabs button.active {
+  border-color: var(--primary);
+  background: var(--input);
+  color: var(--text);
+}
+
+.ui-fixture-manager-shell .detail-content {
+  min-height: 0;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.ui-fixture-manager-shell .docker-log-view {
+  min-height: 64px;
+  max-height: 64px;
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  border-radius: 10px;
+  background: #050816;
+  color: #dbeafe;
+  font-family: var(--mono-font, "Cascadia Mono", Consolas, monospace);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.ui-fixture-manager-shell .docker-info-grid {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 7px 10px;
+  margin: 0;
+}
+
+.ui-fixture-manager-shell .docker-info-grid dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.ui-fixture-manager-shell .tunnel-dialog {
+  width: min(980px, calc(100vw - 48px));
+  height: min(650px, calc(100vh - 48px));
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.ui-fixture-manager-shell .tunnel-dialog-body {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(300px, 380px);
+  gap: 12px;
+  padding: 12px 18px 16px;
+  overflow: hidden;
+}
+
+.ui-fixture-manager-shell .tunnel-profile-list,
+.ui-fixture-manager-shell .tunnel-profile-form {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
+}
+
+.ui-fixture-manager-shell .tunnel-profile-card,
+.ui-fixture-manager-shell .tunnel-profile-form {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel-2);
+  padding: 10px;
+}
+
+.ui-fixture-manager-shell .tunnel-profile-card {
+  display: grid;
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .tunnel-card-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .tunnel-card-title {
+  min-width: 0;
+}
+
+.ui-fixture-manager-shell .tunnel-card-title strong,
+.ui-fixture-manager-shell .tunnel-card-title span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .tunnel-card-title span,
+.ui-fixture-manager-shell .form-hint {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .tunnel-endpoint-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .tunnel-runtime-line,
+.ui-fixture-manager-shell .remote-listen-diagnostics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ui-fixture-manager-shell .tunnel-runtime-line span {
+  display: inline-flex;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.1);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .remote-listen-diagnostics {
+  display: grid;
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.ui-fixture-manager-shell .remote-listen-diagnostics div {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.ui-fixture-manager-shell .remote-listen-diagnostics strong,
+.ui-fixture-manager-shell .remote-listen-diagnostics code {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .remote-listen-warning {
+  color: #fde68a;
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .remote-access-button {
+  justify-self: start;
+}
+
+.ui-fixture-manager-shell .tunnel-type-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .tunnel-type-card {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  padding: 8px;
+  text-align: left;
+}
+
+.ui-fixture-manager-shell .tunnel-form-actions {
+  justify-content: flex-end;
+}
+
+.ui-fixture-manager-shell .process-dialog {
+  width: min(1120px, calc(100vw - 48px));
+  height: min(700px, calc(100vh - 48px));
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.ui-fixture-manager-shell .process-body {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(420px, 1.18fr) minmax(300px, 0.82fr);
+  overflow: hidden;
+}
+
+.ui-fixture-manager-shell .process-list-panel,
+.ui-fixture-manager-shell .process-detail-panel {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+}
+
+.ui-fixture-manager-shell .process-detail-panel {
+  border-left: 1px solid var(--border);
+}
+
+.ui-fixture-manager-shell .process-warning {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 10px;
+  color: #fde68a;
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.ui-fixture-manager-shell .process-table {
+  display: grid;
+  gap: 6px;
+}
+
+.ui-fixture-manager-shell .process-table-head,
+.ui-fixture-manager-shell .process-table-row {
+  display: grid;
+  grid-template-columns: 64px minmax(68px, 0.7fr) 64px 72px 80px minmax(140px, 1.5fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .process-table-head-shell {
+  padding: 6px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--panel-2, rgba(15, 23, 42, 0.72));
+}
+
+.ui-fixture-manager-shell .process-table-head {
+  padding: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .process-table-head button {
+  min-width: 0;
+  width: 100%;
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  color: inherit;
+  background: transparent;
+  text-align: center;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ui-fixture-manager-shell .process-table-head button.numeric {
+  justify-content: center;
+  text-align: center;
+}
+
+.ui-fixture-manager-shell .process-table-head button:hover {
+  color: var(--text);
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.ui-fixture-manager-shell .process-table-head-cell {
+  position: relative;
+  min-width: 0;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 8px;
+}
+
+.ui-fixture-manager-shell .process-table-head-cell.numeric {
+  justify-content: center;
+}
+
+.ui-fixture-manager-shell .process-table-head-cell > span:not(.table-column-resizer, .table-sort-arrow) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .table-sort-arrow {
+  flex: 0 0 auto;
+  color: #9ec0ff;
+  font-size: 11px;
+}
+
+.ui-fixture-manager-shell .table-column-resizer {
+  position: absolute;
+  top: 2px;
+  right: -5px;
+  z-index: 2;
+  width: 10px;
+  height: calc(100% - 4px);
+  cursor: col-resize;
+}
+
+.ui-fixture-manager-shell .table-column-resizer::before {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 100%;
+  margin: 0 auto;
+  background: rgba(148, 163, 184, 0.36);
+}
+
+.ui-fixture-manager-shell .table-column-resizer:hover::before {
+  background: #60a5fa;
+}
+
+.ui-fixture-manager-shell .process-table-row {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 10px;
+  color: inherit;
+  background: rgba(15, 23, 42, 0.68);
+  text-align: left;
+}
+
+.ui-fixture-manager-shell .process-table-row.selected {
+  border-color: rgba(96, 165, 250, 0.55);
+}
+
+.ui-fixture-manager-shell .process-table-row strong,
+.ui-fixture-manager-shell .process-detail-title h3 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-fixture-manager-shell .process-table-row .numeric {
+  text-align: left;
+}
+
+.ui-fixture-manager-shell .numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-fixture-manager-shell .network-diagnostics-modal {
+  width: min(940px, calc(100vw - 48px));
+  height: min(680px, calc(100vh - 48px));
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.ui-fixture-manager-shell .network-diagnostics-toolbar {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  overflow: hidden;
+}
+
+.ui-fixture-manager-shell .network-diag-select-field {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.ui-fixture-manager-shell .network-diag-refresh-button {
+  flex: 0 0 auto;
+}
+
+.ui-fixture-manager-shell .network-diagnostics-body {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.ui-fixture-manager-shell .network-diagnostics-types {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ui-fixture-manager-shell .network-diagnostics-types .command-light-action {
+  border: 0;
+}
+
+.ui-fixture-manager-shell .network-diagnostics-types .command-light-action.active {
+  border-color: transparent;
+  background: rgba(37, 99, 235, 0.18);
+  box-shadow: inset 0 -2px 0 var(--primary);
+}
+
+.ui-fixture-manager-shell .network-diagnostics-main {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(96px, 0.6fr) minmax(120px, 1fr);
+  gap: 8px;
+  overflow: hidden;
+}
+
+.ui-fixture-manager-shell .network-endpoint-table {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.ui-fixture-manager-shell .network-endpoint-table .network-endpoint-row {
+  min-width: 792px;
+}
+
+.ui-fixture-manager-shell .network-endpoint-head-cell {
+  position: relative;
+}
+
+.ui-fixture-manager-shell .process-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ui-fixture-manager-shell .process-detail-heading,
+.ui-fixture-manager-shell .process-detail-title {
+  min-width: 0;
+}
+
+.ui-fixture-manager-shell .process-detail-heading {
+  flex: 1 1 auto;
+  display: grid;
+  gap: 3px;
+}
+
+.ui-fixture-manager-shell .process-detail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .process-state {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.18);
+  color: #bfdbfe;
+  font-size: 12px;
+}
+
+.ui-fixture-manager-shell .process-detail-actions {
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .process-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.ui-fixture-manager-shell .process-facts div,
+.ui-fixture-manager-shell .process-paths p {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(30, 41, 59, 0.65);
+}
+
+.ui-fixture-manager-shell .process-facts dd {
+  margin: 2px 0 0;
+}
+
+.ui-fixture-manager-shell .process-cmdline pre {
+  max-height: 120px;
+  overflow: auto;
+  margin: 6px 0 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.72);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ui-fixture-confirm-dialog {
+  position: absolute;
+  right: 34px;
+  bottom: 28px;
+  width: min(320px, calc(100vw - 68px));
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.38);
+}
+
+.ui-fixture-confirm-dialog div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ui-fixture-manager-shell .danger,
+.ui-fixture-manager-shell .danger.subtle {
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.45);
+}
+
+@media (max-width: 860px) {
+  .ui-fixture-manager-shell .process-body {
+    grid-template-columns: 1fr;
+  }
+
+  .ui-fixture-manager-shell .process-detail-panel {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+}

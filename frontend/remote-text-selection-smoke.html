@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remote Text Selection Smoke</title>
+    <script type="module">
+      import { basicSetup } from 'codemirror'
+      import { EditorState } from '@codemirror/state'
+      import { Decoration, EditorView, ViewPlugin, highlightActiveLine } from '@codemirror/view'
+      import { HighlightStyle, StreamLanguage, syntaxHighlighting } from '@codemirror/language'
+      import { tags as t } from '@lezer/highlight'
+      import { properties } from '@codemirror/legacy-modes/mode/properties'
+      import { visibleSelectionDecoration } from './src/utils/visibleSelectionDecoration'
+      import './src/style.css'
+
+      document.documentElement.dataset.theme = 'dark'
+
+      const doc = [
+        'APP_CHANNEL="local_sample_10002068"',
+        'SEARCH_TOKEN="local_sample_10002068"',
+        'GREEN_TOKEN="local_sample_10002068"',
+      ].join('\n')
+      const selectedText = 'local_sample_10002068'
+      const firstFrom = doc.indexOf(selectedText)
+      const firstTo = firstFrom + selectedText.length
+      const secondFrom = doc.indexOf(selectedText, firstTo)
+      const secondTo = secondFrom + selectedText.length
+      const thirdFrom = doc.indexOf(selectedText, secondTo)
+      const thirdTo = thirdFrom + selectedText.length
+      const focusedHost = document.getElementById('focused-editor')
+      const unfocusedHost = document.getElementById('unfocused-editor')
+      const searchHost = document.getElementById('search-editor')
+
+      const selectedSearchMark = Decoration.mark({ class: 'cm-searchMatch cm-searchMatch-selected' })
+      const tokenBackgroundMark = Decoration.mark({ class: 'sp-smoke-token-background' })
+      const smokeConflictDecorations = ViewPlugin.fromClass(class {
+        decorations = Decoration.set([
+          selectedSearchMark.range(secondFrom, secondTo),
+          tokenBackgroundMark.range(thirdFrom, thirdTo),
+        ], true)
+      }, {
+        decorations: (plugin) => plugin.decorations,
+      })
+
+      const smokeTheme = EditorView.theme({
+        '&': {
+          height: '210px',
+          border: '1px solid #475569',
+          backgroundColor: '#101827',
+          color: '#f8fbff',
+          fontSize: '18px',
+        },
+        '.cm-scroller': {
+          fontFamily: 'Consolas, "Cascadia Mono", monospace',
+          lineHeight: '1.55',
+        },
+        '.cm-activeLine': {
+          backgroundColor: '#1c2f4d',
+        },
+        '.cm-searchMatch': {
+          backgroundColor: '#f59e0bcc',
+          outline: '1px solid #fde68a',
+        },
+        '.cm-searchMatch-selected': {
+          backgroundColor: '#06b6d4dd',
+          outline: '1px solid #a5f3fc',
+        },
+        '.sp-smoke-token-background': {
+          backgroundColor: '#047857cc',
+        },
+      }, { dark: true })
+      const highlight = HighlightStyle.define([
+        { tag: [t.string], color: '#34d399', backgroundColor: '#064e3b66', fontWeight: '600' },
+        { tag: [t.variableName, t.propertyName], color: '#dbeafe' },
+        { tag: [t.operator], color: '#f0abfc' },
+      ])
+
+      function createView(host, selectionFrom) {
+        return new EditorView({
+        parent: host,
+        state: EditorState.create({
+          doc,
+          selection: { anchor: selectionFrom, head: selectionFrom + selectedText.length },
+          extensions: [
+            basicSetup,
+            highlightActiveLine(),
+            StreamLanguage.define(properties),
+            syntaxHighlighting(highlight),
+            smokeConflictDecorations,
+            visibleSelectionDecoration,
+            smokeTheme,
+          ],
+        }),
+        })
+      }
+
+      const focusedView = createView(focusedHost, firstFrom)
+      const unfocusedView = createView(unfocusedHost, firstFrom)
+      const searchView = createView(searchHost, secondFrom)
+      focusedView.focus()
+
+      function stylesFor(host, selector) {
+        const node = host.querySelector(selector)
+        if (!node) return null
+        const style = window.getComputedStyle(node)
+        return {
+          text: node.textContent,
+          backgroundColor: style.backgroundColor,
+          color: style.color,
+          boxShadow: style.boxShadow,
+          outlineColor: style.outlineColor,
+          outlineStyle: style.outlineStyle,
+          outlineWidth: style.outlineWidth,
+        }
+      }
+
+      window.__serverPilotSelectionSmoke = {
+        focusedView,
+        unfocusedView,
+        searchView,
+        run() {
+          return {
+            focusedSelection: stylesFor(focusedHost, '.sp-visible-selection'),
+            unfocusedSelection: stylesFor(unfocusedHost, '.sp-visible-selection'),
+            activeLine: stylesFor(focusedHost, '.cm-activeLine'),
+            selectedSearchMatch: stylesFor(searchHost, '.sp-visible-selection.cm-searchMatch, .sp-visible-selection .cm-searchMatch, .cm-searchMatch .sp-visible-selection'),
+            searchMatch: stylesFor(searchHost, '.cm-searchMatch'),
+            tokenBackground: stylesFor(focusedHost, '.sp-smoke-token-background'),
+            overlayCount: document.querySelectorAll('.sp-visible-selection-overlay').length,
+            selectionLayerCount: document.querySelectorAll('.cm-selectionLayer').length,
+          }
+        },
+      }
+    </script>
+  </head>
+  <body style="margin: 0; background: #0f172a; color: #e2e8f0; padding: 24px; font-family: system-ui, sans-serif;">
+    <h1 style="font-size: 16px; margin: 0 0 12px;">Remote Text Selection Smoke</h1>
+    <div style="display: grid; gap: 16px; width: 760px;">
+      <div id="focused-editor" class="sftp-text-selection-surface"></div>
+      <div id="unfocused-editor" class="sftp-text-selection-surface"></div>
+      <div id="search-editor" class="sftp-text-selection-surface"></div>
+    </div>
+  </body>
+</html>

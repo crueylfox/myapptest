@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terminal Highlighter Smoke</title>
+    <script type="module">
+      import { Terminal } from '@xterm/xterm'
+      import '@xterm/xterm/css/xterm.css'
+      import { TerminalViewportHighlighter } from './src/utils/terminalViewportHighlighter'
+
+      const root = document.getElementById('terminal')
+      const terminal = new Terminal({
+        allowProposedApi: true,
+        cols: 80,
+        rows: 8,
+        fontFamily: 'Consolas, Cascadia Mono, monospace',
+        fontSize: 18,
+        theme: {
+          background: '#05070a',
+          foreground: '#ffffff',
+        },
+      })
+      terminal.open(root)
+
+      const highlighter = new TerminalViewportHighlighter({
+        terminal,
+        root,
+        isActive: () => true,
+        isVisible: () => true,
+      })
+
+      const text = [
+        '\x1b[31mERROR REMOTE_RED\x1b[0m plain IPK="/tmp/a.ipk"',
+        '\x1b[34m/etc DIR_COLOR\x1b[0m nginx.conf',
+        '#!/bin/sh',
+        'IPK="/tmp/a.ipk"',
+        'log "检测到opkg系统"',
+        'if [ -f "$IPK" ]; then return 0; fi',
+      ].join('\r\n')
+
+      function cellAttributesForToken(row, token) {
+        const buffer = terminal.buffer.active
+        const line = buffer.getLine(buffer.viewportY + row)
+        const text = line?.translateToString(true) ?? ''
+        const start = text.indexOf(token)
+        if (!line || start < 0) return null
+        const cells = []
+        for (let column = start; column < start + token.length; column += 1) {
+          const cell = line.getCell(column)
+          if (!cell || cell.getWidth() === 0) continue
+          cells.push({
+            x: column,
+            chars: cell.getChars(),
+            fgDefault: cell.isFgDefault(),
+            fgPalette: cell.isFgPalette(),
+            fgRGB: cell.isFgRGB(),
+            bgDefault: cell.isBgDefault(),
+            bgPalette: cell.isBgPalette(),
+            bgRGB: cell.isBgRGB(),
+            attributeDefault: cell.isAttributeDefault(),
+            inverse: Boolean(cell.isInverse()),
+            invisible: Boolean(cell.isInvisible()),
+          })
+        }
+        return { row, token, cells }
+      }
+
+      window.__serverPilotSmoke = {
+        terminal,
+        highlighter,
+        async run() {
+          terminal.reset()
+          terminal.write(text, () => {
+            highlighter.renderNow()
+          })
+          await new Promise((resolve) => window.setTimeout(resolve, 250))
+          const decorations = [...root.querySelectorAll('.xterm-decoration')].map((node) => {
+            const style = window.getComputedStyle(node)
+            return {
+              className: node.className,
+              left: style.left,
+              top: style.top,
+              width: style.width,
+              height: style.height,
+              color: style.color,
+              backgroundColor: style.backgroundColor,
+              display: style.display,
+              zIndex: style.zIndex,
+            }
+          })
+          return {
+            registerDecorationType: typeof terminal.registerDecoration,
+            registerMarkerType: typeof terminal.registerMarker,
+            decorationCount: decorations.length,
+            decorations,
+            diagnostics: highlighter.getDiagnostics(),
+            cellAttributes: {
+              remoteError: cellAttributesForToken(0, 'ERROR'),
+              remoteRed: cellAttributesForToken(0, 'REMOTE_RED'),
+              remoteEtc: cellAttributesForToken(1, '/etc'),
+              dirColor: cellAttributesForToken(1, 'DIR_COLOR'),
+              plainPath: cellAttributesForToken(3, '/tmp/a.ipk'),
+            },
+          }
+        },
+      }
+    </script>
+  </head>
+  <body style="margin: 0; background: #111827; padding: 24px;">
+    <div id="terminal" style="width: 960px; height: 260px;"></div>
+  </body>
+</html>

@@ -1,0 +1,389 @@
+# Compatibility Entry
+
+中文主文档: `路线图.md`
+
+---
+
+# 路线图
+
+英文兼容入口：`ROADMAP.md`。
+
+本文件是后续功能路线的中文主文档。路线图不能覆盖 `架构说明.md` / `ARCHITECTURE.md` 或 `安全边界.md` / `SECURITY.md` 的硬约束。
+
+---
+
+# ServerPilot Roadmap
+
+## Phase 1: Monitoring MVP
+
+- [x] Wails v2 Vue TypeScript project and package structure
+- [x] Pure Go SQLite connection and group repositories
+- [x] Runtime-only `SecretStore`
+- [x] Connection create, edit, delete, group, and search
+- [x] Password and private-key authentication at runtime
+- [x] Connection test, latency, status, connect, disconnect, and reconnect
+- [x] Independent monitoring SSH transport
+- [x] Linux collection script and strict parsers
+- [x] CPU, memory, swap, root disk, load, uptime, OS, kernel, architecture
+- [x] Default interface and byte-per-second RX/TX rates
+- [x] One-, two-, and five-second intervals
+- [x] Sixty-second charts
+- [x] Structured application logs and log viewer
+- [x] Complete dark theme and basic light theme
+- [x] Graceful application shutdown
+- [x] Go parser tests and frontend unit tests
+- [x] Windows x64 Wails build
+
+## Phase 1 Acceptance
+
+- `wails dev` starts successfully.
+- `wails build` produces a Windows executable.
+- Go tests, vet, frontend tests, type checking, and build pass.
+- A real supported Linux host can be connected to with password or private key.
+- Monitoring values follow the documented sources and calculations.
+- Disconnect and shutdown leave no owned worker running.
+- Logs and persistence contain no secret material.
+
+Real-host SSH acceptance requires credentials and a reachable host and therefore
+cannot be replaced by fabricated test data.
+
+## Phase 2: Terminal
+
+- [x] Independent interactive SSH transport per tab
+- [x] xterm.js integration with ANSI, UTF-8, input, and 10000-line scrollback
+- [x] PTY resize, clipboard shortcuts, disconnect state, and manual reconnect
+- [x] Multiple tabs, same-server multiple sessions, and deterministic cleanup
+- [x] Compact live monitor status bar and full dashboard navigation
+- [x] Unified saved-credential reuse for monitoring, tests, and terminals
+- [x] Default automatic host-key trust/update with optional strict verification
+- [x] Server, terminal-tab, and terminal-content context menus
+- [x] Overlay Toast notifications and a responsive bottom SFTP panel
+- [x] Unified per-server connection state with separate monitor and terminal activity
+- [x] Structured SSH error classification and Chinese user-facing diagnostics
+- [x] Failure cleanup, duplicate-connection prevention, and retryable double-click flow
+- [x] Chinese structured log viewer with level filtering and technical-detail copy
+- [x] Terminal command history and grouped command favorites
+- [x] Ctrl+Space terminal command completion from history, favorites, and builtins
+- [x] Isolated local terminal runtime with xterm.js frontend and Windows ConPTY adapter
+- [x] Configurable terminal profiles and preferences
+- [x] Live terminal profile apply, font preset selector, and sticky Settings actions
+- [x] SSH application-level keepalive policy
+
+## Connection Configuration And Global Defaults
+
+- [x] Add/edit password and private-key authentication fields
+- [x] Global defaults for remembering passwords and private-key passphrases
+- [x] Saved credential state and explicit credential deletion
+- [x] Save-and-connect without a duplicate authentication dialog
+- [x] Defer save-and-connect credential replacement until authentication succeeds
+- [x] Typed `AppSettings`, validation, settings service, and versioned migration
+- [x] `auto_update` and `strict` host-key policies
+- [x] First-run/upgrade security policy onboarding
+- [x] Explicit current-host fingerprint trust and re-trust action
+- [x] Unified 5/10/15/30 second timeout for tests, monitoring, and terminals
+- [x] Strict mode blocks unknown/changed fingerprints until explicit trust/update
+
+## Active Server Context And Lifecycle
+
+- [x] Unified server-wide `DisconnectServer` lifecycle entry
+- [x] Main terminal tab close disconnects all resources for that server
+- [x] Separate terminal-only close action
+- [x] Independent selected server and active terminal server contexts
+- [x] Explicit server workspaces independent from terminal and monitor sessions
+- [x] Unified single-click, double-click, and Enter open/connect behavior
+- [x] Duplicate suppression across overlapping click and double-click events
+- [x] Per-server last active terminal and workspace activation history
+- [x] Retained offline, failed, reconnecting, and disconnected workspace pages
+- [x] Structured failed-workspace summary, technical detail, and recovery actions
+- [x] Monitor-only navigation and active-workspace status-bar context
+- [x] Separate disconnect-resource and close-workspace behavior
+- [x] Per-server terminal, monitor, and connection state maps
+- [x] Late-event suppression after explicit disconnect
+- [x] Per-sample SSH collection round-trip latency
+- [x] Unavailable latency during failure and reconnect
+- [x] Persistent dark, light, and system theme modes
+- [x] Monitor dashboard starts directly at metrics without the old top module
+- [x] Native Windows build, theme restart, monitor layout, and process cleanup checks
+
+## Main Workspace Layout And Compact Monitoring
+
+- [x] Right-workspace-only server and terminal tab bar
+- [x] Top `+` server picker with search, groups, status, add server, and add group
+- [x] Monitor panel floating entry with internal `服务器总览` / `详细监控` tabs and compact multi-server cards
+- [x] Idempotent single-click/double-click `OpenOrActivateServer` behavior
+- [x] Resizable and collapsible left monitor sidebar with persisted state
+- [x] Compact active-workspace CPU, memory, swap, network, system, and latency data
+- [x] Real top-process table with CPU/memory sorting and isolated parser failures
+- [x] Multiple real `df` mount rows with pseudo/overlay filtering and show-all
+- [x] Persisted monitor-to-mount horizontal splitter
+- [x] Horizontal bottom SFTP panel below the terminal; no right-side SFTP rail
+- [x] Persisted SFTP expansion and height splitter
+- [x] Right-workspace-only status bar
+- [x] FitAddon and remote PTY resize after every workspace layout change
+- [x] 1280x720, 1920x1080, and Windows 125% DPR geometry validation
+- [x] Real CentOS 7 monitor and terminal validation
+
+## Main UI And Interaction Polish
+
+- [x] Remove the in-content SP/ServerPilot brand region
+- [x] Anchor the server picker to the actual trailing `+` tab control
+- [x] Close server popovers on outside pointer input, Escape, blur, and competing menus
+- [x] Use one application overlay layer contract
+- [x] Replace native prompt/alert/confirm paths with application dialogs
+- [x] Compact single-row server picker entries with isolated edit/delete actions
+- [x] Persist drag-reordered server workspace tabs without reconnecting SSH
+- [x] Select an adjacent workspace after close according to visible tab order
+- [x] Collapse system details and use compact CPU/memory/swap progress bars
+- [x] Limit compact TOP to five processes while preserving CPU/memory sorting
+- [x] Render each mount as one progress row with overlaid capacity text
+- [x] Move the sidebar toggle into the draggable divider
+- [x] Localize status-bar connection states and remove terminal geometry text
+- [x] Remove the server context-menu test-connection entry
+
+## Terminal, Readability, And Monitor Compatibility
+
+- [x] Stable double-frame xterm fit after every workspace geometry change
+- [x] Frontend resize burst coalescing and backend PTY size deduplication
+- [x] Terminal close cancels pending resize work
+- [x] Preserve xterm instances and unsubmitted input across monitor/log/settings navigation
+- [x] Sticky-bottom output with history-preserving return control
+- [x] Four persistent UI font sizes with a 15 px default
+- [x] Persisted and screen-clamped window width, height, and maximized state
+- [x] Adaptive default window layout: first launch uses current display width 50% and height 75%, while saved user window state wins after that
+- [x] Responsive auto-fit full monitor cards and charts
+- [x] Full monitor overview fits default 1360x820, 1440x900, and 1920x1080 windows without vertical or horizontal scrolling
+- [x] ECharts container ResizeObserver and appearance-change resize
+- [x] Explicit TOP loading, empty, unsupported, failed, and available states
+- [x] Validated GNU procps and BusyBox/Toybox process collection
+- [x] Bounded procfs process fallback with consecutive CPU sampling
+- [x] Invalid process values filtered and equal values sorted by stable PID
+- [x] Process failures logged without invalidating unrelated monitor metrics
+
+## Key Vault
+
+- [x] Store key name, source file name, algorithm, key bits, public-key
+  fingerprint, encrypted storage mode, saved-passphrase state, notes, usage
+  count, and last-used time.
+- [x] Allow connection forms to select a key-vault entry.
+- [x] Encrypted reusable private key vault: import private-key material once,
+  protect it with Windows current-user protection, and store only protected
+  ciphertext plus metadata in SQLite.
+- [x] Do not store plaintext private-key contents or passphrases in SQLite,
+  logs, Wails JSON, frontend state, Toasts, or backup/export payloads.
+- [x] New server profiles store only `key_vault_id`; one key can be reused by
+  multiple servers without duplicating key material.
+- [x] Imported encrypted keys no longer depend on the original local private-key
+  file for later connections.
+- [x] Legacy path-only Key Vault entries remain compatible and have a migration
+  entry when the original file is still available.
+- [x] Continue storing private-key passphrases in the operating-system credential store.
+- [x] Validate private keys and compute public-key SHA-256 fingerprints with
+  Go SSH libraries.
+- [x] Allow confirmed deletion of in-use key-vault entries and automatically
+  clear affected server `key_vault_id` references.
+- [ ] Cross-computer encrypted Key Vault material export/import：本轮暂未实现，
+  后续需要单独安全设计；普通和完整 Backup 均不携带 protected key blob。
+
+## Formal Bottom SFTP
+
+- [x] Independent SFTP transport per server workspace
+- [x] Bottom-only SFTP panel under SSH terminal and above the status bar
+- [x] Bind SFTP state, directory entries, selection, and transfers to
+  `activeWorkspaceServerID` / server ID
+- [x] Real remote file browser with parent/home navigation, manual path entry,
+  refresh, hidden-file toggle, sorting, permissions, owner, and group display
+- [x] Create folder, same-directory rename, delete files, and delete empty
+  directories
+- [x] Native local file selection for upload and native directory selection for
+  download
+- [x] Streamed multi-file upload and download without sending file contents
+  through Wails JSON
+- [x] Per-server transfer queue, progress, speed, cancel, and clear-finished
+  behavior
+- [x] Conflict policies: ask, overwrite, skip, and automatic rename
+- [x] CredentialResolver and Key Vault authentication integration
+- [x] Close SFTP sessions and cancel transfers through `DisconnectServer`
+- [x] Automatically open SFTP after a successful SSH terminal connection,
+  with idempotent connected/connecting no-op behavior
+- [x] Compact single-row SFTP toolbar without Connect/Disconnect buttons
+- [x] Synthetic `..` parent-directory row pinned above real entries
+- [x] File, directory, blank-area, parent-row, and multi-select SFTP context
+  menus using shared business actions
+- [x] Move transfer summary and queue details to the right-side status bar
+- [x] Add collapsible right-side file metadata/details panel
+- [x] Detect servers without an SFTP subsystem, including common
+  OpenWrt/ImmortalWrt Dropbear deployments, as an SFTP-only compatibility
+  error while leaving SSH terminal sessions usable
+- [x] Move the SFTP collapse/expand control into the horizontal splitter
+- [x] Make right-click "文件属性" focus the metadata/details panel
+- [x] Open regular remote text files with a bounded UTF-8 editor on double-click
+- [x] Upload files dragged from Windows Explorer into the SFTP area using
+  Wails file-drop paths
+- [x] Replace the textarea remote editor with CodeMirror 6, search, language
+  detection, line numbers, Ctrl+S, and explicit dirty-close choices
+- [x] Refresh the visible remote directory after successful upload completion
+  using debounced real transfer events
+- [x] Keep SFTP splitter dragging separate from the centered collapse/expand
+  button
+- [x] Harden remote text saves with staged errors, POSIX rename, seconds-level
+  mtime conflict checks, overwrite confirmation, and direct-write fallback
+- [x] Remove bordered/capsule visuals from splitter chevrons
+- [x] Improve CodeMirror dark/light readability with a ServerPilot-specific
+  editor theme
+- [x] Center SFTP splitter chevrons with transparent hit areas and no visual
+  button shell
+- [x] Add compact monitor/sidebar split modes for monitor-only, mounts-only,
+  and normal split views
+- [x] Increase remote editor contrast for dark-theme syntax highlighting,
+  search matches, selections, gutters, and active line
+- [x] Replace splitter text glyphs with centered fixed-viewBox SVG chevrons
+- [x] Repair Toast top-layer ordering so notifications render above editor
+  modals, app dialogs, context menus, server pickers, and busy overlays
+- [x] Repair light theme tokens for shared UI, SFTP surfaces, modals, Toast,
+  compact monitoring, and editor chrome while keeping SSH terminal surfaces
+  dark
+- [x] Strengthen CodeMirror dark and light syntax palettes with readable
+  keyword, string, number, comment, function, variable, operator, search, and
+  selection colors
+- [x] Remove redundant SFTP toolbar server/status text so the expanded toolbar
+  starts at Home and status remains in the content/status areas
+- [x] Harden SFTP file properties so file, directory, and multi-select context
+  actions reliably expand the details panel without changing paths or opening
+  file contents
+- [x] Make Toast width content-adaptive with bounded wrapping for short and
+  long messages
+- [x] Recursive directory upload/download
+- [x] SCP fallback for servers without SFTP subsystem
+- [x] SCP recursive fallback MVP using shell listing/mkdir plus single-file SCP
+- [ ] Large-file remote editing and non-UTF-8 encoding selection
+- [ ] Multi-file remote editor tabs
+- [ ] Find/replace, go-to-line, save-before diff, and richer encoding detection
+- [ ] Transfer pause and resume
+- [ ] Platform file reveal/open downloaded directory
+- [ ] Configurable per-server transfer concurrency
+
+## SCP fallback for SFTP-less hosts
+
+This MVP targets OpenWrt/ImmortalWrt Dropbear hosts and other servers where the
+SSH terminal works but the SFTP subsystem is unavailable.
+
+- SCP fallback is an independent transfer path owned by the SFTP manager, not
+  SFTP protocol compatibility.
+- Single-file upload/download use legacy SCP protocol command sessions.
+- Recursive upload/download use shell compatibility listing/mkdir plus
+  per-file single-file SCP, not `scp -r`.
+- Shell compatibility also supports browsable SCP mode where the remote shell
+  provides the required listing/stat/mkdir helpers.
+- POSIX remote paths must be quoted and normalized rigorously.
+- Shell injection risk is higher than formal SFTP and has dedicated tests.
+- It remains isolated from the SSH terminal session, Monitor, Tunnel, Docker,
+  and Local Terminal runtimes.
+
+## Backup And Terminal Productivity
+
+- [x] Backup/import/export for settings, servers, groups, Key Vault metadata,
+  and host trust metadata using encrypted `.spbackup` files.
+- [x] Argon2id + XChaCha20-Poly1305 backup encryption with integrity checks.
+- [x] Import preview, wrong-password handling, conflict-safe import, ID
+  remapping, credential-state clearing, and import result statistics.
+- [x] Standard and full backup modes. Full mode restores saved SSH passwords,
+  local private-key passphrases, and Key Vault passphrases through SecretStore
+  without exporting SecretStore keys or private-key file contents.
+- [x] Terminal command history and grouped command favorites as an attachment
+  layer, excluding terminal output and backup payloads.
+- [x] Multi-server batch command runner MVP with independent SSH exec clients,
+  bounded concurrency/timeouts, stdout/stderr streaming, single/all cancel,
+  dangerous-command confirmation, and in-memory-only output.
+
+The next phase can be command completion or another terminal productivity
+feature. macOS Keychain and richer transfer controls remain later work.
+
+## Linux Operations Attachments
+
+- [x] System Service Manager MVP：systemd capability 检测、服务列表、搜索、
+  运行状态/开机启动筛选、服务详情、start/stop/restart、enable/disable。
+- [x] System Service Journal Logs MVP：系统服务详情新增日志 Tab，支持
+  journalctl 快照、实时 follow、行数/级别/当前启动筛选、搜索、自动滚动、
+  自动换行、清空显示和复制可见日志；日志正文仅保存在前端内存。
+- [x] OpenWrt procd Service Manager MVP 第一阶段：自动检测
+  OpenWrt / ImmortalWrt procd，列出 `/etc/init.d` 服务，显示运行状态和
+  开机启动状态，支持 start/stop/restart 与 enable/disable；不读取 init
+  script 内容、Environment 或完整命令输出。
+- [ ] OpenWrt logread 日志：下一阶段通过 `logread` 支持 OpenWrt 服务日志，
+  本阶段暂未实现。
+- [ ] Docker Compose 项目管理：用户要求暂缓；未新增 Compose Tab、
+  migration、API 或后端代码，不标记完成。
+- [ ] OpenRC service manager support：暂未支持。
+- [ ] SysV init service manager support：暂未支持。
+- [ ] unit 文件编辑、override、daemon-reload、mask/unmask、服务创建/删除、
+  批量服务操作、日志持久化/导出/告警和非 systemd 日志支持。
+
+## Server Alert Center / 服务器告警与通知中心
+
+- [x] Server Alert Center MVP：应用内告警中心、Toast、菜单未读 badge、底部状态栏 badge 和监控总览 active 告警 badge。
+- [x] 告警只消费已有 Monitor snapshot 和 connection state；不新增 SSH client、远程命令、后端轮询器或 Monitor 刷新频率。
+- [x] 支持服务器非预期离线、CPU 高、内存高、根分区高和延迟高告警。
+- [x] 支持持续时间判定、恢复回差、恢复通知、stale sample 忽略和长 sample gap pending 重置。
+- [x] 用户主动断开、删除服务器、App 启动时已离线服务器和从未连接成功服务器不触发离线告警。
+- [x] 点击告警进入监控面板详细监控，不切换 SSH 输入、不创建 terminal、不重建 xterm。
+- [x] 告警设置持久化为 typed Settings；active evaluator、pending、静音和测试告警只保存在当前进程内存。
+- [x] 告警历史持久化与可配置保留条数：默认 500，范围 50-5000；read/resolved/interrupted 进入本地 SQLite。
+- [ ] Windows 原生通知、声音提醒、邮件、Webhook、微信/Telegram：后续单独阶段。
+- [ ] 服务、Docker、隧道、传输、端口变化、日志关键字告警：后续单独阶段。
+- [ ] 按服务器覆盖告警规则、多用户协作和自动处理：后续单独阶段。
+
+## Network Details / 网络详情
+
+- [x] Network Details / 端口与连接视图：点击首页左侧网络曲线打开网络详情，默认显示“端口与连接”。
+- [x] Network Diagnostics 已整合为 Network Details 内部 Tab；不再从 App 根模板打开独立旧诊断浮窗。
+- [x] 显示 PID、程序、来源、协议、监听 IP、端口、IP 数、连接数、累计上传、累计下载。
+- [x] 保留 Monitor 接口总下载/上传速率；不使用接口速率伪造 per-socket 或 per-container 字节。
+- [x] 支持 `ss -lntup`、`netstat -lntup`、`/proc/net/*` LISTEN fallback；`/proc` fallback 不读取 `cmdline` / `environ`。
+- [x] 宿主机 active socket 指标：恢复当前连接、远程 IP、按行连接数和远端 `bytes_sent` / `bytes_received` 累计字节；不支持 counter 时显示 `—`。
+- [x] Docker network namespace 连接指标：按用户要求恢复，连接表默认采集可读取 Docker 容器 netns，不依赖选择 `docker0`。
+- [x] Docker default bridge / custom bridge / shared netns / host mode 口径区分：`docker0` 只影响默认 bridge 曲线，自定义 bridge 通常是 `br-*`，host mode 与宿主机共享 netns 并去重。
+- [x] Docker listener best-effort：权限允许时显示 `Docker: <containerName>` 来源，权限不足时保留宿主机数据。
+- [x] Network Details 使用独立 SSH exec/context，不复用 SSH terminal、Monitor、SFTP、Tunnel、Docker 或 Service Manager SSH client。
+- [x] 接口选择只控制顶部接口速率和曲线；连接表范围由来源筛选控制。
+- [x] Conntrack：按用户最新要求仍不恢复；不显示 Conntrack 卡片，不采集路由器/NAT 全局连接口径。
+- [ ] OpenWrt procd `logread`：用户要求继续暂缓。
+- [ ] Docker Compose 项目管理：用户要求继续暂缓；未新增 Compose Tab、migration、API 或后端代码。
+- [ ] 抓包、pcap、eBPF、Wireshark、防火墙编辑、连接终止、进程强制结束、端口转发自动创建、远程 IP 地理位置、全量连接明细导出。
+
+## Later Monitoring Tools
+
+- [~] Open a detailed process manager from TOP (partially complete MVP)
+- [~] Detailed process table, process details, and guarded process actions
+  (partially complete MVP)
+- [x] Network interface switch for Monitor charts without changing runtime architecture
+- [x] Network diagnostics MVP with Ping, Traceroute, DNS, TCP, and cancellation; now embedded in Network Details
+- [x] Multi-server overview MVP with read-only frontend state aggregation
+- Detailed traffic views
+- Single-server detailed monitoring
+
+## Later Backup
+
+- Optional encrypted backup export of additional non-sensitive UI preferences
+- Per-item backup selection and import conflict preview improvements
+- Never export credentials or passphrases as plaintext
+
+## Later Command Enhancements
+
+- Copy, delete, favorite, and send commands to the active session
+- Command highlighting, Shell Integration, suggestions, and completion
+
+## Later Cross-Platform And Transfer Work
+
+- SFTP with an independent transport, file browser, transfer queue, conflict
+  policy, cancellation, permissions, and ownership display
+- Windows ConPTY local terminal and macOS PTY local terminal
+- Complete settings center
+- Start at login
+- System tray
+- Keyboard shortcuts
+- Terminal font and background settings
+- Native macOS Keychain persistence
+- Port forwarding
+- Docker management
+- Notifications and automatic updates
+- Signed Windows and macOS release pipelines

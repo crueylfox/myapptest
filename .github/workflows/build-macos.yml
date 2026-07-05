@@ -1,0 +1,65 @@
+name: Build macOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-macos:
+    name: Build unsigned macOS app
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Wails
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.12.0
+
+      - name: Check Wails environment
+        run: wails doctor
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run frontend verification
+        working-directory: frontend
+        run: npm run type-check
+
+      - name: Build frontend assets for Go embed
+        working-directory: frontend
+        run: npm run build
+
+      - name: Run Go tests
+        run: go test ./...
+
+      - name: Build unsigned macOS app
+        run: wails build -platform darwin/universal
+
+      - name: Create artifact archive
+        run: |
+          mkdir -p artifacts
+          ditto -c -k --keepParent build/bin/ServerPilot.app artifacts/ServerPilot-macos-unsigned.zip
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ServerPilot-macos-unsigned
+          path: artifacts/ServerPilot-macos-unsigned.zip
+          if-no-files-found: error
