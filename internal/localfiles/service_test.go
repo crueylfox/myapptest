@@ -3,6 +3,7 @@ package localfiles
 import (
 	"errors"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -52,25 +53,27 @@ func (p *fakeProvider) ListDirectory(path string) ([]domain.LocalFileEntry, erro
 }
 
 func TestServiceListsDirectoryWithCleanedPathAndDirectoriesFirst(t *testing.T) {
+	home := filepath.Join("fixture", "Users", "Tester")
+	documents := filepath.Join(home, "Documents")
 	provider := &fakeProvider{
-		home: "C:\\Users\\Tester",
+		home: home,
 		entries: map[string][]fakeEntry{
-			"C:\\Users\\Tester\\Documents": {
-				{name: "zeta.txt", path: "C:\\Users\\Tester\\Documents\\zeta.txt", size: 12},
-				{name: "alpha", path: "C:\\Users\\Tester\\Documents\\alpha", isDir: true},
+			documents: {
+				{name: "zeta.txt", path: filepath.Join(documents, "zeta.txt"), size: 12},
+				{name: "alpha", path: filepath.Join(documents, "alpha"), isDir: true},
 			},
 		},
 	}
 	service := New(provider)
 
 	listing, err := service.ListDirectory(domain.LocalDirectoryRequest{
-		Path: "C:\\Users\\Tester\\Documents\\..\\Documents\\",
+		Path: filepath.Join(documents, "..", "Documents") + string(os.PathSeparator),
 	})
 	if err != nil {
 		t.Fatalf("ListDirectory returned error: %v", err)
 	}
 
-	if listing.Path != "C:\\Users\\Tester\\Documents" {
+	if listing.Path != documents {
 		t.Fatalf("Path = %q, want cleaned Documents path", listing.Path)
 	}
 	if len(listing.Entries) != 2 {

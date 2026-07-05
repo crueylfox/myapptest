@@ -6,7 +6,7 @@ import (
 	"errors"
 	"io"
 	"os"
-	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -99,6 +99,7 @@ func TestUnsupportedFactoryReturnsChineseError(t *testing.T) {
 }
 
 func TestCapabilitiesDefaultToEnabledWhenRuntimeAvailable(t *testing.T) {
+	skipUnlessWindows(t, "local terminal capabilities are Windows ConPTY-specific")
 	t.Setenv(ExperimentalEnv, "")
 	capabilities := Capabilities(domain.LocalTerminalShellCmd)
 	if !capabilities.Enabled || !capabilities.Supported {
@@ -398,14 +399,14 @@ func TestResolveShellKindForProductizedMenuEntries(t *testing.T) {
 	cmd, err := resolveShellKindForPlatform("windows", "cmd", lookPath(map[string]string{
 		"cmd.exe": `C:\Windows\System32\cmd.exe`,
 	}))
-	if err != nil || filepath.Base(cmd) != "cmd.exe" {
+	if err != nil || !windowsPathBaseEqual(cmd, "cmd.exe") {
 		t.Fatalf("cmd shell=%q err=%v", cmd, err)
 	}
 
 	powerShell, err := resolveShellKindForPlatform("windows", "powershell", lookPath(map[string]string{
 		"powershell.exe": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
 	}))
-	if err != nil || filepath.Base(powerShell) != "powershell.exe" {
+	if err != nil || !windowsPathBaseEqual(powerShell, "powershell.exe") {
 		t.Fatalf("powershell shell=%q err=%v", powerShell, err)
 	}
 
@@ -427,7 +428,7 @@ func TestResolveShellPreferences(t *testing.T) {
 	shell, err := resolveShellForPlatform("windows", "powershell", lookPath(map[string]string{
 		"powershell.exe": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
 	}))
-	if err != nil || filepath.Base(shell) != "powershell.exe" {
+	if err != nil || !windowsPathBaseEqual(shell, "powershell.exe") {
 		t.Fatalf("powershell fallback shell=%q err=%v", shell, err)
 	}
 
@@ -436,7 +437,7 @@ func TestResolveShellPreferences(t *testing.T) {
 		"powershell.exe": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
 		"cmd.exe":        `C:\Windows\System32\cmd.exe`,
 	}))
-	if err != nil || filepath.Base(shell) != "cmd.exe" {
+	if err != nil || !windowsPathBaseEqual(shell, "cmd.exe") {
 		t.Fatalf("cmd shell=%q err=%v", shell, err)
 	}
 
@@ -445,7 +446,7 @@ func TestResolveShellPreferences(t *testing.T) {
 		"powershell.exe": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
 		"cmd.exe":        `C:\Windows\System32\cmd.exe`,
 	}))
-	if err != nil || filepath.Base(shell) != "pwsh.exe" {
+	if err != nil || !windowsPathBaseEqual(shell, "pwsh.exe") {
 		t.Fatalf("auto shell=%q err=%v", shell, err)
 	}
 
@@ -460,6 +461,22 @@ func shellOptionIDs(options []domain.LocalTerminalShellOption) []string {
 		ids = append(ids, option.ID)
 	}
 	return ids
+}
+
+func skipUnlessWindows(t *testing.T, reason string) {
+	t.Helper()
+	if runtime.GOOS != "windows" {
+		t.Skip(reason)
+	}
+}
+
+func windowsPathBaseEqual(path string, base string) bool {
+	normalized := strings.ReplaceAll(path, "/", `\`)
+	index := strings.LastIndex(normalized, `\`)
+	if index >= 0 {
+		normalized = normalized[index+1:]
+	}
+	return strings.EqualFold(normalized, base)
 }
 
 func sameStrings(left, right []string) bool {

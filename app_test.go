@@ -13,6 +13,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -102,6 +103,13 @@ func passwordConfig(id int64, username string, password string, remember bool) d
 
 func keyVaultID(id int64) *int64 {
 	return &id
+}
+
+func skipUnlessWindows(t *testing.T, reason string) {
+	t.Helper()
+	if runtime.GOOS != "windows" {
+		t.Skip(reason)
+	}
 }
 
 func TestGetAppVersionReturnsCurrentReleaseVersion(t *testing.T) {
@@ -709,6 +717,7 @@ func TestChangingPrivateKeyPathAndDeletingConnectionRemoveSystemCredential(t *te
 }
 
 func TestKeyVaultCreateResolveAndDeleteProtection(t *testing.T) {
+	skipUnlessWindows(t, "key-vault private key protection uses Windows DPAPI in this build")
 	secrets := &memorySecretStore{values: make(map[string][]byte)}
 	app, store := setupConnectionConfigApp(t, secrets)
 	testValue := "test-value-" + t.Name()
@@ -789,6 +798,7 @@ func TestKeyVaultCreateResolveAndDeleteProtection(t *testing.T) {
 }
 
 func TestDeleteKeyVaultEntryReturnsWarningWhenSecretCleanupFails(t *testing.T) {
+	skipUnlessWindows(t, "key-vault private key protection uses Windows DPAPI in this build")
 	secrets := &memorySecretStore{values: make(map[string][]byte)}
 	app, store := setupConnectionConfigApp(t, secrets)
 	testValue := "test-value-" + t.Name()
@@ -835,6 +845,7 @@ func TestKeyVaultWrongPassphraseDoesNotSaveSecret(t *testing.T) {
 }
 
 func TestGetLocalTerminalCapabilitiesUsesSavedPreference(t *testing.T) {
+	skipUnlessWindows(t, "local terminal capabilities are Windows ConPTY-specific")
 	t.Setenv(localterminal.ExperimentalEnv, "")
 	secrets := &memorySecretStore{values: make(map[string][]byte)}
 	app, _ := setupConnectionConfigApp(t, secrets)
@@ -876,6 +887,7 @@ func TestStartupLocalTerminalRequestRejectsInvalidShell(t *testing.T) {
 }
 
 func TestOpenLocalTerminalRuntimeFailureDoesNotLeaveSession(t *testing.T) {
+	skipUnlessWindows(t, "local terminal session startup is Windows ConPTY-specific")
 	t.Setenv(localterminal.ExperimentalEnv, "")
 	secrets := &memorySecretStore{values: make(map[string][]byte)}
 	app, _ := setupConnectionConfigApp(t, secrets)
@@ -911,6 +923,7 @@ func TestOpenLocalTerminalRuntimeFailureDoesNotLeaveSession(t *testing.T) {
 }
 
 func TestOpenLocalTerminalCreatesAndClosesIndependentSession(t *testing.T) {
+	skipUnlessWindows(t, "local terminal session startup is Windows ConPTY-specific")
 	secrets := &memorySecretStore{values: make(map[string][]byte)}
 	app, _ := setupConnectionConfigApp(t, secrets)
 	factory := newAppLocalTerminalFactory()
