@@ -57,11 +57,11 @@ Updated: 2026-07-06
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1643 tests, 87 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build -platform darwin/universal`: not run for this hotfix; Windows local builds do not produce the macOS app.
-- GitHub Actions `Build macOS` run `28793249269`: success for commit `68d0c04246ebbb3be7c141d27af328a7f9324485`.
+- GitHub Actions `Build macOS` run `28794975242`: success for commit `c8461c5e3f6840bffb86125d45582e126dded3e6`.
 - Artifact: `ServerPilot-macos-unsigned`.
 - Artifact contains `ServerPilot-macos-universal-unsigned.zip` and `ServerPilot-macos-universal-unsigned.dmg`.
-- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `752949aaef69c648e18dc916e24c5acb026b0a72b8840641172b691128d1ff94`.
-- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `9d01db51a6bd500f058e084b337b548404925cfaaa60bc67530afa27b9edaf6d`.
+- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `f0c5116465ecc3ed1a891f9bde6a074c8993e366a373ff2ea21b8503a4b0b6de`.
+- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `ce09fa332476ed6f325ff0f89e1c0ac6a057801f8851afeff47049843bf865a0`.
 - macOS artifact came from the GitHub Actions macOS runner.
 
 ## 5. Next
