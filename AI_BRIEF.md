@@ -3,8 +3,8 @@
 Updated: 2026-07-06
 
 ## 0. Entry
-- Repo: `C:\Users\Administrator\Documents\Codex\2026-06-13\ssh-serverpilot-windows-11-x64-go`.
-- Branch: `master`.
+- Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
+- Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
 - Current VERSION: `0.5.0-beta.30`.
 - Current round: beta30 macOS usability adaptation.
@@ -24,6 +24,7 @@ Updated: 2026-07-06
 - macOS local monitor and local file manager cover the MVP resource/file workflows without Windows CMD/PowerShell labels.
 - Dark radio checked state and macOS WebView menu/settings blur surfaces have regression coverage.
 - macOS workflow builds `darwin/universal` and uploads `ServerPilot-macos-unsigned`.
+- Commit `efbeae2` (`fix: polish macos dialogs backup import and compose layout`) was pushed for the beta30 macOS usability adaptation.
 
 ## 3. Explicit Non-Goals
 - No Windows DPAPI behavior change.
@@ -40,8 +41,13 @@ Updated: 2026-07-06
 - `go test ./...`: passed.
 - `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1636 tests, 86 Playwright tests, and frontend build.
 - `git diff --check`: passed.
-- `wails build`: passed.
+- GitHub Actions `Build macOS` run `28774666653`: passed for commit `efbeae2`.
+- Artifact: `ServerPilot-macos-unsigned`.
+- Artifact SHA-256 digest from GitHub Actions API: `5216396ecc7a0958146257c4014a144a16d155b60ff1fd619e4355ce4e8c675c`.
+- Local artifact zip download did not complete, so no independent local file hash was recorded.
+- Windows local `wails build -platform darwin/universal` did not produce a macOS app; the macOS artifact came from the GitHub Actions macOS runner.
 
 ## 5. Next
-- Wait for GitHub Actions macOS build result and user smoke.
+- Download or smoke-test the GitHub Actions `ServerPilot-macos-unsigned` artifact.
+- Do not run Windows local `wails build -platform darwin/universal` for macOS packaging.
 - Do not continue Docker, SSH/SFTP runtime, DB schema, signing/notarization, or command completion work by default.
