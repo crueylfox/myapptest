@@ -6,12 +6,12 @@ import type {
   ContextMenuOverlayState,
   MonitorPanelOverlayState,
   ServerPickerOverlayState,
+  SettingsOverlayState,
   ToolDialogsOverlayState,
 } from '../components/AppOverlayHost.vue'
 import type {
   AppLogsPanelState,
   AppMonitorPanelState,
-  AppSettingsPanelState,
   AppTerminalPanelState,
 } from '../components/AppPanelHost.vue'
 import type { AuthDialogMode } from './useAuthDialogController'
@@ -133,6 +133,7 @@ export interface AppShellBindingSources {
   pendingPaneOpenTarget: Ref<PendingPaneOpenTarget | null>
   connectionDialog: Ref<boolean>
   editing: Ref<Connection | null>
+  settingsOverlayOpen: Ref<boolean>
   monitorPanelOpen: Ref<boolean>
   monitorPanelInitialTab: Ref<'overview' | 'detail'>
   monitorPanelInitialServerId: Ref<number | null>
@@ -250,7 +251,8 @@ export function useAppShellBindings(sources: AppShellBindingSources, actions: Ap
     paneTargetAssignment: sources.paneTargetAssignment.value,
   }))
 
-  const settingsPanel = computed<AppSettingsPanelState>(() => ({
+  const settingsOverlay = computed<SettingsOverlayState>(() => ({
+    open: sources.settingsOverlayOpen.value,
     settings: sources.settings.value,
     saving: sources.busy.value,
     connections: sources.store.connections,
@@ -398,20 +400,6 @@ export function useAppShellBindings(sources: AppShellBindingSources, actions: Ap
     paneOpenLocalTerminal: actions.openLocalTerminalForPane,
     connectWorkspace: actions.connectWorkspace,
     editWorkspace: actions.editServerFromTab,
-    closeSettings: actions.closeSettingsOverlay,
-    saveSettings: actions.saveSettings,
-    saveSettingsAndClose: actions.saveSettingsAndClose,
-    previewTheme: actions.applyTheme,
-    previewFontSize: actions.applyUIFontSize,
-    backupImported: actions.reloadAfterBackupImport,
-    keyVaultDeleted: actions.keyVaultDeleted,
-    terminalProfileDeleted: actions.terminalProfileDeleted,
-    testAlert: actions.createTestAlert,
-    testNativeNotification: actions.sendNativeTestNotification,
-    openLogs: () => {
-      actions.closeSettingsOverlay()
-      return actions.showLogs()
-    },
     monitorError: actions.handleMonitorError,
     refreshLogs: actions.showLogs,
     closeLogs: actions.closeLogs,
@@ -435,6 +423,20 @@ export function useAppShellBindings(sources: AppShellBindingSources, actions: Ap
     connectionDialogClose: actions.closeConnectionDialog,
     connectionDialogSave: actions.saveConnection,
     connectionDialogDeleteCredential: actions.deleteSavedCredential,
+    settingsClose: actions.closeSettingsOverlay,
+    settingsSave: actions.saveSettings,
+    settingsSaveAndClose: actions.saveSettingsAndClose,
+    settingsPreviewTheme: actions.applyTheme,
+    settingsPreviewFontSize: actions.applyUIFontSize,
+    settingsBackupImported: actions.reloadAfterBackupImport,
+    settingsKeyVaultDeleted: actions.keyVaultDeleted,
+    settingsTerminalProfileDeleted: actions.terminalProfileDeleted,
+    settingsTestAlert: actions.createTestAlert,
+    settingsTestNativeNotification: actions.sendNativeTestNotification,
+    settingsOpenLogs: () => {
+      actions.closeSettingsOverlay()
+      return actions.showLogs()
+    },
     monitorPanelClose: sources.monitorPanelController.closeMonitorPanel,
     dashboardLayoutChange: actions.saveDashboardLayout,
     dashboardSwitchServer: actions.switchDashboardServer,
@@ -472,7 +474,7 @@ export function useAppShellBindings(sources: AppShellBindingSources, actions: Ap
 
   return {
     terminalPanel,
-    settingsPanel,
+    settingsOverlay,
     monitorPanel,
     logsPanel,
     serverPickerOverlay,

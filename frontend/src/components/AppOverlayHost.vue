@@ -10,6 +10,7 @@ import NetworkDetailsDialog from './NetworkDetailsDialog.vue'
 import ProcessManagerDialog from './ProcessManagerDialog.vue'
 import ServerPicker from './ServerPicker.vue'
 import ServiceManagerDialog from './ServiceManagerDialog.vue'
+import SettingsView from './SettingsView.vue'
 import ToastHost from './ToastHost.vue'
 import TunnelManagerDialog from './TunnelManagerDialog.vue'
 import type { DashboardServerSummary } from '../utils/multiServerDashboard'
@@ -27,6 +28,7 @@ import type {
   LocalTerminalCapabilities,
   LocalTerminalShellKind,
   MonitorSnapshot,
+  NativeNotificationStatus,
   ReorderServersRequest,
   SaveConnectionConfigRequest,
   TerminalProfile,
@@ -54,6 +56,14 @@ export interface ConnectionDialogOverlayState {
   settings: AppSettings
   terminalProfiles: TerminalProfile[]
   connections: Connection[]
+}
+
+export interface SettingsOverlayState {
+  open: boolean
+  settings: AppSettings
+  saving: boolean
+  connections: Connection[]
+  nativeNotificationStatus: NativeNotificationStatus
 }
 
 export interface MonitorPanelOverlayState {
@@ -109,6 +119,7 @@ export interface AlertCenterOverlayState {
 
 withDefaults(defineProps<{
   serverPicker: ServerPickerOverlayState
+  settings: SettingsOverlayState
   connectionDialog: ConnectionDialogOverlayState
   monitorPanel?: MonitorPanelOverlayState | null
   toolDialogs?: ToolDialogsOverlayState | null
@@ -142,6 +153,17 @@ const emit = defineEmits<{
   connectionDialogClose: []
   connectionDialogSave: [request: SaveConnectionConfigRequest]
   connectionDialogDeleteCredential: [connectionId: number]
+  settingsClose: []
+  settingsSave: [settings: AppSettings]
+  settingsSaveAndClose: [settings: AppSettings]
+  settingsPreviewTheme: [mode: AppSettings['themeMode']]
+  settingsPreviewFontSize: [size: AppSettings['uiFontSize']]
+  settingsBackupImported: []
+  settingsKeyVaultDeleted: []
+  settingsTerminalProfileDeleted: []
+  settingsTestAlert: []
+  settingsTestNativeNotification: []
+  settingsOpenLogs: []
   monitorPanelClose: []
   dashboardLayoutChange: [payload: { sortMode: DashboardSortMode; manualServerOrder: string[] }]
   dashboardSwitchServer: [serverID: number]
@@ -214,6 +236,32 @@ const emit = defineEmits<{
     @save="emit('connectionDialogSave', $event)"
     @delete-credential="emit('connectionDialogDeleteCredential', $event)"
   />
+
+  <div
+    v-if="settings.open"
+    class="settings-overlay-backdrop app-glass-backdrop"
+    data-testid="settings-overlay"
+  >
+    <SettingsView
+      overlay
+      :settings="settings.settings"
+      :saving="settings.saving"
+      :connections="settings.connections"
+      :native-notification-status="settings.nativeNotificationStatus"
+      @close-request="emit('settingsClose')"
+      @save="emit('settingsSave', $event)"
+      @save-and-close="emit('settingsSaveAndClose', $event)"
+      @preview-theme="emit('settingsPreviewTheme', $event)"
+      @preview-font-size="emit('settingsPreviewFontSize', $event)"
+      @backup-imported="emit('settingsBackupImported')"
+      @key-vault-deleted="emit('settingsKeyVaultDeleted')"
+      @terminal-profile-deleted="emit('settingsTerminalProfileDeleted')"
+      @test-alert="emit('settingsTestAlert')"
+      @test-native-notification="emit('settingsTestNativeNotification')"
+      @open-logs="emit('settingsOpenLogs')"
+      @notify="(message, type) => emit('notify', message, type)"
+    />
+  </div>
 
   <MultiServerDashboardDialog
     v-if="monitorPanel"

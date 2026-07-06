@@ -1567,12 +1567,40 @@ function isServiceManagerFixture(name: FixtureName | string) {
 function shouldRender(name: FixtureName | string) {
   return fixtureName.value === name
 }
+
+const appBlurOverlayFixture = computed(() =>
+  shouldRender('settings-macos-dark-overlays') || fixtureName.value.startsWith('connection-dialog'))
 </script>
 
 <template>
   <main class="ui-fixture-root" :data-ui-fixture="fixtureName">
     <div class="ui-fixture-stage">
       <button ref="anchor" class="ui-fixture-anchor" type="button" aria-hidden="true">+</button>
+
+      <div
+        v-if="appBlurOverlayFixture"
+        class="app-visual-root ui-fixture-app-visual-root"
+        data-testid="app-visual-root"
+      >
+        <header>
+          <strong>ServerPilot fixture workspace</strong>
+          <span>macOS modal blur background</span>
+        </header>
+        <section>
+          <article>
+            <strong>Production gateway</strong>
+            <span>online</span>
+          </article>
+          <article>
+            <strong>Terminal workspace</strong>
+            <span>tail -f app.log</span>
+          </article>
+          <article>
+            <strong>Monitor</strong>
+            <span>CPU 18% / RAM 52%</span>
+          </article>
+        </section>
+      </div>
 
       <ServerPicker
         v-if="fixtureName.startsWith('server-picker') && anchor"

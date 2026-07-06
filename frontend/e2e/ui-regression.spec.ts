@@ -31,6 +31,13 @@ function expectNoOverlap(first: Box, second: Box) {
   expect(separated).toBe(true)
 }
 
+function expectSubstantialOverlap(first: Box, second: Box) {
+  const width = Math.max(0, Math.min(first.x + first.width, second.x + second.width) - Math.max(first.x, second.x))
+  const height = Math.max(0, Math.min(first.y + first.height, second.y + second.height) - Math.max(first.y, second.y))
+  expect(width).toBeGreaterThan(Math.min(first.width, second.width) * 0.8)
+  expect(height).toBeGreaterThan(Math.min(first.height, second.height) * 0.8)
+}
+
 async function expectNoHorizontalShiftAfterScroll(row: Locator, scrollContainer: Locator) {
   const before = await box(row)
   await scrollContainer.evaluate((element) => {
@@ -65,13 +72,38 @@ async function expectGlassBackdrop(locator: Locator) {
     const style = window.getComputedStyle(element)
     return {
       backgroundColor: style.backgroundColor,
-      backdropFilter: style.backdropFilter || style.webkitBackdropFilter,
     }
   })
   expect(styles.backgroundColor).toMatch(/rgba\(/)
   const alpha = Number(styles.backgroundColor.match(/,\s*([.\d]+)\)$/)?.[1] ?? '1')
-  expect(alpha).toBeLessThanOrEqual(0.12)
-  expect(styles.backdropFilter).toContain('blur(')
+  expect(alpha).toBeLessThanOrEqual(0.18)
+}
+
+async function expectAppBlurOverlay(page: Page, backdrop: Locator, surface: Locator) {
+  await expectGlassBackdrop(backdrop)
+  await expect(surface).toBeVisible()
+  const visualRoot = page.locator('[data-testid="app-visual-root"]').first()
+  await expect(visualRoot).toBeVisible()
+  const overlayBox = await box(backdrop)
+  const visualBox = await box(visualRoot)
+  const surfaceBox = await box(surface)
+  expectSubstantialOverlap(overlayBox, visualBox)
+  expectSubstantialOverlap(overlayBox, surfaceBox)
+  const styles = await visualRoot.evaluate((element) => {
+    const style = window.getComputedStyle(element)
+    return { filter: style.filter }
+  })
+  expect(styles.filter).toContain('blur(')
+  expect(styles.filter).toContain('brightness(')
+  const surfaceState = await surface.evaluate((element) => {
+    const style = window.getComputedStyle(element)
+    return {
+      filter: style.filter,
+      insideVisualRoot: Boolean(element.closest('.app-visual-root')),
+    }
+  })
+  expect(surfaceState.filter).toBe('none')
+  expect(surfaceState.insideVisualRoot).toBe(false)
 }
 
 async function textRightGapToSeparator(control: Locator, separator: Locator) {
@@ -874,22 +906,32 @@ test('macOS dark settings radios and overlay menus use visible checked state and
 
   for (const selector of [
     '.topbar-menu',
-    '.app-dialog-backdrop',
-    '.settings-overlay-backdrop',
     '.settings-page-overlay',
     '.settings-page-overlay .settings-page-header',
     '.settings-page-overlay .settings-category-nav',
   ]) {
     await expectBlurredTranslucentSurface(page.locator(selector).first())
   }
-  await expectGlassBackdrop(page.locator('.settings-overlay-backdrop').first())
-  await expectGlassBackdrop(page.locator('.app-dialog-backdrop').first())
+  await expectAppBlurOverlay(
+    page,
+    page.locator('.settings-overlay-backdrop').first(),
+    page.locator('.settings-page-overlay').first(),
+  )
+  await expectAppBlurOverlay(
+    page,
+    page.locator('.app-dialog-backdrop').first(),
+    page.locator('.app-dialog').first(),
+  )
 })
 
 test('macOS app dialogs use glass backdrops without full-screen gray wash', async ({ page }) => {
-  for (const fixture of ['connection-dialog-password', 'connection-dialog-advanced'] as const) {
+  for (const fixture of ['connection-dialog-password', 'connection-dialog-advanced', 'connection-dialog-keyvault'] as const) {
     await openFixture(page, fixture, { width: 900, height: 640 })
-    await expectGlassBackdrop(page.locator('.modal-backdrop').first())
+    await expectAppBlurOverlay(
+      page,
+      page.locator('.modal-backdrop').first(),
+      page.locator('.connection-modal').first(),
+    )
   }
 })
 

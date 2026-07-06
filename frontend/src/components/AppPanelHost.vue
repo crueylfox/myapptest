@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
 import ErrorBoundary from './ErrorBoundary.vue'
-import SettingsView from './SettingsView.vue'
 import type {
   AppSettings,
   Connection,
@@ -13,7 +12,6 @@ import type {
   MonitorNetworkInterfacePreference,
   MonitorSnapshot,
   NetworkInterface,
-  NativeNotificationStatus,
   TerminalProfile,
 } from '../types'
 import type { PaneTargetAssignment } from '../composables/usePaneTargetRequests'
@@ -49,13 +47,6 @@ export interface AppTerminalPanelState {
   paneTargetAssignment: PaneTargetAssignment | null
 }
 
-export interface AppSettingsPanelState {
-  settings: AppSettings
-  saving: boolean
-  connections: Connection[]
-  nativeNotificationStatus: NativeNotificationStatus
-}
-
 export interface AppMonitorPanelState {
   selected: Connection | null
   snapshot: MonitorSnapshot | null
@@ -71,9 +62,7 @@ export interface AppLogsPanelState {
 
 defineProps<{
   activeView: AppPanelView
-  settingsOverlayOpen: boolean
   terminal: AppTerminalPanelState
-  settingsPanel: AppSettingsPanelState
   monitor: AppMonitorPanelState
   logs: AppLogsPanelState
 }>()
@@ -99,17 +88,6 @@ const emit = defineEmits<{
   paneOpenLocalTerminal: [paneId: string, shellKind: LocalTerminalShellKind | string]
   connectWorkspace: [connectionId: number]
   editWorkspace: [connectionId: number]
-  closeSettings: []
-  saveSettings: [settings: AppSettings]
-  saveSettingsAndClose: [settings: AppSettings]
-  previewTheme: [mode: AppSettings['themeMode']]
-  previewFontSize: [size: AppSettings['uiFontSize']]
-  backupImported: []
-  keyVaultDeleted: []
-  terminalProfileDeleted: []
-  testAlert: []
-  testNativeNotification: []
-  openLogs: []
   monitorError: [error: unknown]
   refreshLogs: []
   closeLogs: []
@@ -182,32 +160,6 @@ function updateLogQuery(event: Event) {
       <slot name="tabs" />
     </template>
   </TerminalWorkspace>
-
-  <div
-    v-if="settingsOverlayOpen"
-    class="settings-overlay-backdrop app-glass-backdrop"
-    data-testid="settings-overlay"
-  >
-    <SettingsView
-      overlay
-      :settings="settingsPanel.settings"
-      :saving="settingsPanel.saving"
-      :connections="settingsPanel.connections"
-      :native-notification-status="settingsPanel.nativeNotificationStatus"
-      @close-request="emit('closeSettings')"
-      @save="emit('saveSettings', $event)"
-      @save-and-close="emit('saveSettingsAndClose', $event)"
-      @preview-theme="emit('previewTheme', $event)"
-      @preview-font-size="emit('previewFontSize', $event)"
-      @backup-imported="emit('backupImported')"
-      @key-vault-deleted="emit('keyVaultDeleted')"
-      @terminal-profile-deleted="emit('terminalProfileDeleted')"
-      @test-alert="emit('testAlert')"
-      @test-native-notification="emit('testNativeNotification')"
-      @open-logs="emit('openLogs')"
-      @notify="(message, type) => emit('notify', message, type)"
-    />
-  </div>
 
   <template v-if="isMonitorView(activeView)">
     <ErrorBoundary v-if="monitor.selected" @error="emit('monitorError', $event)">

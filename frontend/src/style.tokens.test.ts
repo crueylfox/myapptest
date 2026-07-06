@@ -105,7 +105,7 @@ describe('theme and overlay tokens', () => {
     expect(Number(dark['z-app-dialog'])).toBeGreaterThan(Number(dark['z-popover']))
   })
 
-  it('uses translucent blur surfaces for macOS WebView popovers and settings overlays', () => {
+  it('uses translucent blur surfaces for macOS WebView popovers and settings surfaces', () => {
     for (const selector of [
       '.topbar-menu',
       '.server-picker',
@@ -116,7 +116,6 @@ describe('theme and overlay tokens', () => {
       '.terminal-pane-menu',
       '.terminal-pane-selector',
       '.transfer-popover',
-      '.settings-overlay-backdrop',
       '.settings-page-overlay',
       '.settings-page-overlay .settings-page-header',
       '.settings-page-overlay .settings-category-nav',
@@ -161,11 +160,20 @@ describe('theme and overlay tokens', () => {
     expect(darkChecked).toContain('background-image: url("data:image/svg+xml')
   })
 
-  it('keeps macOS overlay backdrops translucent enough for blur to be visible', () => {
-    expect(rgbaAlpha(declaration(block('.modal-backdrop'), 'background'))).toBeLessThanOrEqual(0.12)
-    expect(rgbaAlpha(declaration(block('.settings-overlay-backdrop'), 'background'))).toBeLessThanOrEqual(0.12)
-    expect(declaration(block('.modal-backdrop'), 'backdrop-filter')).toContain('blur(')
-    expect(declaration(block('.settings-overlay-backdrop'), 'backdrop-filter')).toContain('blur(')
+  it('uses app content blur instead of full-screen gray modal scrims', () => {
+    const visualRoot = block('.app-visual-root')
+    const modalOpenRule = block('body:has(.modal-backdrop) .app-visual-root,\nbody:has(.settings-overlay-backdrop) .app-visual-root')
+    const modalBackdrop = block('.modal-backdrop')
+    const settingsBackdrop = block('.settings-overlay-backdrop')
+
+    expect(visualRoot).toContain('transition: filter 120ms ease')
+    expect(modalOpenRule).toContain('filter: blur(10px) brightness(.72)')
+    expect(rgbaAlpha(declaration(modalBackdrop, 'background'))).toBeLessThanOrEqual(0.18)
+    expect(rgbaAlpha(declaration(settingsBackdrop, 'background'))).toBeLessThanOrEqual(0.18)
+    expect(modalBackdrop).not.toContain('backdrop-filter')
+    expect(modalBackdrop).not.toContain('-webkit-backdrop-filter')
+    expect(settingsBackdrop).not.toContain('backdrop-filter')
+    expect(settingsBackdrop).not.toContain('-webkit-backdrop-filter')
   })
 
   it('keeps workspace tab close control right-aligned without layout hacks', () => {

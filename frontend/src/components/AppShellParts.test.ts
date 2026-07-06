@@ -92,6 +92,7 @@ vi.mock('./SettingsView.vue', () => ({
       'keyVaultDeleted',
       'terminalProfileDeleted',
       'testAlert',
+      'testNativeNotification',
       'openLogs',
       'notify',
     ],
@@ -252,6 +253,7 @@ describe('App shell parts', () => {
 
     expect(wrapper.classes()).toContain('app-shell')
     expect(wrapper.classes()).toContain('terminal-layout')
+    expect(wrapper.find('[data-testid="app-visual-root"]').exists()).toBe(true)
     expect(wrapper.get('main.content').classes()).toContain('terminal-mode')
     expect(wrapper.find('[data-testid="topbar-slot"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="main-slot"]').exists()).toBe(true)
@@ -286,11 +288,10 @@ describe('App shell parts', () => {
     expect(wrapper.emitted('action')).toEqual([['transfers']])
   })
 
-  it('AppPanelHost renders terminal, settings, monitor, and logs panels from props and emits actions', async () => {
+  it('AppPanelHost renders terminal, monitor, and logs panels from props and emits actions', async () => {
     const wrapper = mount(AppPanelHost, {
       props: {
         activeView: 'terminals',
-        settingsOverlayOpen: true,
         terminal: {
           connection,
           state: null,
@@ -312,16 +313,6 @@ describe('App shell parts', () => {
           networkInterfacesLoading: false,
           alertActiveCount: 0,
           paneTargetAssignment: null,
-        },
-        settingsPanel: {
-          settings,
-          saving: false,
-          connections: [connection],
-          nativeNotificationStatus: {
-            initialized: false,
-            available: false,
-            message: 'disabled',
-          },
         },
         monitor: {
           selected: null,
@@ -343,9 +334,6 @@ describe('App shell parts', () => {
 
     expect(wrapper.find('.preserved-terminal-workspace').exists()).toBe(true)
     expect(wrapper.find('[data-testid="terminal-tabs"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="settings-view-stub"]').exists()).toBe(true)
-    await wrapper.get('[data-testid="settings-open-logs"]').trigger('click')
-    expect(wrapper.emitted('openLogs')).toEqual([[]])
 
     await wrapper.get('[data-testid="connect-workspace"]').trigger('click')
     expect(wrapper.emitted('connectWorkspace')).toEqual([[1]])
@@ -358,7 +346,6 @@ describe('App shell parts', () => {
     const wrapper = mount(AppPanelHost, {
       props: {
         activeView: 'monitor',
-        settingsOverlayOpen: false,
         terminal: {
           connection,
           state: null,
@@ -380,16 +367,6 @@ describe('App shell parts', () => {
           networkInterfacesLoading: false,
           alertActiveCount: 0,
           paneTargetAssignment: null,
-        },
-        settingsPanel: {
-          settings,
-          saving: false,
-          connections: [connection],
-          nativeNotificationStatus: {
-            initialized: false,
-            available: false,
-            message: 'disabled',
-          },
         },
         monitor: {
           selected: connection,
@@ -428,6 +405,17 @@ describe('App shell parts', () => {
           query: '',
           targetPaneMode: false,
         },
+        settings: {
+          open: true,
+          settings,
+          saving: false,
+          connections: [connection],
+          nativeNotificationStatus: {
+            initialized: false,
+            available: false,
+            message: 'disabled',
+          },
+        },
         connectionDialog: {
           open: true,
           connection: null,
@@ -465,6 +453,7 @@ describe('App shell parts', () => {
     })
 
     expect(wrapper.find('.server-picker').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="settings-view-stub"]').exists()).toBe(true)
     expect(wrapper.find('.connection-modal').exists()).toBe(true)
     expect(wrapper.find('.context-menu').exists()).toBe(true)
     expect(wrapper.find('.alert-center').exists()).toBe(true)
@@ -473,6 +462,9 @@ describe('App shell parts', () => {
 
     await wrapper.get('[data-testid="picker-close"]').trigger('click')
     expect(wrapper.emitted('serverPickerClose')).toHaveLength(1)
+
+    await wrapper.get('[data-testid="settings-open-logs"]').trigger('click')
+    expect(wrapper.emitted('settingsOpenLogs')).toEqual([[]])
 
     await wrapper.get('[data-testid="docker-connect-container"]').trigger('click')
     expect(wrapper.emitted('dockerConnectContainer')).toEqual([[

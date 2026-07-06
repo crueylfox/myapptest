@@ -187,7 +187,10 @@ describe('first-batch UI regression contracts', () => {
   })
 
   it('keeps modal, menu, settings, and radio styles visible in macOS WebView dark mode', () => {
-    for (const selector of ['.modal-backdrop', '.settings-overlay-backdrop', '.settings-page-overlay', '.topbar-menu', '.server-picker']) {
+    const visualBlurRule = block('body:has(.modal-backdrop) .app-visual-root,\nbody:has(.settings-overlay-backdrop) .app-visual-root')
+    expect(visualBlurRule).toContain('filter: blur(10px) brightness(.72)')
+
+    for (const selector of ['.settings-page-overlay', '.topbar-menu', '.server-picker']) {
       const source = block(selector)
       expect(source).toContain('background: rgba(')
       expect(source).toContain('backdrop-filter: blur(')
@@ -198,8 +201,10 @@ describe('first-batch UI regression contracts', () => {
     const radioDarkChecked = block(':root:not([data-theme="light"]) input[type="radio"]:checked')
     const checkboxChecked = block('input[type="checkbox"]:checked')
     const checkboxDarkChecked = block(':root:not([data-theme="light"]) input[type="checkbox"]:checked')
-    expect(rgbaAlpha(declaration(block('.modal-backdrop'), 'background'))).toBeLessThanOrEqual(0.34)
-    expect(rgbaAlpha(declaration(block('.settings-overlay-backdrop'), 'background'))).toBeLessThanOrEqual(0.26)
+    expect(rgbaAlpha(declaration(block('.modal-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
+    expect(rgbaAlpha(declaration(block('.settings-overlay-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
+    expect(block('.modal-backdrop')).not.toContain('backdrop-filter')
+    expect(block('.settings-overlay-backdrop')).not.toContain('backdrop-filter')
     expect(radioChecked).toContain('background-image: radial-gradient')
     expect(radioChecked).toContain('background-color: var(--primary)')
     expect(radioDarkChecked).toContain('border-color: #93c5fd')

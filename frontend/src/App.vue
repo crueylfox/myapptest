@@ -596,7 +596,7 @@ onBeforeUnmount(() => {
 })
 
 const {
-  terminalPanel, settingsPanel, monitorPanel, logsPanel, serverPickerOverlay,
+  terminalPanel, settingsOverlay, monitorPanel, logsPanel, serverPickerOverlay,
   connectionDialogOverlay, monitorPanelOverlay, toolDialogsOverlay, authOverlay,
   contextMenuOverlay, alertCenterOverlay, menuConnection, topBarListeners,
   panelListeners, overlayListeners,
@@ -613,6 +613,7 @@ const {
   groupedConnections, serverStatuses, dashboardSummaries, toolDialogActiveServerId,
   authConnection, logLevelFilter, logQuery, terminalLayoutRevision, sftpOpenRevision,
   paneTargetAssignment, pendingPaneOpenTarget, connectionDialog, editing,
+  settingsOverlayOpen,
   monitorPanelOpen: monitorPanelController.monitorPanelOpen,
   monitorPanelInitialTab: monitorPanelController.monitorPanelInitialTab,
   monitorPanelInitialServerId: monitorPanelController.monitorPanelInitialServerId, dashboardBatchOperation,
@@ -656,9 +657,7 @@ const {
 
     <AppPanelHost
       :active-view="activeView"
-      :settings-overlay-open="settingsOverlayOpen"
       :terminal="terminalPanel"
-      :settings-panel="settingsPanel"
       :monitor="monitorPanel"
       :logs="logsPanel"
       v-on="panelListeners"
@@ -679,6 +678,7 @@ const {
     <template #overlays>
       <AppOverlayHost
         :server-picker="serverPickerOverlay"
+        :settings="settingsOverlay"
         :connection-dialog="connectionDialogOverlay"
         :monitor-panel="monitorPanelOverlay"
         :tool-dialogs="toolDialogsOverlay"

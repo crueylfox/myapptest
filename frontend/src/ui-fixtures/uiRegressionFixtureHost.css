@@ -46,6 +46,48 @@ body,
   pointer-events: none;
 }
 
+.ui-fixture-app-visual-root {
+  position: absolute;
+  inset: 16px;
+  height: auto;
+  display: grid;
+  grid-template-rows: 48px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, .2), transparent 36%),
+    var(--panel);
+  box-sizing: border-box;
+}
+
+.ui-fixture-app-visual-root header,
+.ui-fixture-app-visual-root article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-2);
+  padding: 10px 12px;
+}
+
+.ui-fixture-app-visual-root section {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-content: start;
+  min-width: 0;
+}
+
+.ui-fixture-app-visual-root span {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 .ui-fixture-split {
   width: 100%;
   height: 100%;
