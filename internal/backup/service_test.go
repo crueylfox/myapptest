@@ -13,6 +13,7 @@ import (
 
 	"serverpilot/internal/commands"
 	"serverpilot/internal/domain"
+	"serverpilot/internal/keyvault"
 	"serverpilot/internal/persistence"
 	"serverpilot/internal/secretstore"
 )
@@ -20,6 +21,8 @@ import (
 type memorySecrets struct {
 	values map[string][]byte
 }
+
+type failingSecrets struct{}
 
 func newMemorySecrets() *memorySecrets {
 	return &memorySecrets{values: map[string][]byte{}}
@@ -40,6 +43,18 @@ func (s *memorySecrets) Set(_ context.Context, key string, value []byte) error {
 
 func (s *memorySecrets) Delete(_ context.Context, key string) error {
 	delete(s.values, key)
+	return nil
+}
+
+func (failingSecrets) Get(context.Context, string) ([]byte, error) {
+	return nil, secretstore.ErrNotFound
+}
+
+func (failingSecrets) Set(context.Context, string, []byte) error {
+	return errors.New("system credential store unavailable")
+}
+
+func (failingSecrets) Delete(context.Context, string) error {
 	return nil
 }
 
@@ -437,7 +452,8 @@ func TestFullBackupRestoresSavedSecrets(t *testing.T) {
 func TestFullBackupRestoresEncryptedKeyVaultMaterialAndPassphrase(t *testing.T) {
 	ctx := context.Background()
 	source := newBackupStore(t)
-	sourceKey := createEncryptedBackupKey(t, ctx, source, "portable-key", "SHA256:portable", "protected-portable-key")
+	protectedBlob := keyvault.LocalProtectorBlobPrefix + "protected-portable-key"
+	sourceKey := createEncryptedBackupKey(t, ctx, source, "portable-key", "SHA256:portable", protectedBlob)
 	if err := source.SetKeyVaultPassphraseRef(ctx, sourceKey.ID, "portable-passphrase-ref"); err != nil {
 		t.Fatal(err)
 	}
@@ -491,7 +507,7 @@ func TestFullBackupRestoresEncryptedKeyVaultMaterialAndPassphrase(t *testing.T) 
 	if len(keys) != 1 ||
 		keys[0].Name != "portable-key" ||
 		keys[0].StorageMode != string(domain.KeyVaultStorageEncryptedDatabase) ||
-		string(keys[0].ProtectedKeyBlob) != "protected-portable-key" ||
+		string(keys[0].ProtectedKeyBlob) != protectedBlob ||
 		!keys[0].PassphraseSaved {
 		t.Fatalf("restored key vault entries=%+v", keys)
 	}
@@ -508,6 +524,51 @@ func TestFullBackupRestoresEncryptedKeyVaultMaterialAndPassphrase(t *testing.T) 
 	}
 	if len(connections) != 1 || connections[0].KeyVaultID == nil || *connections[0].KeyVaultID != keys[0].ID {
 		t.Fatalf("connection was not rebound to restored key vault entry: connections=%+v keys=%+v", connections, keys)
+	}
+}
+
+func TestFullBackupKeepsConfigWhenSecretStoreCannotSave(t *testing.T) {
+	ctx := context.Background()
+	source := newBackupStore(t)
+	seedBackupData(t, ctx, source)
+	sourceSecrets := newMemorySecrets()
+	if err := sourceSecrets.Set(ctx, "credential-ref", []byte("saved-password")); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "serverpilot-full-secret-failure.spbackup")
+	password := "correct horse battery"
+	if _, err := New(source, sourceSecrets).Export(ctx, domain.BackupExportRequest{
+		Path: path, Password: password, ConfirmPassword: password, Mode: string(domain.BackupModeFull),
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	target := newBackupStore(t)
+	result, err := New(target, failingSecrets{}).Import(ctx, domain.BackupImportRequest{
+		Path: path, Password: password,
+		Options: domain.BackupImportOptions{ImportSettings: true, ImportGroups: true, ImportServers: true, ImportKeyVault: true, ImportHostTrust: false},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.ConnectionsAdded == 0 || result.SecretsRestored != 0 || len(result.Warnings) == 0 {
+		t.Fatalf("import result=%+v", result)
+	}
+	connections, err := target.ListConnections(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(connections) != 2 {
+		t.Fatalf("non-sensitive connections were not imported: %+v", connections)
+	}
+	for _, connection := range connections {
+		refs, err := target.ListCredentialRefs(ctx, connection.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(refs) != 0 {
+			t.Fatalf("failed secret store should not leave credential refs: %v", refs)
+		}
 	}
 }
 

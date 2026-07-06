@@ -15,6 +15,7 @@ type LocalTerminalShellKind string
 const (
 	LocalTerminalShellKindCmd        LocalTerminalShellKind = "cmd"
 	LocalTerminalShellKindPowerShell LocalTerminalShellKind = "powershell"
+	LocalTerminalShellKindLocal      LocalTerminalShellKind = "local"
 )
 
 type LocalTerminalOpenRequest struct {

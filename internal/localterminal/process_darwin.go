@@ -1,4 +1,4 @@
-//go:build !windows && !darwin
+//go:build darwin
 
 package localterminal
 
@@ -13,7 +13,7 @@ import (
 const embeddedPTYCreationFlags = 0
 
 func platformLocalTerminalAvailable() bool {
-	return false
+	return true
 }
 
 func platformProcessElevated() bool {
@@ -34,7 +34,7 @@ func startPlatformPTY(ctx context.Context, shell string, cwd string, cols int, r
 	cmd.Env = append(os.Environ(), "TERM=xterm-256color")
 	if err := cmd.Start(); err != nil {
 		_ = term.Close()
-		return nil, nil, errors.New("启动本地 shell 失败")
+		return nil, nil, errors.New("启动 macOS 本地 shell 失败")
 	}
 	return term, cmdProcess{cmd: cmd}, nil
 }

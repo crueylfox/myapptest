@@ -179,11 +179,14 @@ func (s *Service) Import(ctx context.Context, request domain.BackupImportRequest
 		return domain.BackupImportResult{}, fmt.Errorf("BACKUP_IMPORT_ROLLBACK: 导入失败，已回滚所有更改: %w", err)
 	}
 	secretsRestored := 0
+	warnings := append([]domain.BackupWarning(nil), result.Warnings...)
 	if payload.Mode == domain.BackupModeFull && len(result.SecretRestores) > 0 {
-		if err := s.restoreSecrets(ctx, result.SecretRestores); err != nil {
+		restored, secretWarnings, err := s.restoreSecrets(ctx, result.SecretRestores)
+		if err != nil {
 			return domain.BackupImportResult{}, err
 		}
-		secretsRestored = len(result.SecretRestores)
+		secretsRestored = restored
+		warnings = append(warnings, secretWarnings...)
 	}
 	return domain.BackupImportResult{
 		GroupsAdded:       result.GroupsAdded,
@@ -193,7 +196,7 @@ func (s *Service) Import(ctx context.Context, request domain.BackupImportRequest
 		SecretsRestored:   secretsRestored,
 		Skipped:           result.Skipped,
 		Renamed:           result.Renamed,
-		Warnings:          result.Warnings,
+		Warnings:          warnings,
 		CredentialsNotice: credentialsNoticeFor(payload.Mode),
 	}, nil
 }
@@ -252,30 +255,40 @@ func (s *Service) exportSecrets(ctx context.Context) ([]domain.BackupSecret, err
 	return out, nil
 }
 
-func (s *Service) restoreSecrets(ctx context.Context, restores []domain.BackupSecretRestore) error {
+func (s *Service) restoreSecrets(ctx context.Context, restores []domain.BackupSecretRestore) (int, []domain.BackupWarning, error) {
 	if s.secrets == nil {
-		return ErrFullBackupUnavailable
+		return 0, []domain.BackupWarning{{
+			Code:    "BACKUP_SECRET_REENTER_REQUIRED",
+			Message: "系统凭据库不可用，导入后需要重新输入密码/私钥口令。",
+		}}, nil
 	}
 	written := make([]string, 0, len(restores))
+	writtenRestores := make([]domain.BackupSecretRestore, 0, len(restores))
+	warnings := []domain.BackupWarning{}
 	for _, restore := range restores {
 		value := append([]byte(nil), restore.Value...)
 		if err := s.secrets.Set(ctx, restore.Reference, value); err != nil {
 			wipeBytes(value)
-			for _, ref := range written {
-				_ = s.secrets.Delete(ctx, ref)
-			}
-			return fmt.Errorf("BACKUP_SECRET_RESTORE_FAILED: 恢复系统凭据失败: %w", err)
+			warnings = append(warnings, domain.BackupWarning{
+				Code:    "BACKUP_SECRET_REENTER_REQUIRED",
+				Message: "部分凭据未能写入系统凭据库，导入后需要重新输入密码/私钥口令。",
+			})
+			continue
 		}
 		wipeBytes(value)
 		written = append(written, restore.Reference)
+		writtenRestores = append(writtenRestores, restore)
 	}
-	if err := s.store.ApplyBackupSecretRefs(ctx, restores); err != nil {
+	if len(writtenRestores) == 0 {
+		return 0, warnings, nil
+	}
+	if err := s.store.ApplyBackupSecretRefs(ctx, writtenRestores); err != nil {
 		for _, ref := range written {
 			_ = s.secrets.Delete(ctx, ref)
 		}
-		return fmt.Errorf("BACKUP_SECRET_RESTORE_FAILED: 保存凭据引用失败: %w", err)
+		return 0, warnings, fmt.Errorf("BACKUP_SECRET_RESTORE_FAILED: 保存凭据引用失败: %w", err)
 	}
-	return nil
+	return len(writtenRestores), warnings, nil
 }
 
 func encryptPayload(payload domain.BackupPayload, password string) ([]byte, string, error) {

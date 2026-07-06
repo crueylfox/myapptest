@@ -128,7 +128,7 @@ func CapabilitiesForPlatform(
 	if current == "" || !isShellPreferenceAllowedForOptions(string(current), options) {
 		current = domain.LocalTerminalShellAuto
 	}
-	supported := platform == "windows" && conptyAvailable && shellAvailable
+	supported := platformSupportsLocalTerminal(platform, conptyAvailable, shellAvailable)
 	capabilities := domain.LocalTerminalCapabilities{
 		Platform:               platformName(platform),
 		Enabled:                supported,
@@ -146,13 +146,25 @@ func CapabilitiesForPlatform(
 		capabilities.UnsupportedMessage = unsupportedMessage(platform, conptyAvailable, shellAvailable)
 		return capabilities
 	}
-	capabilities.ShellOptions = localTerminalShellOptions(false)
-	capabilities.AdminShellOptions = localTerminalShellOptions(true)
+	capabilities.ShellOptions = localTerminalShellOptionsForPlatform(platform, false)
+	capabilities.AdminShellOptions = localTerminalShellOptionsForPlatform(platform, true)
 	return capabilities
+}
+
+func platformSupportsLocalTerminal(platform string, platformAvailable bool, shellAvailable bool) bool {
+	switch platform {
+	case "windows", "darwin":
+		return platformAvailable && shellAvailable
+	default:
+		return false
+	}
 }
 
 func unsupportedMessage(platform string, conptyAvailable bool, shellAvailable bool) string {
 	if platform != "windows" {
+		if platform == "darwin" && !shellAvailable {
+			return "未找到可用的 macOS 本地 shell"
+		}
 		return "当前平台暂未支持本地终端"
 	}
 	if !conptyAvailable {
@@ -164,7 +176,15 @@ func unsupportedMessage(platform string, conptyAvailable bool, shellAvailable bo
 	return ErrUnsupported.Error()
 }
 
-func localTerminalShellOptions(admin bool) []domain.LocalTerminalShellOption {
+func localTerminalShellOptionsForPlatform(platform string, admin bool) []domain.LocalTerminalShellOption {
+	if platform == "darwin" {
+		if admin {
+			return []domain.LocalTerminalShellOption{}
+		}
+		return []domain.LocalTerminalShellOption{
+			{ID: string(domain.LocalTerminalShellKindLocal), Label: "本地终端", Description: "打开 macOS 本地终端。"},
+		}
+	}
 	if admin {
 		return []domain.LocalTerminalShellOption{
 			{ID: "cmd-admin", Label: "CMD（管理员）", Description: "以管理员身份运行 ServerPilot 时打开管理员 CMD。"},
@@ -186,13 +206,22 @@ func ExperimentalEnabled() bool {
 }
 
 func runtimeAvailableForPlatform(platform string, lookPath lookPathFunc, platformAvailable bool) bool {
-	if platform != "windows" || !platformAvailable {
+	if !platformAvailable {
+		return false
+	}
+	if platform != "windows" && platform != "darwin" {
 		return false
 	}
 	return shellResolverAvailable(platform, lookPath)
 }
 
 func shellResolverAvailable(platform string, lookPath lookPathFunc) bool {
+	if platform == "darwin" {
+		if _, err := resolveShellKindForPlatform(platform, string(domain.LocalTerminalShellKindLocal), lookPath); err == nil {
+			return true
+		}
+		return false
+	}
 	if _, err := resolveShellKindForPlatform(platform, string(domain.LocalTerminalShellKindCmd), lookPath); err == nil {
 		return true
 	}
@@ -213,6 +242,8 @@ func normalizeShellKind(kind string) (string, bool) {
 		return string(domain.LocalTerminalShellKindCmd), true
 	case string(domain.LocalTerminalShellKindPowerShell):
 		return string(domain.LocalTerminalShellKindPowerShell), true
+	case string(domain.LocalTerminalShellKindLocal):
+		return string(domain.LocalTerminalShellKindLocal), true
 	default:
 		return "", false
 	}
@@ -225,6 +256,8 @@ func shellKindTitle(kind string, elevated bool) string {
 		title = "CMD"
 	case string(domain.LocalTerminalShellKindPowerShell):
 		title = "PowerShell"
+	case string(domain.LocalTerminalShellKindLocal):
+		title = "本地终端"
 	}
 	if elevated {
 		return title + "（管理员）"
@@ -239,6 +272,8 @@ func shellKindFromPath(path string) string {
 		return string(domain.LocalTerminalShellKindCmd)
 	case "pwsh", "pwsh.exe", "powershell", "powershell.exe":
 		return string(domain.LocalTerminalShellKindPowerShell)
+	case "zsh", "bash", "sh":
+		return string(domain.LocalTerminalShellKindLocal)
 	default:
 		return ""
 	}
@@ -258,7 +293,7 @@ func shellOptionsForPlatform(platform string) []domain.LocalTerminalShellOption 
 		}
 	case "darwin":
 		return []domain.LocalTerminalShellOption{
-			{ID: string(domain.LocalTerminalShellAuto), Label: "自动", Description: "优先 zsh，其次 bash。"},
+			{ID: string(domain.LocalTerminalShellAuto), Label: "自动", Description: "优先使用用户 SHELL，其次 /bin/zsh，最后 /bin/bash。"},
 			{ID: string(domain.LocalTerminalShellZsh), Label: "zsh", Description: "使用 macOS 默认 zsh。"},
 			{ID: string(domain.LocalTerminalShellBash), Label: "bash", Description: "使用 bash。"},
 		}
@@ -739,6 +774,10 @@ func resolveShellKindForPlatform(platform, kind string, lookPath lookPathFunc) (
 		case string(domain.LocalTerminalShellKindPowerShell):
 			candidates = []string{"pwsh.exe", "powershell.exe"}
 		}
+	case "darwin":
+		if kind == string(domain.LocalTerminalShellKindLocal) {
+			candidates = shellCandidates(platform, string(domain.LocalTerminalShellAuto))
+		}
 	default:
 		return "", ErrUnsupported
 	}
@@ -781,11 +820,16 @@ func shellCandidates(platform, preference string) []string {
 	case "darwin":
 		switch domain.LocalTerminalShellPreference(preference) {
 		case "", domain.LocalTerminalShellAuto:
-			return []string{"zsh", "bash"}
+			candidates := make([]string, 0, 3)
+			if shell := strings.TrimSpace(os.Getenv("SHELL")); shell != "" {
+				candidates = append(candidates, shell)
+			}
+			candidates = append(candidates, "/bin/zsh", "/bin/bash")
+			return uniqueStrings(candidates)
 		case domain.LocalTerminalShellZsh:
-			return []string{"zsh"}
+			return []string{"/bin/zsh", "zsh"}
 		case domain.LocalTerminalShellBash:
-			return []string{"bash"}
+			return []string{"/bin/bash", "bash"}
 		}
 	case "linux":
 		switch domain.LocalTerminalShellPreference(preference) {
@@ -800,6 +844,20 @@ func shellCandidates(platform, preference string) []string {
 		}
 	}
 	return nil
+}
+
+func uniqueStrings(values []string) []string {
+	result := make([]string, 0, len(values))
+	seen := map[string]bool{}
+	for _, value := range values {
+		value = strings.TrimSpace(value)
+		if value == "" || seen[value] {
+			continue
+		}
+		seen[value] = true
+		result = append(result, value)
+	}
+	return result
 }
 
 func userError(err error) string {

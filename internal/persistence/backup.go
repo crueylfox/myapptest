@@ -5,11 +5,13 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
 	"serverpilot/internal/domain"
+	"serverpilot/internal/keyvault"
 )
 
 func (s *Store) ExportBackupPayload(ctx context.Context) (domain.BackupPayload, error) {
@@ -262,6 +264,13 @@ func (s *Store) importBackupPayloadTx(
 			if payload.Mode == domain.BackupModeFull &&
 				domain.KeyVaultStorageMode(key.StorageMode) == domain.KeyVaultStorageEncryptedDatabase &&
 				len(protectedKeyBlobs[key.ID]) > 0 {
+				if !protectedKeyBlobRestorableForPlatform(runtime.GOOS, protectedKeyBlobs[key.ID]) {
+					result.Warnings = append(result.Warnings, domain.BackupWarning{
+						Code:    "WINDOWS_PROTECTED_CREDENTIAL_REENTER_REQUIRED",
+						Message: keyvault.WindowsProtectedCredentialHint,
+					})
+					continue
+				}
 				insertedID, err := insertKeyVaultTx(ctx, tx, key, backupName(key.Name), protectedKeyBlobs[key.ID])
 				if err != nil {
 					return result, err
@@ -486,6 +495,13 @@ WHERE singleton=1`,
 	}
 	result.SecretRestores = backupSecretRestores(payload.Secrets, connectionMap, keyMap, restoredKeyVaultIDs)
 	return result, nil
+}
+
+func protectedKeyBlobRestorableForPlatform(platform string, blob []byte) bool {
+	if platform == "darwin" {
+		return keyvault.IsLocalProtectorBlob(blob)
+	}
+	return true
 }
 
 func normalizeDashboardSortMode(value domain.DashboardSortMode) domain.DashboardSortMode {

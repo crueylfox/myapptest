@@ -139,8 +139,12 @@ func TestRuntimeAvailabilityUsesConPTYAndShellResolver(t *testing.T) {
 	if runtimeAvailableForPlatform("windows", lookPath(nil), true) {
 		t.Fatal("Windows without cmd or PowerShell must be unavailable")
 	}
-	if runtimeAvailableForPlatform("darwin", lookPath(map[string]string{"zsh": "/bin/zsh"}), true) {
-		t.Fatal("non-Windows platforms are not enabled by the Windows ConPTY path")
+	t.Setenv("SHELL", "")
+	if !runtimeAvailableForPlatform("darwin", lookPath(map[string]string{"/bin/zsh": "/bin/zsh"}), true) {
+		t.Fatal("macOS with PTY support and zsh should be available")
+	}
+	if runtimeAvailableForPlatform("darwin", lookPath(nil), true) {
+		t.Fatal("macOS without zsh or bash must be unavailable")
 	}
 }
 
@@ -363,11 +367,14 @@ func TestCapabilitiesExposePlatformShellOptions(t *testing.T) {
 	}
 
 	darwin := CapabilitiesForPlatform("darwin", domain.LocalTerminalShellPowerShell, true, false, true)
-	if darwin.Platform != "darwin" || darwin.Enabled || darwin.Supported || darwin.CurrentShellPreference != "auto" {
+	if darwin.Platform != "darwin" || !darwin.Enabled || !darwin.Supported || darwin.CurrentShellPreference != "auto" {
 		t.Fatalf("darwin capabilities = %+v", darwin)
 	}
-	if len(darwin.ShellOptions) != 0 {
-		t.Fatalf("unsupported platform should not expose shell options: %v", darwin.ShellOptions)
+	if ids := shellOptionIDs(darwin.ShellOptions); !sameStrings(ids, []string{"local"}) {
+		t.Fatalf("darwin shell options = %v", ids)
+	}
+	if len(darwin.AdminShellOptions) != 0 || darwin.SupportsElevation {
+		t.Fatalf("darwin should not expose admin shell options: %+v", darwin)
 	}
 }
 
@@ -412,6 +419,41 @@ func TestResolveShellKindForProductizedMenuEntries(t *testing.T) {
 
 	if _, err := resolveShellKindForPlatform("windows", "invalid", lookPath(nil)); err == nil {
 		t.Fatal("invalid shell kind was accepted")
+	}
+}
+
+func TestResolveDarwinLocalShellPrefersUserShellThenZshThenBash(t *testing.T) {
+	lookPath := func(existing map[string]string) lookPathFunc {
+		return func(name string) (string, error) {
+			if path, ok := existing[name]; ok {
+				return path, nil
+			}
+			return "", os.ErrNotExist
+		}
+	}
+
+	t.Setenv("SHELL", "/opt/homebrew/bin/fish")
+	shell, err := resolveShellKindForPlatform("darwin", "local", lookPath(map[string]string{
+		"/opt/homebrew/bin/fish": "/opt/homebrew/bin/fish",
+		"/bin/zsh":               "/bin/zsh",
+	}))
+	if err != nil || shell != "/opt/homebrew/bin/fish" {
+		t.Fatalf("darwin user shell=%q err=%v", shell, err)
+	}
+
+	t.Setenv("SHELL", "")
+	shell, err = resolveShellKindForPlatform("darwin", "local", lookPath(map[string]string{
+		"/bin/zsh": "/bin/zsh",
+	}))
+	if err != nil || shell != "/bin/zsh" {
+		t.Fatalf("darwin zsh fallback=%q err=%v", shell, err)
+	}
+
+	shell, err = resolveShellKindForPlatform("darwin", "local", lookPath(map[string]string{
+		"/bin/bash": "/bin/bash",
+	}))
+	if err != nil || shell != "/bin/bash" {
+		t.Fatalf("darwin bash fallback=%q err=%v", shell, err)
 	}
 }
 
