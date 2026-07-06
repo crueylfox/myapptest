@@ -1,6 +1,6 @@
 # AI_BRIEF - ServerPilot Current Handoff
 
-Updated: 2026-07-06
+Updated: 2026-07-07
 
 ## 0. Entry
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
@@ -8,7 +8,7 @@ Updated: 2026-07-06
 - Previous delivery version: `0.5.0-beta.28` PASS.
 - Current VERSION: `0.5.0-beta.31`.
 - Recommended delivery version: `0.5.0-beta.31` user-smoke-required.
-- Current round: beta31 same-version macOS settings/dialog/local-terminal hotfix after beta31 cross-platform Key Vault backup.
+- Current round: beta31 same-version SFTP/local-terminal/macOS theme hotfix after beta31 cross-platform Key Vault backup.
 - Version bump this hotfix: no; baseline already `0.5.0-beta.31`.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
@@ -17,6 +17,7 @@ Updated: 2026-07-06
 - Previous overlay blocker commit: `a16ac96` (`fix: replace macos gray modal scrim with app blur overlay`).
 - Current UI polish commit: `65a19b9` (`fix: polish beta31 macos dialogs and settings ui`).
 - Current settings/dialog/local-terminal hotfix commit: `7dce440` (`fix: polish beta31 macos settings dialogs and local terminal`).
+- Current SFTP/local-terminal/macOS theme hotfix commit: `a7ba5c2` (`fix: polish beta31 sftp local terminal and macos theme ui`).
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -48,6 +49,17 @@ Updated: 2026-07-06
 - macOS shortcut defaults are platform-specific: copy `⌘C`, paste `⌘V`, command completion `⌘K`, history `⇧⌘H`, and common commands `⇧⌘P`.
 - User-facing `Key Vault` copy in settings/backup/server-edit surfaces is changed to `密钥库`; code identifiers and data models are unchanged.
 - macOS local terminal startup now uses login shell args for zsh/bash and color-capable env (`TERM=xterm-256color`, `COLORTERM=truecolor`, `CLICOLOR=1`) without changing SSH terminal behavior.
+- Beta31 same-version SFTP/local-terminal/macOS theme hotfix:
+  - Transfer queue popover is anchored to the workspace/window bottom-right and remains stable after resize/SFTP height changes.
+  - Terminal right-click paste now falls back to Wails `ClipboardGetText()` when `navigator.clipboard.readText()` is unavailable.
+  - Settings adds a preview-only macOS gray dark theme; the production dark theme setting is not replaced.
+  - Settings General UI font size control is a 12-18px slider with unchanged save semantics.
+  - Remote Linux and local monitor disk/mount `显示全部` defaults to checked while preserving session toggle state.
+  - SFTP More menu positions from the More button, including when the bottom splitter is low.
+  - Transfer queue actions use lightweight `|` separated controls.
+  - Collapsed SFTP details pane keeps a visible restore entry.
+  - macOS local terminal strips only the first isolated `%` line without suppressing a normal prompt or changing SSH/Windows behavior.
+  - Settings left nav active state uses a stronger full-row background with distinct hover.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.
@@ -72,15 +84,17 @@ Updated: 2026-07-06
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1647 tests, 88 Playwright tests, and frontend build.
+- Local focused frontend tests for SFTP transfer overlay, SFTP toolbar/details, terminal paste, local terminal, settings theme/font UI, monitor disk/mount defaults, and theme tokens: passed, 10 files / 365 tests.
+- Local focused `go test ./internal/localterminal`: passed.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1656 tests, 88 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build -platform darwin/universal`: not run for this hotfix; Windows local builds do not produce the macOS app.
-- GitHub Actions `Build macOS` run `28807706013`: success for commit `7dce44074ed672a8e63182e211c38b5bfc40740f`.
+- GitHub Actions `Build macOS` run `28810637794`: success for commit `a7ba5c2404cb4633a6c029585ea3cc4fc6f1b71745d`.
 - Artifact: `ServerPilot-macos-unsigned`.
 - Artifact contains `ServerPilot-macos-universal-unsigned.zip` and `ServerPilot-macos-universal-unsigned.dmg`.
-- Artifact archive `ServerPilot-macos-unsigned.zip` SHA-256: `000c4d016f62629b7ca374b5ac1074a968e95da4b5d3c70c7f39fccfbdf640d1`.
-- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `09e4e08fd25d47c9193c7d6b2b51497f8916f5717cf7aed3b425c60c08973cd4`.
-- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `8577356eb20fd47c65a9f4c139370eae4d7c7f4f6f2ce5a6a213d0b723d61b3c`.
+- Artifact archive `ServerPilot-macos-unsigned.zip` was downloaded by the user to Desktop for hash extraction.
+- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `26903FAA58EC3FC4D1165853D39224DC61B7C11B46B8A8072C53F8B5733FB5C2`.
+- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `4D7F48CCFE877D5797448E4F14B76901EC150E1D1FBA945DDB1A853C6820B098`.
 - macOS artifact came from the GitHub Actions macOS runner.
 - Windows local `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 
