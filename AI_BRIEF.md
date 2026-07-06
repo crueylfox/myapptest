@@ -8,7 +8,7 @@ Updated: 2026-07-07
 - Previous delivery version: `0.5.0-beta.28` PASS.
 - Current VERSION: `0.5.0-beta.31`.
 - Recommended delivery version: `0.5.0-beta.31` user-smoke-required.
-- Current round: beta31 same-version SFTP/local-terminal/macOS theme hotfix after beta31 cross-platform Key Vault backup.
+- Current round: beta31 same-version macOS gray dark theme/SFTP/local-terminal hotfix after beta31 cross-platform Key Vault backup.
 - Version bump this hotfix: no; baseline already `0.5.0-beta.31`.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
@@ -18,6 +18,7 @@ Updated: 2026-07-07
 - Current UI polish commit: `65a19b9` (`fix: polish beta31 macos dialogs and settings ui`).
 - Current settings/dialog/local-terminal hotfix commit: `7dce440` (`fix: polish beta31 macos settings dialogs and local terminal`).
 - Current SFTP/local-terminal/macOS theme hotfix commit: `a7ba5c2` (`fix: polish beta31 sftp local terminal and macos theme ui`).
+- Current macOS gray dark theme completion commit: `a0fde0e` (`fix: polish beta31 macos theme sftp and local terminal ui`).
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -52,8 +53,9 @@ Updated: 2026-07-07
 - Beta31 same-version SFTP/local-terminal/macOS theme hotfix:
   - Transfer queue popover is anchored to the workspace/window bottom-right and remains stable after resize/SFTP height changes.
   - Terminal right-click paste now falls back to Wails `ClipboardGetText()` when `navigator.clipboard.readText()` is unavailable.
-  - Settings adds a preview-only macOS gray dark theme; the production dark theme setting is not replaced.
-  - Settings General UI font size control is a 12-18px slider with unchanged save semantics.
+  - Production dark theme now uses the macOS gray/graphite palette directly instead of a preview-only macOS gray theme.
+  - Legacy `macos_gray_dark` preview requests are treated as the production dark theme for compatibility.
+  - Settings General UI font size control is a 12-18px slider with visible tick marks and unchanged save semantics.
   - Remote Linux and local monitor disk/mount `显示全部` defaults to checked while preserving session toggle state.
   - SFTP More menu positions from the More button, including when the bottom splitter is low.
   - Transfer queue actions use lightweight `|` separated controls.
@@ -86,15 +88,15 @@ Updated: 2026-07-07
 - Local `go test ./...`: passed.
 - Local focused frontend tests for SFTP transfer overlay, SFTP toolbar/details, terminal paste, local terminal, settings theme/font UI, monitor disk/mount defaults, and theme tokens: passed, 10 files / 365 tests.
 - Local focused `go test ./internal/localterminal`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1656 tests, 88 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1655 tests, 88 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build -platform darwin/universal`: not run for this hotfix; Windows local builds do not produce the macOS app.
-- GitHub Actions `Build macOS` run `28810637794`: success for commit `a7ba5c2404cb4633a6c029585ea3cc4fc6f1b71745d`.
+- GitHub Actions `Build macOS` run `28813019269`: success for commit `a0fde0effee5bdcc5bd335a6f35f78c7a3074a4e`.
 - Artifact: `ServerPilot-macos-unsigned`.
 - Artifact contains `ServerPilot-macos-universal-unsigned.zip` and `ServerPilot-macos-universal-unsigned.dmg`.
-- Artifact archive `ServerPilot-macos-unsigned.zip` was downloaded by the user to Desktop for hash extraction.
-- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `26903FAA58EC3FC4D1165853D39224DC61B7C11B46B8A8072C53F8B5733FB5C2`.
-- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `4D7F48CCFE877D5797448E4F14B76901EC150E1D1FBA945DDB1A853C6820B098`.
+- Artifact archive `ServerPilot-macos-unsigned.zip` was downloaded from GitHub Actions to a temporary local directory for hash extraction.
+- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `4C6E202E6B1B5E95DACF035DAD65D66A063ABD0914A10CF14072970BC97C0324`.
+- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `BE6FF7C775F02E223884CD76D5DF6ED04496169DB9210D3185E6979589DB7DFE`.
 - macOS artifact came from the GitHub Actions macOS runner.
 - Windows local `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 
