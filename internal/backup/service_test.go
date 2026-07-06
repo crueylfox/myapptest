@@ -75,6 +75,20 @@ func (backupTestProtector) Unprotect(ciphertext []byte) ([]byte, error) {
 	return append([]byte(nil), ciphertext[len(keyvault.LocalProtectorBlobPrefix):]...), nil
 }
 
+type encodedBackupTestProtector struct{}
+
+func (encodedBackupTestProtector) Protect(plaintext []byte) ([]byte, error) {
+	encoded := base64.StdEncoding.EncodeToString(plaintext)
+	return []byte(keyvault.LocalProtectorBlobPrefix + encoded), nil
+}
+
+func (encodedBackupTestProtector) Unprotect(ciphertext []byte) ([]byte, error) {
+	if !keyvault.IsLocalProtectorBlob(ciphertext) {
+		return nil, errors.New("unexpected protected fixture prefix")
+	}
+	return base64.StdEncoding.DecodeString(string(ciphertext[len(keyvault.LocalProtectorBlobPrefix):]))
+}
+
 func TestExportEncryptsBusinessDataAndInspectRejectsWrongPassword(t *testing.T) {
 	ctx := context.Background()
 	store := newBackupStore(t)
@@ -524,23 +538,46 @@ func TestFullBackupRestoresSavedSecrets(t *testing.T) {
 
 func TestFullBackupImportsUnrestorableWindowsKeyVaultMetadataWithWarning(t *testing.T) {
 	ctx := context.Background()
-	source := newBackupStore(t)
+	sourceKeyID := int64(90)
 	protectedBlob := []byte("windows-dpapi-blob")
-	sourceKey := createEncryptedBackupKey(t, ctx, source, "windows-key", "SHA256:windows-only", string(protectedBlob))
-	sourceKeyID := sourceKey.ID
-	if _, err := source.SaveConnection(ctx, domain.SaveConnectionRequest{
-		Name: "windows-key-server", Host: "203.0.113.88", Port: 22, Username: "deploy",
-		AuthType: domain.AuthPrivateKey, PrivateKeySource: domain.PrivateKeySourceKeyVault,
-		KeyVaultID: &sourceKeyID, RefreshInterval: 2,
-	}); err != nil {
+	payload := domain.BackupPayload{
+		SchemaVersion: 1,
+		Mode:          domain.BackupModeFull,
+		KeyVault: []domain.BackupKeyVaultEntry{{
+			ID:                         sourceKeyID,
+			Name:                       "windows-key",
+			StorageMode:                string(domain.KeyVaultStorageEncryptedDatabase),
+			SourceFileName:             "id_ed25519",
+			Algorithm:                  "ssh-ed25519",
+			KeyBits:                    256,
+			PublicKeyFingerprintSHA256: "SHA256:windows-only",
+			Encrypted:                  false,
+		}},
+		Connections: []domain.BackupConnection{{
+			ID:               699,
+			Name:             "windows-key-server",
+			Host:             "203.0.113.88",
+			Port:             22,
+			Username:         "deploy",
+			AuthType:         domain.AuthPrivateKey,
+			PrivateKeySource: domain.PrivateKeySourceKeyVault,
+			KeyVaultID:       &sourceKeyID,
+			RefreshInterval:  2,
+		}},
+		Secrets: []domain.BackupSecret{{
+			Scope:   domain.BackupSecretScopeKeyVault,
+			OwnerID: sourceKeyID,
+			Kind:    domain.BackupSecretKindProtectedKeyBlob,
+			Value:   protectedBlob,
+		}},
+	}
+	password := "correct horse battery"
+	contents, _, err := encryptPayload(payload, password)
+	if err != nil {
 		t.Fatal(err)
 	}
-
 	path := filepath.Join(t.TempDir(), "serverpilot-windows-keyvault.spbackup")
-	password := "correct horse battery"
-	if _, err := New(source, newMemorySecrets()).Export(ctx, domain.BackupExportRequest{
-		Path: path, Password: password, ConfirmPassword: password, Mode: string(domain.BackupModeFull),
-	}); err != nil {
+	if err := os.WriteFile(path, contents, 0o600); err != nil {
 		t.Fatal(err)
 	}
 
@@ -602,7 +639,9 @@ func TestFullBackupRestoresEncryptedKeyVaultMaterialAndPassphrase(t *testing.T) 
 
 	path := filepath.Join(t.TempDir(), "serverpilot-full-keyvault.spbackup")
 	password := "correct horse battery"
-	result, err := New(source, sourceSecrets).Export(ctx, domain.BackupExportRequest{
+	sourceService := New(source, sourceSecrets)
+	sourceService.protector = backupTestProtector{}
+	result, err := sourceService.Export(ctx, domain.BackupExportRequest{
 		Path: path, Password: password, ConfirmPassword: password, Mode: string(domain.BackupModeFull),
 	})
 	if err != nil {
@@ -617,10 +656,28 @@ func TestFullBackupRestoresEncryptedKeyVaultMaterialAndPassphrase(t *testing.T) 
 			t.Fatalf("full backup envelope contains plaintext key vault material %q", forbidden)
 		}
 	}
+	payload, _, err := decryptPayload(readFile(t, path), password)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hasPortableMaterial := false
+	for _, secret := range payload.Secrets {
+		if secret.Scope == domain.BackupSecretScopeKeyVault && secret.Kind == domain.BackupSecretKindProtectedKeyBlob {
+			t.Fatalf("full backup exported platform-bound key vault blob for owner %d", secret.OwnerID)
+		}
+		if secret.Scope == domain.BackupSecretScopeKeyVault && secret.Kind == domain.BackupSecretKindPrivateKeyMaterial {
+			hasPortableMaterial = true
+		}
+	}
+	if !hasPortableMaterial {
+		t.Fatal("full backup did not export portable key vault material")
+	}
 
 	target := newBackupStore(t)
 	targetSecrets := newMemorySecrets()
-	importResult, err := New(target, targetSecrets).Import(ctx, domain.BackupImportRequest{
+	targetService := New(target, targetSecrets)
+	targetService.protector = backupTestProtector{}
+	importResult, err := targetService.Import(ctx, domain.BackupImportRequest{
 		Path: path, Password: password,
 		Options: domain.BackupImportOptions{ImportSettings: false, ImportGroups: false, ImportServers: true, ImportKeyVault: true, ImportHostTrust: false},
 	})
@@ -654,6 +711,91 @@ func TestFullBackupRestoresEncryptedKeyVaultMaterialAndPassphrase(t *testing.T) 
 	}
 	if len(connections) != 1 || connections[0].KeyVaultID == nil || *connections[0].KeyVaultID != keys[0].ID {
 		t.Fatalf("connection was not rebound to restored key vault entry: connections=%+v keys=%+v", connections, keys)
+	}
+}
+
+func TestFullBackupImportsPortableKeyVaultMaterialAsUsableLocalProtectedKey(t *testing.T) {
+	ctx := context.Background()
+	sourceKeyID := int64(93)
+	privateKeyPEM := generatedBackupTestPrivateKeyPEM(t)
+	payload := domain.BackupPayload{
+		SchemaVersion: 1,
+		Mode:          domain.BackupModeFull,
+		KeyVault: []domain.BackupKeyVaultEntry{{
+			ID:                         sourceKeyID,
+			Name:                       "portable-cross-platform-key",
+			StorageMode:                string(domain.KeyVaultStorageEncryptedDatabase),
+			SourceFileName:             "id_ed25519",
+			Algorithm:                  "ssh-ed25519",
+			KeyBits:                    256,
+			PublicKeyFingerprintSHA256: "SHA256:portable-cross-platform-key",
+			Encrypted:                  false,
+		}},
+		Connections: []domain.BackupConnection{{
+			ID:               702,
+			Name:             "portable-cross-platform-server",
+			Host:             "203.0.113.72",
+			Port:             22,
+			Username:         "deploy",
+			AuthType:         domain.AuthPrivateKey,
+			PrivateKeySource: domain.PrivateKeySourceKeyVault,
+			KeyVaultID:       &sourceKeyID,
+			RefreshInterval:  2,
+		}},
+		Secrets: []domain.BackupSecret{{
+			Scope:   "key_vault",
+			OwnerID: sourceKeyID,
+			Kind:    "private_key_material",
+			Value:   append([]byte(nil), privateKeyPEM...),
+		}},
+	}
+	contents, _, err := encryptPayload(payload, "correct horse battery")
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "portable-keyvault.spbackup")
+	if err := os.WriteFile(path, contents, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	target := newBackupStore(t)
+	targetSecrets := newMemorySecrets()
+	targetService := New(target, targetSecrets)
+	targetService.protector = encodedBackupTestProtector{}
+	importResult, err := targetService.Import(ctx, domain.BackupImportRequest{
+		Path: path, Password: "correct horse battery",
+		Options: domain.BackupImportOptions{ImportSettings: false, ImportGroups: false, ImportServers: true, ImportKeyVault: true, ImportHostTrust: false},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if importResult.KeyVaultAdded != 1 || hasBackupWarning(importResult.Warnings, "WINDOWS_PROTECTED_CREDENTIAL_REENTER_REQUIRED") {
+		t.Fatalf("portable import result=%+v", importResult)
+	}
+	keys, err := target.ListKeyVaultEntries(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(keys) != 1 ||
+		keys[0].StorageMode != string(domain.KeyVaultStorageEncryptedDatabase) ||
+		!strings.HasPrefix(string(keys[0].ProtectedKeyBlob), keyvault.LocalProtectorBlobPrefix) ||
+		strings.Contains(string(keys[0].ProtectedKeyBlob), "PRIVATE KEY") {
+		t.Fatalf("portable import did not store local protected key material safely: %+v", keys)
+	}
+	connections, err := target.ListConnections(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(connections) != 1 || connections[0].KeyVaultID == nil || *connections[0].KeyVaultID != keys[0].ID {
+		t.Fatalf("connection was not rebound to restored key vault entry: connections=%+v keys=%+v", connections, keys)
+	}
+	auth, err := credential.New(target, targetSecrets, encodedBackupTestProtector{}).Resolve(ctx, connections[0], domain.AuthRequest{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer wipeBytes(auth.ResolvedPrivateKeyPEM)
+	if auth.ResolvedKeyVaultID != keys[0].ID || len(auth.ResolvedPrivateKeyPEM) == 0 {
+		t.Fatalf("resolved auth did not use portable key vault material: resolvedKeyVaultID=%d keyBytes=%d", auth.ResolvedKeyVaultID, len(auth.ResolvedPrivateKeyPEM))
 	}
 }
 

@@ -182,6 +182,14 @@ type BackupSecret struct {
 	Value   []byte `json:"value"`
 }
 
+const (
+	BackupSecretScopeConnection = "connection"
+	BackupSecretScopeKeyVault   = "key_vault"
+
+	BackupSecretKindProtectedKeyBlob   = "protected_key_blob"
+	BackupSecretKindPrivateKeyMaterial = "private_key_material"
+)
+
 type BackupSecretRef struct {
 	Scope     string
 	OwnerID   int64

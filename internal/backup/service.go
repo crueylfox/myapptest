@@ -16,6 +16,7 @@ import (
 	"golang.org/x/crypto/chacha20poly1305"
 
 	"serverpilot/internal/domain"
+	"serverpilot/internal/keyvault"
 	"serverpilot/internal/secretstore"
 )
 
@@ -61,8 +62,9 @@ type inlineSecretExporter interface {
 }
 
 type Service struct {
-	store   Store
-	secrets secretstore.Store
+	store     Store
+	secrets   secretstore.Store
+	protector keyvault.KeyMaterialProtector
 }
 
 func New(store Store, secrets ...secretstore.Store) *Service {
@@ -70,7 +72,7 @@ func New(store Store, secrets ...secretstore.Store) *Service {
 	if len(secrets) > 0 {
 		secretStore = secrets[0]
 	}
-	return &Service{store: store, secrets: secretStore}
+	return &Service{store: store, secrets: secretStore, protector: keyvault.NewPlatformProtector()}
 }
 
 type envelope struct {
@@ -173,6 +175,12 @@ func (s *Service) Import(ctx context.Context, request domain.BackupImportRequest
 	if err != nil {
 		return domain.BackupImportResult{}, err
 	}
+	defer func() { wipeBackupSecrets(payload.Secrets) }()
+	if payload.Mode == domain.BackupModeFull {
+		if err := s.preparePortableKeyVaultSecretsForImport(&payload); err != nil {
+			return domain.BackupImportResult{}, err
+		}
+	}
 	options := request.Options
 	result, err := s.store.ImportBackupPayload(ctx, payload, options)
 	if err != nil {
@@ -237,7 +245,11 @@ func (s *Service) exportSecrets(ctx context.Context) ([]domain.BackupSecret, err
 		if err != nil {
 			return nil, fmt.Errorf("BACKUP_READ_FAILED: read key vault encrypted material failed: %w", err)
 		}
-		out = append(out, inline...)
+		portable, err := s.exportPortableKeyVaultMaterial(inline)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, portable...)
 	}
 	for _, ref := range refs {
 		value, err := s.secrets.Get(ctx, ref.Reference)
@@ -253,6 +265,73 @@ func (s *Service) exportSecrets(ctx context.Context) ([]domain.BackupSecret, err
 		wipeBytes(value)
 	}
 	return out, nil
+}
+
+func (s *Service) exportPortableKeyVaultMaterial(secrets []domain.BackupSecret) ([]domain.BackupSecret, error) {
+	out := make([]domain.BackupSecret, 0, len(secrets))
+	for _, secret := range secrets {
+		if secret.Scope != domain.BackupSecretScopeKeyVault || secret.Kind != domain.BackupSecretKindProtectedKeyBlob {
+			out = append(out, cloneBackupSecret(secret))
+			continue
+		}
+		if s.protector == nil {
+			return nil, fmt.Errorf("%w: key_vault/%d/private_key_material", ErrFullBackupUnavailable, secret.OwnerID)
+		}
+		plaintext, err := s.protector.Unprotect(secret.Value)
+		if err != nil {
+			return nil, fmt.Errorf("%w: key_vault/%d/private_key_material", ErrFullBackupUnavailable, secret.OwnerID)
+		}
+		out = append(out, domain.BackupSecret{
+			Scope:   domain.BackupSecretScopeKeyVault,
+			OwnerID: secret.OwnerID,
+			Kind:    domain.BackupSecretKindPrivateKeyMaterial,
+			Value:   append([]byte(nil), plaintext...),
+		})
+		wipeBytes(plaintext)
+		wipeBytes(secret.Value)
+	}
+	return out, nil
+}
+
+func (s *Service) preparePortableKeyVaultSecretsForImport(payload *domain.BackupPayload) error {
+	if payload == nil || len(payload.Secrets) == 0 {
+		return nil
+	}
+	converted := make([]domain.BackupSecret, 0, len(payload.Secrets))
+	for _, secret := range payload.Secrets {
+		if secret.Scope != domain.BackupSecretScopeKeyVault || secret.Kind != domain.BackupSecretKindPrivateKeyMaterial {
+			converted = append(converted, cloneBackupSecret(secret))
+			continue
+		}
+		if s.protector == nil {
+			return errors.New("BACKUP_KEY_VAULT_REPROTECT_FAILED: key vault protector is unavailable")
+		}
+		protected, err := s.protector.Protect(secret.Value)
+		if err != nil {
+			return fmt.Errorf("BACKUP_KEY_VAULT_REPROTECT_FAILED: save portable key vault material: %w", err)
+		}
+		converted = append(converted, domain.BackupSecret{
+			Scope:   domain.BackupSecretScopeKeyVault,
+			OwnerID: secret.OwnerID,
+			Kind:    domain.BackupSecretKindProtectedKeyBlob,
+			Value:   append([]byte(nil), protected...),
+		})
+		wipeBytes(protected)
+		wipeBytes(secret.Value)
+	}
+	payload.Secrets = converted
+	return nil
+}
+
+func cloneBackupSecret(secret domain.BackupSecret) domain.BackupSecret {
+	secret.Value = append([]byte(nil), secret.Value...)
+	return secret
+}
+
+func wipeBackupSecrets(secrets []domain.BackupSecret) {
+	for _, secret := range secrets {
+		wipeBytes(secret.Value)
+	}
 }
 
 func (s *Service) restoreSecrets(ctx context.Context, restores []domain.BackupSecretRestore) (int, []domain.BackupWarning, error) {
