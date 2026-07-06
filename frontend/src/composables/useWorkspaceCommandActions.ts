@@ -1,5 +1,5 @@
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
-import type { LocalTerminalState, TerminalSessionInfo } from '../types'
+import type { LocalTerminalShellKind, LocalTerminalState, TerminalSessionInfo } from '../types'
 import {
   ALL_SPLIT_PANE_IDS,
   isSplitMode,
@@ -62,7 +62,7 @@ export type WorkspaceCommandActionsOptions = {
   confirmClearAllPanes?: () => Promise<boolean>
   emitPaneAddServer: (paneId: SplitPaneId) => void
   emitPaneConnectSaved: (paneId: SplitPaneId) => void
-  emitPaneOpenLocalTerminal: (paneId: SplitPaneId, shellKind: 'cmd' | 'powershell') => void
+  emitPaneOpenLocalTerminal: (paneId: SplitPaneId, shellKind: LocalTerminalShellKind | string) => void
 }
 
 export function useWorkspaceCommandActions(options: WorkspaceCommandActionsOptions) {
@@ -366,7 +366,7 @@ export function useWorkspaceCommandActions(options: WorkspaceCommandActionsOptio
     options.emitPaneConnectSaved(paneId)
   }
 
-  function openLocalTerminalToPane(paneId: SplitPaneId, shellKind: 'cmd' | 'powershell') {
+  function openLocalTerminalToPane(paneId: SplitPaneId, shellKind: LocalTerminalShellKind | string) {
     if (!activatePaneTarget(paneId)) return
     options.emitPaneOpenLocalTerminal(paneId, shellKind)
   }

@@ -8,9 +8,11 @@ export type TerminalPaneMoveOption = {
 </script>
 
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import type { LocalTerminalCapabilities, LocalTerminalShellKind } from '../types'
 import type { PaneAssignmentKind, SplitPaneId } from '../utils/workspaceSplitTypes'
 import { getViewportPopoverPosition } from '../utils/viewportPopover'
+import { buildLocalTerminalActions, localTerminalPaneAction } from '../utils/localTerminalActions'
 
 const props = defineProps<{
   paneId: SplitPaneId
@@ -26,6 +28,7 @@ const props = defineProps<{
   menuMode: 'main' | 'swap' | 'move'
   occupiedPaneOptions: TerminalPaneMoveOption[]
   emptyPaneOptions: TerminalPaneMoveOption[]
+  localTerminalCapabilities?: LocalTerminalCapabilities | null
 }>()
 
 defineEmits<{
@@ -35,7 +38,7 @@ defineEmits<{
   addServer: [paneId: SplitPaneId]
   connectSaved: [paneId: SplitPaneId]
   selectConnected: [paneId: SplitPaneId]
-  newLocal: [paneId: SplitPaneId, shellKind: 'cmd' | 'powershell']
+  newLocal: [paneId: SplitPaneId, shellKind: LocalTerminalShellKind | string]
   replaceTerminal: [paneId: SplitPaneId]
   clearActivity: [paneId: SplitPaneId]
   openSwapMenu: [paneId: SplitPaneId]
@@ -48,6 +51,7 @@ defineEmits<{
 const menuTrigger = ref<HTMLElement | null>(null)
 const menu = ref<HTMLElement | null>(null)
 const menuStyle = ref<Record<string, string>>({})
+const localTerminalActions = computed(() => buildLocalTerminalActions(props.localTerminalCapabilities))
 
 async function updateMenuPosition() {
   if (!props.kind || !props.menuOpen) return
@@ -152,8 +156,13 @@ onBeforeUnmount(() => {
       <button type="button" data-action="add-server-pane" @click="$emit('addServer', paneId)">新建服务器到此窗格</button>
       <button type="button" data-action="connect-saved-pane" @click="$emit('connectSaved', paneId)">连接已保存到此窗格</button>
       <button type="button" data-action="select-connected-pane" @click="$emit('selectConnected', paneId)">选择已连接到此窗格</button>
-      <button type="button" data-action="new-cmd-pane" @click="$emit('newLocal', paneId, 'cmd')">新建 CMD 到此窗格</button>
-      <button type="button" data-action="new-powershell-pane" @click="$emit('newLocal', paneId, 'powershell')">新建 PowerShell 到此窗格</button>
+      <button
+        v-for="action in localTerminalActions"
+        :key="action.id"
+        type="button"
+        :data-action="`${localTerminalPaneAction(action.id)}-pane`"
+        @click="$emit('newLocal', paneId, action.id)"
+      >新建 {{ action.label }} 到此窗格</button>
       <button type="button" data-action="replace-terminal" @click="$emit('replaceTerminal', paneId)">更换终端</button>
       <button
         type="button"

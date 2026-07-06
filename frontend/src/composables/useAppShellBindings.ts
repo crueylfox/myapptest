@@ -30,6 +30,8 @@ import type {
   DashboardSortMode,
   Group,
   LogEntry,
+  LocalTerminalCapabilities,
+  LocalTerminalShellKind,
   MonitorNetworkInterfaceMode,
   MonitorNetworkInterfacePreference,
   MonitorSnapshot,
@@ -116,6 +118,7 @@ export interface AppShellBindingSources {
   activeWorkspaceNetworkInterfacePreference: ComputedRef<MonitorNetworkInterfacePreference | null>
   activeWorkspaceNetworkInterfacesLoading: ComputedRef<boolean>
   localTerminalEnabled: ComputedRef<boolean>
+  localTerminalCapabilities?: ComputedRef<LocalTerminalCapabilities | null>
   filteredLogs: ComputedRef<LogEntry[]>
   groupedConnections: ComputedRef<Array<{ id: number; name: string; items: Connection[] }>>
   serverStatuses: ComputedRef<Record<number, ConnectionStatus>>
@@ -175,7 +178,7 @@ export interface AppShellBindingActions {
   trustWorkspaceHostKey: (connectionId: number) => unknown
   openCreateForPane: (paneId: string) => unknown
   openSavedServerPickerForPane: (paneId: string) => unknown
-  openLocalTerminalForPane: (paneId: string, shellKind: 'cmd' | 'powershell') => unknown
+  openLocalTerminalForPane: (paneId: string, shellKind: LocalTerminalShellKind | string) => unknown
   connectWorkspace: (connectionId: number) => unknown
   closeSettingsOverlay: () => unknown
   saveSettings: (settings: AppSettings) => unknown
@@ -195,7 +198,7 @@ export interface AppShellBindingActions {
   copyLogDetail: (detail: string) => unknown
   openCreate: () => unknown
   addGroup: () => unknown
-  openLocalTerminalFromPicker: (shellKind: 'cmd' | 'powershell') => unknown
+  openLocalTerminalFromPicker: (shellKind: LocalTerminalShellKind | string) => unknown
   openOrActivateServer: (connection: Connection) => unknown
   connectDockerContainer: (payload: { serverID: number; containerID: string; containerName: string }) => unknown
   openEdit: (connection: Connection) => unknown
@@ -243,6 +246,7 @@ export function useAppShellBindings(sources: AppShellBindingSources, actions: Ap
     networkInterfacePreference: sources.activeWorkspaceNetworkInterfacePreference.value,
     networkInterfacesLoading: sources.activeWorkspaceNetworkInterfacesLoading.value,
     alertActiveCount: sources.alertStore.activeEvents.length,
+    localTerminalCapabilities: sources.localTerminalCapabilities?.value ?? null,
     paneTargetAssignment: sources.paneTargetAssignment.value,
   }))
 
@@ -273,6 +277,7 @@ export function useAppShellBindings(sources: AppShellBindingSources, actions: Ap
     statuses: sources.serverStatuses.value,
     activeServerId: sources.terminalStore.activeWorkspaceServerId,
     localTerminalEnabled: sources.localTerminalEnabled.value,
+    localTerminalCapabilities: sources.localTerminalCapabilities?.value ?? null,
     query: sources.search.value,
     targetPaneMode: sources.pendingPaneOpenTarget.value?.action === 'connect-saved',
   }))

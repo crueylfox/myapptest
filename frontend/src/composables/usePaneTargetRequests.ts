@@ -6,6 +6,7 @@ export type PendingPaneOpenAction =
   | 'select-connected'
   | 'new-cmd'
   | 'new-powershell'
+  | 'new-local'
 
 export type PendingPaneOpenTarget = {
   paneId: string

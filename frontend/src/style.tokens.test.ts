@@ -99,6 +99,38 @@ describe('theme and overlay tokens', () => {
     expect(Number(dark['z-app-dialog'])).toBeGreaterThan(Number(dark['z-popover']))
   })
 
+  it('uses translucent blur surfaces for macOS WebView popovers and settings overlays', () => {
+    for (const selector of [
+      '.topbar-menu',
+      '.server-picker',
+      '.terminal-pane-menu',
+      '.settings-overlay-backdrop',
+      '.settings-page-overlay',
+      '.settings-page-overlay .settings-page-header',
+      '.settings-page-overlay .settings-category-nav',
+    ]) {
+      const styles = block(selector)
+      expect(styles).toContain('background: rgba(')
+      expect(styles).toContain('backdrop-filter: blur(')
+      expect(styles).toContain('-webkit-backdrop-filter: blur(')
+      expect(styles).not.toContain('background: var(--panel)')
+      expect(styles).not.toContain('background: var(--sidebar)')
+    }
+  })
+
+  it('keeps checked radio controls visible in dark and light settings groups', () => {
+    const radio = block('input[type="radio"]')
+    const checked = block('input[type="radio"]:checked')
+    const darkChecked = block(':root:not([data-theme="light"]) input[type="radio"]:checked')
+
+    expect(radio).toContain('appearance: none')
+    expect(radio).toContain('border: 1px solid var(--border)')
+    expect(radio).toContain('background: var(--input)')
+    expect(checked).toContain('box-shadow: inset 0 0 0 4px')
+    expect(checked).toContain('border-color: var(--primary)')
+    expect(darkChecked).toContain('background-color: #dbeafe')
+  })
+
   it('keeps workspace tab close control right-aligned without layout hacks', () => {
     const tab = block('.terminal-tab')
     const close = block('.terminal-close')

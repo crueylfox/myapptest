@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import type { Connection, ConnectionStatus, Group, ReorderServersRequest } from '../types'
+import type { Connection, ConnectionStatus, Group, LocalTerminalCapabilities, LocalTerminalShellKind, ReorderServersRequest } from '../types'
+import { buildLocalTerminalActions } from '../utils/localTerminalActions'
 import { getViewportPopoverPosition } from '../utils/viewportPopover'
 import AppIcon from './icons/AppIcon.vue'
 
@@ -13,6 +14,7 @@ const props = defineProps<{
   statuses: Record<number, ConnectionStatus>
   activeServerId: number | null
   localTerminalEnabled: boolean
+  localTerminalCapabilities?: LocalTerminalCapabilities | null
   query: string
   outsideIgnoreSelector?: string
   targetPaneMode?: boolean
@@ -22,7 +24,7 @@ const emit = defineEmits<{
   'update:query': [value: string]
   addServer: []
   addGroup: []
-  openLocalTerminal: [shellKind: 'cmd' | 'powershell']
+  openLocalTerminal: [shellKind: LocalTerminalShellKind | string]
   openServer: [connection: Connection]
   editServer: [connection: Connection]
   deleteServer: [connection: Connection]
@@ -60,6 +62,7 @@ const dropTarget = ref<{
 } | null>(null)
 const suppressClickServerId = ref<number | null>(null)
 const searchDragDisabled = computed(() => props.query.trim().length > 0)
+const localTerminalActions = computed(() => buildLocalTerminalActions(props.localTerminalCapabilities))
 
 async function updatePosition() {
   if (!props.open || !props.anchor) return
@@ -467,9 +470,10 @@ onBeforeUnmount(() => {
         <span class="action-separator server-picker-action-separator" aria-hidden="true"></span>
         <button type="button" @click="emit('addGroup')"><AppIcon name="folder-plus" :size="18" /><span>添加分组</span></button>
         <span class="action-separator server-picker-action-separator" aria-hidden="true"></span>
-        <button type="button" :disabled="!localTerminalEnabled" @click="emit('openLocalTerminal', 'cmd')"><AppIcon name="terminal" :size="18" /><span>CMD</span></button>
-        <span class="action-separator server-picker-action-separator" aria-hidden="true"></span>
-        <button type="button" :disabled="!localTerminalEnabled" @click="emit('openLocalTerminal', 'powershell')"><AppIcon name="powershell" :size="18" /><span>PowerShell</span></button>
+        <template v-for="action in localTerminalActions" :key="action.id">
+          <button type="button" :disabled="!localTerminalEnabled" @click="emit('openLocalTerminal', action.id)"><AppIcon :name="action.icon" :size="18" /><span>{{ action.label }}</span></button>
+          <span v-if="action.id !== localTerminalActions[localTerminalActions.length - 1]?.id" class="action-separator server-picker-action-separator" aria-hidden="true"></span>
+        </template>
       </div>
       <p v-if="searchDragDisabled" ref="dragHint" class="server-picker-drag-hint">清空搜索后可拖动排序</p>
       <div ref="listBody" class="server-picker-list" @scroll="handleListScroll">

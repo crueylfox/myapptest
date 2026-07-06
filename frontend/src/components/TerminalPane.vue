@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PaneAssignmentKind, SplitPaneId } from '../utils/workspaceSplitTypes'
+import type { LocalTerminalCapabilities, LocalTerminalShellKind } from '../types'
 import TerminalEmptyPane from './TerminalEmptyPane.vue'
 import TerminalPaneHeader, { type TerminalPaneMoveOption } from './TerminalPaneHeader.vue'
 
@@ -21,6 +22,7 @@ const props = defineProps<{
   menuMode: 'main' | 'swap' | 'move'
   occupiedPaneOptions: TerminalPaneMoveOption[]
   emptyPaneOptions: TerminalPaneMoveOption[]
+  localTerminalCapabilities?: LocalTerminalCapabilities | null
   paneStyle?: Record<string, string>
 }>()
 
@@ -32,7 +34,7 @@ defineEmits<{
   addServer: [paneId: SplitPaneId]
   connectSaved: [paneId: SplitPaneId]
   selectConnected: [paneId: SplitPaneId]
-  newLocal: [paneId: SplitPaneId, shellKind: 'cmd' | 'powershell']
+  newLocal: [paneId: SplitPaneId, shellKind: LocalTerminalShellKind | string]
   replaceTerminal: [paneId: SplitPaneId]
   clearActivity: [paneId: SplitPaneId]
   openSwapMenu: [paneId: SplitPaneId]
@@ -68,6 +70,7 @@ defineEmits<{
       :menu-mode="menuMode"
       :occupied-pane-options="occupiedPaneOptions"
       :empty-pane-options="emptyPaneOptions"
+      :local-terminal-capabilities="localTerminalCapabilities"
       @drag-start="(id, event) => $emit('dragStart', id, event)"
       @toggle-menu="$emit('toggleMenu', $event)"
       @clear-pane="$emit('clearPane', $event)"

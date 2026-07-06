@@ -2,6 +2,7 @@
 
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { LocalTerminalCapabilities } from '../types'
 import TerminalPaneHeader, { type TerminalPaneMoveOption } from './TerminalPaneHeader.vue'
 
 const occupiedPaneOptions: TerminalPaneMoveOption[] = [{ paneId: 'pane-2', label: 'right: server #2' }]
@@ -13,6 +14,7 @@ function mountHeader(options: {
   menuMode?: 'main' | 'swap' | 'move'
   hasActivity?: boolean
   maximized?: boolean
+  localTerminalCapabilities?: LocalTerminalCapabilities
 } = {}) {
   return mount(TerminalPaneHeader, {
     attachTo: document.body,
@@ -30,8 +32,25 @@ function mountHeader(options: {
       menuMode: options.menuMode ?? 'main',
       occupiedPaneOptions,
       emptyPaneOptions,
+      localTerminalCapabilities: options.localTerminalCapabilities,
     },
   })
+}
+
+function macosCapabilities(): LocalTerminalCapabilities {
+  return {
+    platform: 'darwin',
+    enabled: true,
+    supported: true,
+    conptyAvailable: false,
+    isProcessElevated: false,
+    supportsElevation: false,
+    shellOptions: [{ id: 'local', label: '本地终端', description: '$SHELL' }],
+    adminShellOptions: [],
+    defaultShellPreference: 'local',
+    currentShellPreference: 'local',
+    unsupportedMessage: '',
+  }
 }
 
 function paneMenu() {
@@ -116,6 +135,20 @@ describe('TerminalPaneHeader', () => {
     paneMenuButton('[data-move-target="pane-3"]').click()
     await move.vm.$nextTick()
     expect(move.emitted('movePane')).toEqual([['pane-1', 'pane-3']])
+  })
+
+  it('uses a single macOS local terminal pane action without CMD or PowerShell', async () => {
+    const wrapper = mountHeader({ menuOpen: true, localTerminalCapabilities: macosCapabilities() })
+    const menuText = paneMenu()!.textContent ?? ''
+
+    expect(menuText).toContain('本地终端')
+    expect(menuText).not.toContain('CMD')
+    expect(menuText).not.toContain('PowerShell')
+
+    paneMenuButton('[data-action="new-local-pane"]').click()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('newLocal')).toEqual([['pane-1', 'local']])
   })
 
   it('positions the pane header menu with the shared viewport helper without starting pane drag', async () => {

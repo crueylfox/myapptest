@@ -38,13 +38,13 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install chromium
+
       - name: Run frontend verification
         working-directory: frontend
-        run: npm run type-check
-
-      - name: Build frontend assets for Go embed
-        working-directory: frontend
-        run: npm run build
+        run: npm run verify:frontend:ci-macos
 
       - name: Run Go tests
         run: go test ./...

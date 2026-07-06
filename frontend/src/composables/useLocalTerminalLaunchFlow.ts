@@ -1,6 +1,7 @@
 import type { ComputedRef, Ref } from 'vue'
 import type { AppSettings, LocalTerminalCapabilities, LocalTerminalShellKind } from '../types'
 import type { PendingPaneOpenTarget, PaneTargetAssignment } from './usePaneTargetRequests'
+import { localTerminalPaneAction } from '../utils/localTerminalActions'
 
 type AppView = 'terminals' | 'monitor' | 'logs' | 'settings'
 type ToastType = 'success' | 'error' | 'info'
@@ -12,7 +13,7 @@ export interface LocalTerminalLaunchFlowOptions {
   capabilities: () => LocalTerminalCapabilities | null | undefined
   beginPaneOpenTarget: (
     paneId: string,
-    action: 'new-cmd' | 'new-powershell',
+    action: 'new-cmd' | 'new-powershell' | 'new-local',
   ) => PendingPaneOpenTarget
   clearPendingPaneOpenTarget: (target?: PendingPaneOpenTarget | null) => void
   pendingConnectSavedTarget: () => PendingPaneOpenTarget | null
@@ -47,8 +48,8 @@ export function useLocalTerminalLaunchFlow(options: LocalTerminalLaunchFlowOptio
       options.clearPendingPaneOpenTarget(paneTarget)
       return
     }
-    const elevated = Boolean(options.settings.value.localTerminalElevatedEnabled)
     const capabilities = options.capabilities()
+    const elevated = Boolean(options.settings.value.localTerminalElevatedEnabled && capabilities?.supportsElevation)
     if (elevated && !capabilities?.isProcessElevated) {
       const ok = await options.confirmElevatedRelaunch()
       if (!ok) {
@@ -86,7 +87,7 @@ export function useLocalTerminalLaunchFlow(options: LocalTerminalLaunchFlowOptio
   async function openLocalTerminalForPane(paneId: string, shellKind: LocalTerminalShellKind | string) {
     const target = options.beginPaneOpenTarget(
       paneId,
-      shellKind === 'cmd' ? 'new-cmd' : 'new-powershell',
+      localTerminalPaneAction(shellKind),
     )
     await openLocalTerminal(shellKind, target)
   }

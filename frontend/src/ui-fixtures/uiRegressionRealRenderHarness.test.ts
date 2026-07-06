@@ -37,6 +37,15 @@ describe('real-render UI regression harness contract', () => {
     expect(exists('../../e2e/connection-security-ui-regression.spec.ts')).toBe(true)
   })
 
+  it('starts the Playwright web server without Windows-only shell commands on macOS', () => {
+    const playwrightConfig = read('../../playwright.config.ts')
+
+    expect(playwrightConfig).toContain('process.platform ===')
+    expect(playwrightConfig).toContain("'cmd.exe /c npm run dev -- --host 127.0.0.1 --port 47831'")
+    expect(playwrightConfig).toContain("'npm run dev -- --host 127.0.0.1 --port 47831'")
+    expect(playwrightConfig).toContain('command: devServerCommand')
+  })
+
   it('exposes a test-only Playwright host without importing the production app entry', () => {
     const packageJson = JSON.parse(read('../../package.json')) as {
       scripts: Record<string, string>

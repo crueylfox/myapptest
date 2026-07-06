@@ -62,7 +62,11 @@ const apiMock = vi.hoisted(() => ({
     platform: 'windows',
     enabled: false,
     supported: false,
+    conptyAvailable: false,
+    isProcessElevated: false,
+    supportsElevation: true,
     shellOptions: [] as Array<{ id: string; label: string; description: string }>,
+    adminShellOptions: [] as Array<{ id: string; label: string; description: string }>,
     defaultShellPreference: 'auto',
     currentShellPreference: 'auto',
     unsupportedMessage: 'LOCAL_TERMINAL_DISABLED: 本地终端暂未启用',
@@ -277,7 +281,11 @@ describe('connection settings', () => {
       platform: 'windows',
       enabled: false,
       supported: false,
+      conptyAvailable: false,
+      isProcessElevated: false,
+      supportsElevation: true,
       shellOptions: [] as Array<{ id: string; label: string; description: string }>,
+      adminShellOptions: [] as Array<{ id: string; label: string; description: string }>,
       defaultShellPreference: 'auto',
       currentShellPreference: 'auto',
       unsupportedMessage: 'LOCAL_TERMINAL_DISABLED: 本地终端暂未启用',
@@ -366,6 +374,28 @@ describe('connection settings', () => {
     expect(saved.themeMode).toBe('light')
     expect(wrapper.find('[data-testid="local-terminal-admin-setting"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('备份与恢复')
+  })
+
+  it('hides the Windows administrator local terminal setting on macOS', async () => {
+    apiMock.getLocalTerminalCapabilities.mockResolvedValue({
+      platform: 'darwin',
+      enabled: true,
+      supported: true,
+      conptyAvailable: false,
+      isProcessElevated: false,
+      supportsElevation: false,
+      shellOptions: [{ id: 'local', label: '本地终端', description: '$SHELL' }],
+      adminShellOptions: [],
+      defaultShellPreference: 'local',
+      currentShellPreference: 'local',
+      unsupportedMessage: '',
+    })
+    const wrapper = mount(SettingsView, { props: { settings } })
+
+    await flushSettingsView()
+
+    expect(wrapper.find('[data-testid="local-terminal-admin-setting"]').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('以管理员模式打开本地终端')
   })
 
   it('keeps settings header actions visible and supports save-and-close plus shortcuts', async () => {
@@ -762,7 +792,7 @@ describe('connection settings', () => {
     await new Promise((resolve) => window.setTimeout(resolve, 0))
     await wrapper.vm.$nextTick()
 
-    expect(apiMock.getLocalTerminalCapabilities).not.toHaveBeenCalled()
+    expect(apiMock.getLocalTerminalCapabilities).toHaveBeenCalled()
     expect(wrapper.find('[data-testid="local-terminal-settings"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="local-terminal-admin-setting"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('以管理员模式打开本地终端')

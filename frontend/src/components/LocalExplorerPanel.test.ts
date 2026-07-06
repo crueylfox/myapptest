@@ -184,7 +184,8 @@ describe('LocalExplorerPanel', () => {
     await wrapper.vm.$nextTick()
 
     expect(document.body.textContent).toContain('打开')
-    expect(document.body.textContent).toContain('在资源管理器中显示')
+    expect(document.body.textContent).toContain('在文件管理器中显示')
+    expect(document.body.textContent).not.toContain('资源管理器')
     expect(document.body.textContent).toContain('复制路径')
     expect(document.body.textContent).toContain('复制名称')
     expect(document.body.textContent).toContain('属性')

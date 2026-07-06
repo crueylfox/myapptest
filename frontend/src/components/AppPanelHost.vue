@@ -7,6 +7,8 @@ import type {
   Connection,
   ConnectionRuntimeState,
   LogEntry,
+  LocalTerminalCapabilities,
+  LocalTerminalShellKind,
   MonitorNetworkInterfaceMode,
   MonitorNetworkInterfacePreference,
   MonitorSnapshot,
@@ -43,6 +45,7 @@ export interface AppTerminalPanelState {
   networkInterfacePreference: MonitorNetworkInterfacePreference | null
   networkInterfacesLoading: boolean
   alertActiveCount: number
+  localTerminalCapabilities?: LocalTerminalCapabilities | null
   paneTargetAssignment: PaneTargetAssignment | null
 }
 
@@ -93,7 +96,7 @@ const emit = defineEmits<{
   trustHostKey: [connectionId: number]
   paneAddServer: [paneId: string]
   paneConnectSaved: [paneId: string]
-  paneOpenLocalTerminal: [paneId: string, shellKind: 'cmd' | 'powershell']
+  paneOpenLocalTerminal: [paneId: string, shellKind: LocalTerminalShellKind | string]
   connectWorkspace: [connectionId: number]
   editWorkspace: [connectionId: number]
   closeSettings: []
@@ -151,6 +154,7 @@ function updateLogQuery(event: Event) {
     :network-interface-preference="terminal.networkInterfacePreference"
     :network-interfaces-loading="terminal.networkInterfacesLoading"
     :alert-active-count="terminal.alertActiveCount"
+    :local-terminal-capabilities="terminal.localTerminalCapabilities"
     :pane-target-assignment="terminal.paneTargetAssignment"
     :visible="isTerminalView(activeView)"
     @monitor="emit('monitor')"

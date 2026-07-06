@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { computed, ref } from 'vue'
-import type { LocalTerminalState, TerminalSessionInfo } from '../types'
+import type { LocalTerminalShellKind, LocalTerminalState, TerminalSessionInfo } from '../types'
 import type { PaneAssignment, PaneAssignments, SplitMode, SplitPaneId } from '../utils/workspaceSplitTypes'
 import { defaultPaneAssignments } from '../utils/workspaceSplitTypes'
 import { useWorkspaceCommandActions } from './useWorkspaceCommandActions'
@@ -163,7 +163,7 @@ function actionHarness(options: {
       notify: (message: string, type: 'success' | 'error' | 'info') => harness.notify(message, type),
       emitPaneAddServer: (paneId: SplitPaneId) => harness.emitPaneAddServer(paneId),
       emitPaneConnectSaved: (paneId: SplitPaneId) => harness.emitPaneConnectSaved(paneId),
-      emitPaneOpenLocalTerminal: (paneId: SplitPaneId, shellKind: 'cmd' | 'powershell') =>
+      emitPaneOpenLocalTerminal: (paneId: SplitPaneId, shellKind: LocalTerminalShellKind | string) =>
         harness.emitPaneOpenLocalTerminal(paneId, shellKind),
     },
   }

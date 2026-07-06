@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, toRef, watch } fro
 import type {
   Connection,
   ConnectionRuntimeState,
+  LocalTerminalCapabilities,
   MonitorNetworkInterfaceMode,
   MonitorNetworkInterfacePreference,
   MonitorSnapshot,
@@ -91,7 +92,7 @@ const props = withDefaults(defineProps<{
   networkInterfaces?: NetworkInterface[]
   networkInterfacePreference?: MonitorNetworkInterfacePreference | null
   networkInterfacesLoading?: boolean
-  alertActiveCount?: number
+  alertActiveCount?: number; localTerminalCapabilities?: LocalTerminalCapabilities | null
   paneTargetAssignment?: {
     paneId: string
     kind: 'ssh' | 'local'
@@ -120,7 +121,7 @@ const emit = defineEmits<{
   alerts: []
   paneAddServer: [paneId: string]
   paneConnectSaved: [paneId: string]
-  paneOpenLocalTerminal: [paneId: string, shellKind: 'cmd' | 'powershell']
+  paneOpenLocalTerminal: [paneId: string, shellKind: string]
   notify: [message: string, type: 'success' | 'error' | 'info']
 }>()
 const store = useTerminalStore()
@@ -190,7 +191,7 @@ const collapsed = computed(() => sidebarCollapsed.value || autoCollapsed.value)
 const shellStyle = computed(() => buildWorkspaceShellStyle({ collapsed: collapsed.value, sidebarWidth: sidebarWidth.value }))
 const bottomPanelExpanded = computed(() => sftpExpanded.value)
 const rightStyle = computed(() => buildWorkspaceRightStyle({ sftpExpanded: bottomPanelExpanded.value, sftpHeight: sftpHeight.value }))
-const bottomPanelLabel = computed(() => localTerminalActive.value ? 'Local Explorer panel' : 'SFTP panel')
+const bottomPanelLabel = computed(() => localTerminalActive.value ? '本地文件管理' : 'SFTP panel')
 const revision = computed(() => props.layoutRevision + internalRevision.value)
 const activeSftpContextId = ref<string | null>(null)
 const effectiveDefaultProfile = computed(() => props.defaultTerminalProfile ?? builtinDefaultTerminalProfile)
@@ -841,8 +842,7 @@ onBeforeUnmount(() => {
           @splitter-drag-start="paneResizeBridge.startSplitResize"
         >
           <template #pane="{ paneId, paneStyle }">
-          <TerminalPane
-            v-bind="paneShellBinding(paneId, paneStyle)"
+          <TerminalPane v-bind="paneShellBinding(paneId, paneStyle)" :local-terminal-capabilities="localTerminalCapabilities"
             @pane-click="activatePane"
             @drag-start="startPaneDrag"
             @toggle-menu="togglePaneMenu"

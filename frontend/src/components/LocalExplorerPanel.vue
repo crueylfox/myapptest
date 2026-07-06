@@ -187,7 +187,7 @@ function refresh() {
 function localEntryMenuItems(): ContextMenuItem[] {
   return [
     { id: 'open', label: '打开' },
-    { id: 'reveal', label: '在资源管理器中显示' },
+    { id: 'reveal', label: '在文件管理器中显示' },
     { id: 'copy-path', label: '复制路径' },
     { id: 'copy-name', label: '复制名称' },
     { id: 'properties', label: '属性' },
@@ -262,7 +262,7 @@ async function handleContextSelect(id: string) {
       await api.revealLocalPath(target.path)
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : String(reason)
-      emit('notify', `资源管理器显示失败：${message}`, 'error')
+      emit('notify', `文件管理器显示失败：${message}`, 'error')
     }
     return
   }

@@ -5,7 +5,10 @@ import { usePaneTargetRequests } from './usePaneTargetRequests'
 import type { AppSettings, LocalTerminalCapabilities } from '../types'
 import { createDefaultAppSettings } from '../utils/defaultAppSettings'
 
-const capabilities = (elevated = true): LocalTerminalCapabilities => ({
+const capabilities = (
+  elevated = true,
+  overrides: Partial<LocalTerminalCapabilities> = {},
+): LocalTerminalCapabilities => ({
   platform: 'windows',
   enabled: true,
   supported: true,
@@ -17,6 +20,7 @@ const capabilities = (elevated = true): LocalTerminalCapabilities => ({
   defaultShellPreference: 'powershell',
   currentShellPreference: 'powershell',
   unsupportedMessage: '',
+  ...overrides,
 })
 
 function createFlow(overrides: Partial<Parameters<typeof useLocalTerminalLaunchFlow>[0]> = {}) {
@@ -77,6 +81,37 @@ describe('useLocalTerminalLaunchFlow', () => {
       paneId: 'pane-b',
       kind: 'local',
       sessionId: 'powershell-1',
+    })
+  })
+
+  it('opens macOS local terminals without elevated relaunch even when the saved setting is enabled', async () => {
+    const openLocalTerminalSession = vi.fn(async (shellKind: string) => ({ sessionId: `${shellKind}-1` }))
+    const relaunchElevatedLocalTerminal = vi.fn(async () => undefined)
+    const confirmElevatedRelaunch = vi.fn(async () => true)
+    const ctx = createFlow({
+      openLocalTerminalSession,
+      relaunchElevatedLocalTerminal,
+      confirmElevatedRelaunch,
+      capabilities: () => capabilities(false, {
+        platform: 'darwin',
+        conptyAvailable: false,
+        supportsElevation: false,
+        shellOptions: [{ id: 'local', label: '本地终端', description: '$SHELL' }],
+        defaultShellPreference: 'local',
+        currentShellPreference: 'local',
+      }),
+    })
+    ctx.deps.settings.value.localTerminalElevatedEnabled = true
+
+    await ctx.flow.openLocalTerminalForPane('pane-a', 'local')
+
+    expect(confirmElevatedRelaunch).not.toHaveBeenCalled()
+    expect(relaunchElevatedLocalTerminal).not.toHaveBeenCalled()
+    expect(openLocalTerminalSession).toHaveBeenCalledWith('local', false, 100, 30)
+    expect(ctx.paneTargetAssignment.value).toMatchObject({
+      paneId: 'pane-a',
+      kind: 'local',
+      sessionId: 'local-1',
     })
   })
 

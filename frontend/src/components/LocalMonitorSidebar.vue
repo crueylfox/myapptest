@@ -41,7 +41,7 @@ const visibleInterfaceRows = computed(() => visibleNetworkInterfaces(interfaceRo
 const selectedInterface = computed(() =>
   interfaceRows.value.find((item) => item.name === selectedInterfaceName.value) ?? interfaceRows.value[0] ?? null)
 const selectedInterfaceLabel = computed(() =>
-  selectedInterface.value?.displayName || selectedInterface.value?.name || 'Local')
+  selectedInterface.value?.displayName || selectedInterface.value?.name || '本地网络')
 const currentUploadRate = computed(() =>
   selectedInterface.value?.uploadBytesPerSecond ?? snapshot.value?.uploadBytesPerSecond ?? null)
 const currentDownloadRate = computed(() =>
@@ -105,6 +105,7 @@ const gpuMemorySummary = computed(() => {
   }
   return gpuName.value
 })
+const showGpuCard = computed(() => snapshot.value?.platform !== 'darwin')
 const disks = computed(() => snapshot.value?.disks ?? [])
 const rawProcesses = computed(() => snapshot.value?.processes ?? [])
 const processCpuAvailable = computed(() =>
@@ -264,9 +265,9 @@ onBeforeUnmount(() => {
       <header class="compact-server-header">
         <div>
           <strong>{{ snapshot?.hostname || '本机' }}</strong>
-          <small>{{ props.session?.shell || 'Local' }} · {{ snapshot?.platform || 'windows' }}</small>
+          <small>{{ props.session?.shell || '本地终端' }} · {{ snapshot?.platform || '本机' }}</small>
         </div>
-        <span class="compact-state"><i class="status-dot online"></i>Local</span>
+        <span class="compact-state"><i class="status-dot online"></i>本地</span>
       </header>
 
       <section class="system-info local-system-info">
@@ -304,7 +305,7 @@ onBeforeUnmount(() => {
         </div>
         <div class="metric-progress memory"><i :style="{ width: `${clampPercent(snapshot?.memoryUsedPercent)}%` }"></i></div>
       </section>
-      <section class="compact-resource gpu-resource" data-testid="local-gpu-card">
+      <section v-if="showGpuCard" class="compact-resource gpu-resource" data-testid="local-gpu-card">
         <div class="resource-line">
           <strong>GPU</strong>
           <span>{{ gpuUsageLabel }}</span>
@@ -333,7 +334,7 @@ onBeforeUnmount(() => {
                 >
                   {{ item.displayName || item.name }}
                 </option>
-                <option v-if="!visibleInterfaceRows.length" value="">Local</option>
+                <option v-if="!visibleInterfaceRows.length" value="">本地网络</option>
               </select>
               <span class="network-inline-separator" aria-hidden="true">|</span>
               <button type="button" class="network-icon-button" title="刷新本地监控" aria-label="刷新本地监控" @click.stop="refresh">↻</button>

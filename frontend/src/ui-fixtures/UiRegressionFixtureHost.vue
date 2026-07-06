@@ -15,7 +15,7 @@ import RemoteTextViewer from '../components/RemoteTextViewer.vue'
 import RemoteTextEditor from '../components/RemoteTextEditor.vue'
 import ServiceManagerDetails from '../components/service-manager/ServiceManagerDetails.vue'
 import ServiceManagerList from '../components/service-manager/ServiceManagerList.vue'
-import type { AlertEvent, CommandFavorite, CommandHistoryEntry, CommandSuggestion, Connection, ConnectionStatus, ContextMenuItem, MonitorSnapshot, ServiceJournalLine, ServiceManagerCapability, ServiceManagerInitSystem, SFTPEntry, SFTPReadTextFileResult, SystemServiceDetail, SystemServiceSummary } from '../types'
+import type { AlertEvent, CommandFavorite, CommandHistoryEntry, CommandSuggestion, Connection, ConnectionStatus, ContextMenuItem, LocalTerminalCapabilities, MonitorSnapshot, ServiceJournalLine, ServiceManagerCapability, ServiceManagerInitSystem, SFTPEntry, SFTPReadTextFileResult, SystemServiceDetail, SystemServiceSummary } from '../types'
 import { formatBytes } from '../utils/format'
 import { buildCommandCompletionSuggestions, commandCompletionToken, commandCompletionTriggerLength, completionInsertText } from '../composables/useCommandCompletion'
 import { terminalCompletionOverlayCssWidth, terminalCompletionOverlayWidth } from '../composables/terminalCompletionPosition'
@@ -48,6 +48,7 @@ type FixtureName =
   | 'server-picker-search-debian'
   | 'server-picker-many-servers'
   | 'server-picker-search-empty'
+  | 'server-picker-macos-local'
   | 'split-pane-two-empty'
   | 'split-pane-quad-empty-narrow'
   | 'workspace-tabs-many'
@@ -65,7 +66,9 @@ type FixtureName =
   | 'compact-network-card-stats-ens192'
   | 'local-terminal-cmd-workspace'
   | 'local-terminal-powershell-workspace'
+  | 'local-terminal-macos-workspace'
   | 'local-terminal-gpu-unavailable'
+  | 'settings-macos-dark-overlays'
   | 'transfer-popover-many'
   | 'service-manager-journal-narrow'
   | 'service-manager-openwrt-logread'
@@ -380,9 +383,24 @@ function serverPickerData(state: string) {
   return fixtureData<ServerPickerFixtureData>('server-picker-geometry', state)
 }
 
+const macosLocalTerminalCapabilities: LocalTerminalCapabilities = {
+  platform: 'darwin',
+  enabled: true,
+  supported: true,
+  conptyAvailable: false,
+  isProcessElevated: false,
+  supportsElevation: false,
+  shellOptions: [{ id: 'local', label: '本地终端', description: '$SHELL' }],
+  adminShellOptions: [],
+  defaultShellPreference: 'local',
+  currentShellPreference: 'local',
+  unsupportedMessage: '',
+}
+
 const currentServerPickerData = computed(() => {
   if (fixtureName.value === 'server-picker-many-servers') return serverPickerData('many-servers')
   if (fixtureName.value === 'server-picker-search-empty') return serverPickerData('search-no-result')
+  if (fixtureName.value === 'server-picker-macos-local') return serverPickerData('search-no-result')
   return serverPickerData('search-debian-one-result')
 })
 
@@ -525,9 +543,14 @@ const localExplorerEntries = computed(() =>
     compareFixtureEntries(left, right, localExplorerSortKey.value, localExplorerSortAsc.value))])
 const localShellScope = computed<'cmd' | 'powershell'>(() =>
   shouldRender('local-terminal-powershell-workspace') ? 'powershell' : 'cmd')
+const isMacosLocalFixture = computed(() => shouldRender('local-terminal-macos-workspace'))
+const localTerminalFixtureLabel = computed(() =>
+  isMacosLocalFixture.value ? '本地终端' : shouldRender('local-terminal-powershell-workspace') ? 'PowerShell' : 'CMD')
+const localPlatformFixtureLabel = computed(() => isMacosLocalFixture.value ? 'macOS' : 'windows')
+const localSystemFixtureSummary = computed(() => isMacosLocalFixture.value ? 'macOS 15.5 fixture' : 'Windows 11 fixture')
 const visibleLocalCommandHistory = computed(() => localCommandHistory.value[localShellScope.value])
-const localExplorerFixtureHome = 'C:\\Users\\Fixture'
-const localExplorerFixturePath = ref('C:\\Temp\\Fixture')
+const localExplorerFixtureHome = computed(() => isMacosLocalFixture.value ? '/Users/fixture' : 'C:\\Users\\Fixture')
+const localExplorerFixturePath = ref(fixtureName.value === 'local-terminal-macos-workspace' ? '/Users/fixture' : 'C:\\Temp\\Fixture')
 const sftpEntries = computed<SftpDisplayEntry[]>(() => sftpData.value.entries)
 const sftpSelectedEntries = computed(() => sftpEntries.value.filter((entry) => sftpData.value.selectedPaths.includes(entry.path)))
 const sftpToolbarActions = computed<SftpToolbarAction[]>(() => [{
@@ -1429,7 +1452,7 @@ function sortLocalExplorerColumn(column: FileColumn) {
 }
 
 function goLocalExplorerFixtureHome() {
-  localExplorerFixturePath.value = localExplorerFixtureHome
+  localExplorerFixturePath.value = localExplorerFixtureHome.value
 }
 
 function openLocalExplorerFixtureEntry(entry: SftpDisplayEntry) {
@@ -1559,6 +1582,7 @@ function shouldRender(name: FixtureName | string) {
         :statuses="serverPickerStatuses"
         :active-server-id="null"
         :local-terminal-enabled="true"
+        :local-terminal-capabilities="shouldRender('server-picker-macos-local') ? macosLocalTerminalCapabilities : null"
         :query="currentServerPickerData.query"
         @update:query="pickerQuery = $event"
       />
@@ -1633,9 +1657,9 @@ function shouldRender(name: FixtureName | string) {
       </section>
 
       <section
-        v-if="shouldRender('local-terminal-cmd-workspace') || shouldRender('local-terminal-powershell-workspace') || shouldRender('local-terminal-gpu-unavailable')"
+        v-if="shouldRender('local-terminal-cmd-workspace') || shouldRender('local-terminal-powershell-workspace') || shouldRender('local-terminal-macos-workspace') || shouldRender('local-terminal-gpu-unavailable')"
         class="ui-fixture-local-workspace workspace-shell"
-        :class="{ 'is-powershell': shouldRender('local-terminal-powershell-workspace') }"
+        :class="{ 'is-powershell': shouldRender('local-terminal-powershell-workspace'), 'is-macos': isMacosLocalFixture }"
         data-testid="local-terminal-workspace"
       >
         <aside class="local-monitor-sidebar">
@@ -1643,7 +1667,7 @@ function shouldRender(name: FixtureName | string) {
             <header class="compact-server-header">
               <div>
                 <strong>fixture-local-host</strong>
-                <small>{{ shouldRender('local-terminal-powershell-workspace') ? 'PowerShell' : 'CMD' }} · windows</small>
+                <small>{{ localTerminalFixtureLabel }} · {{ localPlatformFixtureLabel }}</small>
               </div>
               <span class="compact-state"><i class="status-dot online"></i>Local</span>
             </header>
@@ -1654,7 +1678,7 @@ function shouldRender(name: FixtureName | string) {
                 :aria-expanded="localSystemExpanded"
                 @click="localSystemExpanded = !localSystemExpanded"
               >
-                <span class="system-info-summary-text"><strong>系统信息</strong><span>Windows 11 fixture</span></span>
+                <span class="system-info-summary-text"><strong>系统信息</strong><span>{{ localSystemFixtureSummary }}</span></span>
                 <span class="system-info-summary-chevron" aria-hidden="true">
                   <svg
                     class="splitter-chevron"
@@ -1682,7 +1706,7 @@ function shouldRender(name: FixtureName | string) {
               <div class="resource-line"><strong>内存</strong><span>38.0%</span><small>6.00 GB / 16.00 GB</small></div>
               <div class="metric-progress memory"><i style="width: 38%;"></i></div>
             </section>
-            <section class="compact-resource gpu-resource" data-testid="local-gpu-card">
+            <section v-if="!isMacosLocalFixture" class="compact-resource gpu-resource" data-testid="local-gpu-card">
               <div class="resource-line">
                 <strong>GPU</strong>
                 <span>{{ shouldRender('local-terminal-gpu-unavailable') ? '使用率不可用' : '34.0%' }}</span>
@@ -1759,7 +1783,7 @@ function shouldRender(name: FixtureName | string) {
               :aria-selected="localWorkspaceMode === 'local'"
               @click="localWorkspaceMode = 'local'"
             >
-              <span class="terminal-tab-title">{{ shouldRender('local-terminal-powershell-workspace') ? 'PowerShell' : 'CMD' }}</span>
+              <span class="terminal-tab-title">{{ localTerminalFixtureLabel }}</span>
             </button>
             <button
               type="button"
@@ -1776,7 +1800,7 @@ function shouldRender(name: FixtureName | string) {
         <section class="right-workspace">
           <div class="terminal-stage">
             <div v-if="localWorkspaceMode === 'local'" class="local-terminal-view-stub">
-              <strong>{{ shouldRender('local-terminal-powershell-workspace') ? 'PowerShell' : 'CMD' }}</strong>
+              <strong>{{ localTerminalFixtureLabel }}</strong>
               <input
                 v-model="localTerminalFixtureInput"
                 data-testid="local-terminal-command-input"
@@ -1795,7 +1819,7 @@ function shouldRender(name: FixtureName | string) {
             >鍛戒护</button>
             <section v-if="localCommandPaletteOpen" class="command-palette-shell" data-testid="local-command-palette">
               <strong>鍛戒护闈㈡澘</strong>
-              <span>{{ shouldRender('local-terminal-powershell-workspace') ? 'PowerShell' : 'CMD' }}</span>
+              <span>{{ localTerminalFixtureLabel }}</span>
               <div class="command-list" data-testid="local-command-history-list">
                 <button
                   v-for="command in visibleLocalCommandHistory"
@@ -2081,6 +2105,39 @@ function shouldRender(name: FixtureName | string) {
             </div>
           </div>
         </div>
+      </section>
+
+      <section
+        v-if="shouldRender('settings-macos-dark-overlays')"
+        class="settings-overlay-backdrop"
+        data-testid="settings-macos-dark-overlays"
+      >
+        <div class="topbar-menu">
+          <button type="button" class="topbar-menu-item">
+            <span class="topbar-menu-leading" aria-hidden="true"></span>
+            <span class="topbar-menu-content"><AppIcon name="gear" :size="18" /><span class="topbar-menu-label">设置</span></span>
+            <span class="topbar-menu-trailing"></span>
+          </button>
+        </div>
+        <section class="settings-page settings-page-overlay">
+          <header class="settings-page-header">
+            <div>
+              <h1>Settings</h1>
+              <p class="settings-app-version">macOS fixture</p>
+            </div>
+          </header>
+          <div class="settings-category-shell">
+            <nav class="settings-category-nav" aria-label="Settings categories">
+              <button type="button" class="active"><AppIcon name="gear" :size="18" /><span class="settings-category-nav-label">常规</span></button>
+            </nav>
+            <article class="settings-card">
+              <fieldset class="backup-option-list">
+                <label><input data-testid="macos-dark-radio-checked" type="radio" name="macos-theme" checked />深色</label>
+                <label><input type="radio" name="macos-theme" />浅色</label>
+              </fieldset>
+            </article>
+          </div>
+        </section>
       </section>
 
       <section

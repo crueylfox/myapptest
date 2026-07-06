@@ -44,6 +44,20 @@ async function overflowY(locator: Locator) {
   return locator.evaluate((element) => window.getComputedStyle(element).overflowY)
 }
 
+async function expectBlurredTranslucentSurface(locator: Locator) {
+  await expect(locator).toBeVisible()
+  const styles = await locator.evaluate((element) => {
+    const style = window.getComputedStyle(element)
+    return {
+      backgroundColor: style.backgroundColor,
+      backdropFilter: style.backdropFilter || style.webkitBackdropFilter,
+    }
+  })
+  expect(styles.backgroundColor).toMatch(/rgba\(/)
+  expect(styles.backgroundColor).not.toMatch(/,\s*1\)$/)
+  expect(styles.backdropFilter).toContain('blur(')
+}
+
 async function textRightGapToSeparator(control: Locator, separator: Locator) {
   const controlBox = await box(control)
   const separatorBox = await box(separator)
@@ -147,6 +161,18 @@ test('ServerPicker empty search keeps the empty state and local actions visible'
   expectInside(await box(panel), await box(empty))
   expect(await panel.evaluate((element) => element.scrollHeight <= element.clientHeight + 1)).toBe(true)
   expect((await box(panel)).height).toBeLessThan(260)
+})
+
+test('macOS ServerPicker shows only the local terminal action with a blurred menu surface', async ({ page }) => {
+  await openFixture(page, 'server-picker-macos-local')
+
+  const panel = page.locator('.server-picker')
+  const actions = panel.locator('.server-picker-actions')
+  await expectBlurredTranslucentSurface(panel)
+  await expect(actions.getByRole('button', { name: '本地终端' })).toBeVisible()
+  await expect(actions.getByRole('button', { name: 'CMD' })).toHaveCount(0)
+  await expect(actions.getByRole('button', { name: 'PowerShell' })).toHaveCount(0)
+  await expect(actions.locator('button')).toHaveCount(3)
 })
 
 test('split-pane 2 empty centers each selector without hint/action overlap', async ({ page }) => {
@@ -458,6 +484,27 @@ test('local CMD and PowerShell workspaces keep monitor and Local Explorer visibl
     await page.mouse.up()
     expect(await firstRow.getAttribute('style')).not.toBe(beforeGrid)
   }
+})
+
+test('macOS local terminal workspace keeps monitor and local file manager visible without Windows shell labels', async ({ page }) => {
+  await openFixture(page, 'local-terminal-macos-workspace', { width: 1180, height: 720 })
+
+  const shell = page.locator('[data-testid="local-terminal-workspace"]')
+  const monitor = shell.locator('.local-monitor-sidebar')
+  const explorer = shell.locator('.local-explorer-panel')
+  const terminal = shell.locator('.local-terminal-view-stub')
+  await expect(monitor).toBeVisible()
+  await expect(explorer).toBeVisible()
+  await expect(terminal).toBeVisible()
+  await expect(terminal).toContainText('本地终端')
+  await expect(shell).not.toContainText('CMD')
+  await expect(shell).not.toContainText('PowerShell')
+  await expect(shell).not.toContainText('Windows')
+  await expect(monitor).toContainText('macOS')
+  await expect(monitor.locator('[data-testid="local-gpu-card"]')).toHaveCount(0)
+  await expect(explorer.locator('.local-explorer-path input')).toHaveValue('/Users/fixture')
+  await explorer.getByRole('button', { name: 'Home' }).click()
+  await expect(explorer.locator('.local-explorer-path input')).toHaveValue('/Users/fixture')
 })
 
 test('local workspace monitor uses GPU, filtered default-route interfaces, filled cards, and taller network chart', async ({ page }) => {
@@ -776,6 +823,29 @@ test('topbar menu uses icon option items without dropdown separators', async ({ 
 
   const firstItemBorder = await items.first().evaluate((element) => window.getComputedStyle(element).borderStyle)
   expect(firstItemBorder).toBe('none')
+})
+
+test('macOS dark settings radios and overlay menus use visible checked state and blur surfaces', async ({ page }) => {
+  await openFixture(page, 'settings-macos-dark-overlays', { width: 900, height: 640 })
+
+  const checkedRadio = page.locator('[data-testid="macos-dark-radio-checked"]')
+  await expect(checkedRadio).toBeChecked()
+  const radioStyle = await checkedRadio.evaluate((element) => {
+    const style = window.getComputedStyle(element)
+    return { backgroundColor: style.backgroundColor, boxShadow: style.boxShadow }
+  })
+  expect(radioStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+  expect(radioStyle.boxShadow).toContain('inset')
+
+  for (const selector of [
+    '.topbar-menu',
+    '.settings-overlay-backdrop',
+    '.settings-page-overlay',
+    '.settings-page-overlay .settings-page-header',
+    '.settings-page-overlay .settings-category-nav',
+  ]) {
+    await expectBlurredTranslucentSurface(page.locator(selector).first())
+  }
 })
 
 test('command floating button drags inside workspace and snaps to nearest edge', async ({ page }) => {

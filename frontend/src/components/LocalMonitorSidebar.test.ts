@@ -287,6 +287,33 @@ describe('LocalMonitorSidebar', () => {
     expect(wrapper.text()).not.toContain('Pagefile')
   })
 
+  it('does not render a GPU card for macOS local monitoring', async () => {
+    const wrapper = mountSidebar(snapshot({
+      platform: 'darwin',
+      osName: 'macOS',
+      osVersion: 'macOS 15.5',
+      osBuild: '24F74',
+      gpus: [],
+      disks: [
+        { name: 'Macintosh HD', mountPath: '/', total: 1000, used: 420, available: 580, usedPercent: 42 },
+      ],
+      processes: [],
+    } as Partial<LocalResourceSnapshot>), session({
+      shellKind: 'local',
+      shell: '本地终端',
+      shellName: 'zsh',
+      title: '本地终端',
+      cwd: '/Users/fixture',
+    }))
+    await flush()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.text()).toContain('macOS 15.5')
+    expect(wrapper.text()).not.toContain('Windows')
+    expect(wrapper.find('[data-testid="local-gpu-card"]').exists()).toBe(false)
+    expect(wrapper.get('[data-testid="local-process-card"]').text()).toContain('unavailable')
+  })
+
   it('shows the physical GPU name and memory while labeling unavailable usage explicitly', async () => {
     const wrapper = mountSidebar(snapshot({
       gpus: [

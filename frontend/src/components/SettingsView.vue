@@ -13,6 +13,7 @@ import AppIcon from './icons/AppIcon.vue'
 import SshCommandCompletionSettings from './SshCommandCompletionSettings.vue'
 import { choiceDialog, confirmDialog } from '../composables/useAppDialog'
 import { useSettingsBackupRestoreFlow } from '../composables/useSettingsBackupRestoreFlow'
+import { useLocalTerminalSettingsCapabilities } from '../composables/useLocalTerminalSettingsCapabilities'
 import { defaultTerminalProfile, useTerminalProfileStore } from '../stores/terminalProfiles'
 import {
   sanitizeTerminalFontFamily,
@@ -163,6 +164,7 @@ const categories = [
 const availableCategoryIds = new Set(categories.map((category) => category.id))
 const forceFormDirty = ref(false)
 const appVersion = ref('')
+const { showLocalTerminalAdminSetting, loadLocalTerminalCapabilities } = useLocalTerminalSettingsCapabilities(() => { form.localTerminalElevatedEnabled = false })
 const formDirty = computed(() => forceFormDirty.value ||
   JSON.stringify(normalizeSettings(settingsDraft())) !== JSON.stringify(normalizeSettings(props.settings)))
 const appVersionLabel = computed(() => appVersion.value ? `ServerPilot v${appVersion.value}` : 'ServerPilot')
@@ -192,10 +194,7 @@ watch(activeCategory, (category) => {
   if (!availableCategoryIds.has(category)) activeCategory.value = fallbackCategory(category)
 })
 
-function fallbackCategory(category: string) {
-  if (category === 'advanced') return 'terminal'
-  return 'appearance'
-}
+function fallbackCategory(category: string) { return category === 'advanced' ? 'terminal' : 'appearance' }
 
 function applySettingsToForm(value: AppSettings) {
   Object.assign(form, {
@@ -511,6 +510,7 @@ const filteredKeyVaultEntries = computed(() => {
 
 onMounted(() => {
   void loadAppVersion()
+  void loadLocalTerminalCapabilities()
   void loadKeyVaultEntries()
   if (!terminalProfileStore.profiles.length) {
     void terminalProfileStore.load(form.defaultTerminalProfileId).then(syncSelectedTerminalProfile)
@@ -1066,7 +1066,7 @@ function errorMessage(reason: unknown, fallback: string) {
 
     <article v-show="activeCategory === 'terminal'" class="settings-card" data-testid="terminal-settings">
       <h2>SSH 终端</h2>
-      <label class="setting-toggle" data-testid="local-terminal-admin-setting">
+      <label v-if="showLocalTerminalAdminSetting" class="setting-toggle" data-testid="local-terminal-admin-setting">
         <span>
           <strong>以管理员模式打开本地终端</strong>
           <small>开启后，从 + 菜单打开 CMD 或 PowerShell 时，将以管理员模式启动。</small>

@@ -2,7 +2,7 @@
 
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { Connection, ConnectionStatus } from '../types'
+import type { Connection, ConnectionStatus, LocalTerminalCapabilities } from '../types'
 import ServerPicker from './ServerPicker.vue'
 
 const connection: Connection = {
@@ -14,7 +14,23 @@ const connection: Connection = {
 const secondConnection: Connection = { ...connection, id: 2, name: 'second', host: '192.0.2.2' }
 const thirdConnection: Connection = { ...connection, id: 3, name: 'third', host: '192.0.2.3', groupId: 7 }
 
-function render(localTerminalEnabled = false) {
+function macosCapabilities(): LocalTerminalCapabilities {
+  return {
+    platform: 'darwin',
+    enabled: true,
+    supported: true,
+    conptyAvailable: false,
+    isProcessElevated: false,
+    supportsElevation: false,
+    shellOptions: [{ id: 'local', label: '本地终端', description: '$SHELL' }],
+    adminShellOptions: [],
+    defaultShellPreference: 'local',
+    currentShellPreference: 'local',
+    unsupportedMessage: '',
+  }
+}
+
+function render(localTerminalEnabled = false, localTerminalCapabilities?: LocalTerminalCapabilities) {
   const anchor = document.createElement('button')
   document.body.append(anchor)
   vi.spyOn(anchor, 'getBoundingClientRect').mockReturnValue({
@@ -30,6 +46,7 @@ function render(localTerminalEnabled = false) {
       statuses: { 1: 'online' },
       activeServerId: 1,
       localTerminalEnabled,
+      localTerminalCapabilities,
       query: '',
     },
   })
@@ -1187,6 +1204,24 @@ describe('ServerPicker', () => {
       ['powershell'],
     ])
     expect(wrapper.emitted('openServer')).toBeUndefined()
+  })
+
+  it('shows only the macOS local terminal action when Darwin capabilities are supported', async () => {
+    const wrapper = render(true, macosCapabilities())
+    await Promise.resolve()
+    const actions = document.body.querySelectorAll<HTMLButtonElement>('.server-picker-actions button')
+
+    expect([...actions].map((item) => item.textContent)).toEqual([
+      '添加服务器',
+      '添加分组',
+      '本地终端',
+    ])
+    expect(document.body.querySelector('.server-picker')?.textContent).not.toContain('CMD')
+    expect(document.body.querySelector('.server-picker')?.textContent).not.toContain('PowerShell')
+
+    actions[2].click()
+
+    expect(wrapper.emitted('openLocalTerminal')).toEqual([['local']])
   })
 
   it('emits a typed reorder request when a server row is dragged within its group', async () => {

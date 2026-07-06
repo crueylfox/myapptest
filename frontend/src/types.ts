@@ -1933,7 +1933,7 @@ export interface TerminalStatusEvent {
 }
 
 export type LocalTerminalStatus = 'starting' | 'running' | 'exited' | 'failed' | 'closed'
-export type LocalTerminalShellKind = 'cmd' | 'powershell'
+export type LocalTerminalShellKind = 'cmd' | 'powershell' | 'local'
 
 export interface LocalTerminalOpenRequest {
   shellKind: LocalTerminalShellKind | string

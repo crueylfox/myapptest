@@ -24,6 +24,8 @@ import type {
   ContextMenuItem,
   DashboardSortMode,
   Group,
+  LocalTerminalCapabilities,
+  LocalTerminalShellKind,
   MonitorSnapshot,
   ReorderServersRequest,
   SaveConnectionConfigRequest,
@@ -40,6 +42,7 @@ export interface ServerPickerOverlayState {
   statuses: Record<number, ConnectionStatus>
   activeServerId: number | null
   localTerminalEnabled: boolean
+  localTerminalCapabilities?: LocalTerminalCapabilities | null
   query: string
   targetPaneMode: boolean
 }
@@ -129,7 +132,7 @@ const emit = defineEmits<{
   serverPickerQueryUpdate: [value: string]
   serverPickerAddServer: []
   serverPickerAddGroup: []
-  serverPickerOpenLocalTerminal: [shellKind: 'cmd' | 'powershell']
+  serverPickerOpenLocalTerminal: [shellKind: LocalTerminalShellKind | string]
   serverPickerOpenServer: [connection: Connection]
   serverPickerEditServer: [connection: Connection]
   serverPickerDeleteServer: [connection: Connection]
@@ -183,6 +186,7 @@ const emit = defineEmits<{
     :statuses="serverPicker.statuses"
     :active-server-id="serverPicker.activeServerId"
     :local-terminal-enabled="serverPicker.localTerminalEnabled"
+    :local-terminal-capabilities="serverPicker.localTerminalCapabilities"
     :query="serverPicker.query"
     :target-pane-mode="serverPicker.targetPaneMode"
     outside-ignore-selector="[data-interaction-scope='server-picker-menu']"

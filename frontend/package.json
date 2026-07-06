@@ -10,6 +10,7 @@
     "test:ui": "playwright test",
     "smoke:ui": "playwright test e2e/ui-smoke-regression.spec.ts",
     "verify:frontend": "npm run type-check && npm run test -- --run && npm run test:ui && npm run build",
+    "verify:frontend:ci-macos": "npm run type-check && npm run test -- --run && npm run test:ui -- e2e/ui-regression.spec.ts -g \"macOS\" && npm run build",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
