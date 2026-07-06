@@ -103,7 +103,13 @@ describe('theme and overlay tokens', () => {
     for (const selector of [
       '.topbar-menu',
       '.server-picker',
+      '.context-menu',
+      '.sftp-more-menu',
+      '.sftp-bookmarks-menu',
+      '.split-mode-menu',
       '.terminal-pane-menu',
+      '.terminal-pane-selector',
+      '.transfer-popover',
       '.settings-overlay-backdrop',
       '.settings-page-overlay',
       '.settings-page-overlay .settings-page-header',
@@ -126,11 +132,12 @@ describe('theme and overlay tokens', () => {
     expect(radio).toContain('appearance: none')
     expect(radio).toContain('border: 1px solid var(--border)')
     expect(radio).toContain('background: var(--input)')
-    expect(checked).toContain('box-shadow: inset 0 0 0 4px')
+    expect(checked).not.toContain('background-image')
+    expect(checked).toContain('background: var(--input)')
+    expect(checked).toContain('box-shadow: inset 0 0 0 4px var(--input), inset 0 0 0 8px var(--primary)')
     expect(checked).toContain('border-color: var(--primary)')
     expect(darkChecked).toContain('border-color: #93c5fd')
-    expect(darkChecked).toContain('background-color: #2563eb')
-    expect(darkChecked).toContain('#ffffff')
+    expect(darkChecked).toContain('box-shadow: inset 0 0 0 4px var(--input), inset 0 0 0 8px #93c5fd')
   })
 
   it('keeps workspace tab close control right-aligned without layout hacks', () => {

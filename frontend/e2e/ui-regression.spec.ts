@@ -840,8 +840,9 @@ test('macOS dark settings radios and overlay menus use visible checked state and
     }
   })
   expect(radioStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
-  expect(radioStyle.backgroundImage).toContain('radial-gradient')
+  expect(radioStyle.backgroundImage).toBe('none')
   expect(radioStyle.boxShadow).toContain('inset')
+  expect(radioStyle.boxShadow).toContain('147, 197, 253')
 
   for (const selector of [
     '.topbar-menu',

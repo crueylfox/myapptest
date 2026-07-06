@@ -96,6 +96,7 @@ describe('settingsBackupRestoreModel', () => {
       '导入主机指纹：4',
       '跳过：5',
       '警告：1',
+      '警告：fake warning',
     ])
     expect(summarizeBackupImportResult(result).join('\n')).not.toContain('重命名')
   })

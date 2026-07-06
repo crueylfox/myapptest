@@ -184,10 +184,11 @@ describe('first-batch UI regression contracts', () => {
     const radioChecked = block('input[type="radio"]:checked')
     const radioDarkChecked = block(':root:not([data-theme="light"]) input[type="radio"]:checked')
     expect(radioChecked).toContain('box-shadow: inset')
-    expect(radioChecked).toContain('background-color: var(--primary)')
+    expect(radioChecked).toContain('background: var(--input)')
+    expect(radioChecked).not.toContain('background-image')
     expect(radioDarkChecked).toContain('border-color: #93c5fd')
     expect(radioDarkChecked).toContain('box-shadow: inset')
-    expect(radioDarkChecked).toContain('#ffffff')
+    expect(radioDarkChecked).toContain('#93c5fd')
   })
 
   it('keeps workspace tab titles ellipsized and close clicks isolated', () => {

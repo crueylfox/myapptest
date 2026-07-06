@@ -119,6 +119,7 @@ describe('SettingsBackupRestoreSection', () => {
     expect(wrapper.text()).toContain('导入失败（已回滚）')
     expect(wrapper.text()).toContain('导出完成：标准备份')
     expect(wrapper.get('[data-testid="backup-result"]').text()).toContain('新增服务器：2')
+    expect(wrapper.get('[data-testid="backup-result"]').text()).toContain('fake warning')
     expect(wrapper.get('[data-testid="backup-result"]').text()).not.toContain('重命名')
     expect(wrapper.findAll<HTMLInputElement>('[data-testid="backup-import-options"] input[type="checkbox"]').at(-1)!.element.checked).toBe(false)
   })

@@ -58,5 +58,20 @@ export function summarizeBackupImportResult(result: BackupImportResult) {
   if (result.secretsRestored) summary.push(`恢复凭据：${result.secretsRestored}`)
   summary.push(`跳过：${result.skipped}`)
   summary.push(`警告：${result.warnings.length}`)
+  for (const message of uniqueWarningMessages(result)) {
+    summary.push(`警告：${message}`)
+  }
   return summary
+}
+
+function uniqueWarningMessages(result: BackupImportResult) {
+  const seen = new Set<string>()
+  const messages: string[] = []
+  for (const warning of result.warnings) {
+    const message = warning.message?.trim()
+    if (!message || seen.has(message)) continue
+    seen.add(message)
+    messages.push(message)
+  }
+  return messages
 }

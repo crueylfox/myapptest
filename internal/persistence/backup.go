@@ -1163,11 +1163,16 @@ sort_order, connection_mode, jump_server_id, created_at, updated_at
 }
 
 func backupConnectionPrivateKeySource(connection domain.BackupConnection) domain.PrivateKeySource {
+	if connection.AuthType == domain.AuthPrivateKey &&
+		connection.KeyVaultID != nil &&
+		*connection.KeyVaultID > 0 &&
+		(connection.PrivateKeySource == "" ||
+			connection.PrivateKeySource == domain.PrivateKeySourceKeyVault ||
+			strings.TrimSpace(connection.PrivateKeyPath) == "") {
+		return domain.PrivateKeySourceKeyVault
+	}
 	if connection.PrivateKeySource != "" {
 		return connection.PrivateKeySource
-	}
-	if connection.AuthType == domain.AuthPrivateKey && connection.KeyVaultID != nil && *connection.KeyVaultID > 0 {
-		return domain.PrivateKeySourceKeyVault
 	}
 	return domain.PrivateKeySourceLocalFile
 }

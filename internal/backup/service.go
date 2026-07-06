@@ -448,13 +448,18 @@ func validatePayload(payload domain.BackupPayload) error {
 }
 
 func backupConnectionPrivateKeySource(connection domain.BackupConnection) domain.PrivateKeySource {
+	if connection.AuthType == domain.AuthPrivateKey &&
+		connection.KeyVaultID != nil &&
+		*connection.KeyVaultID > 0 &&
+		(connection.PrivateKeySource == "" ||
+			connection.PrivateKeySource == domain.PrivateKeySourceKeyVault ||
+			strings.TrimSpace(connection.PrivateKeyPath) == "") {
+		return domain.PrivateKeySourceKeyVault
+	}
 	if connection.PrivateKeySource != "" {
 		return connection.PrivateKeySource
 	}
-	if connection.AuthType == domain.AuthPrivateKey && connection.KeyVaultID != nil && *connection.KeyVaultID > 0 {
-		return domain.PrivateKeySourceKeyVault
-	}
-	return connection.PrivateKeySource
+	return domain.PrivateKeySourceLocalFile
 }
 
 func normalizeBackupMode(value string) (domain.BackupMode, error) {
