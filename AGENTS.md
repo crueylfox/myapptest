@@ -43,6 +43,13 @@ Post-build finalization:
   `安全边界.md -> SECURITY.md`; `AGENTS.md` remains this compatibility entry.
 - After successful code validation and `wails build`, do not rerun full Go/npm/
   Wails validation just because Markdown sync changed docs.
+- After a successful GitHub Actions packaging commit has produced the required
+  macOS artifact, follow-up docs-only commits that only record build status,
+  artifact names, or SHA-256 values must include `[skip ci]` in the commit
+  message. Do not trigger a second macOS packaging run for docs-only records.
+- If downloading a GitHub Actions artifact fails, stalls, or repeatedly times
+  out, stop the artifact-download work and ask the user where they manually
+  downloaded the file. Do not keep retrying with alternate download methods.
 - Compute the EXE SHA-256 once and reuse that result in docs/final response.
 - Keep `AI_BRIEF.md` within 120 lines.
 

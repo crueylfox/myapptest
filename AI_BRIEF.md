@@ -70,4 +70,5 @@ Updated: 2026-07-06
 ## 5. Next
 - Download or smoke-test the GitHub Actions `ServerPilot-macos-unsigned` artifact.
 - Do not run Windows local `wails build -platform darwin/universal` for macOS packaging.
+- Use `[skip ci]` for docs-only build-record commits after a successful packaging run; if artifact download fails, stop and ask the user for the manual download path.
 - Do not continue Docker, SSH/SFTP runtime, DB schema, signing/notarization, or command completion work by default.
