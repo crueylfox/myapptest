@@ -1180,7 +1180,7 @@ test('Settings final navigation labels are centered and readable', async ({ page
     expect(Math.abs((buttonBox.x + buttonBox.width / 2) - (labelBox.x + labelBox.width / 2))).toBeLessThanOrEqual(2)
     expect(Math.abs((buttonBox.y + buttonBox.height / 2) - (labelBox.y + labelBox.height / 2))).toBeLessThanOrEqual(2)
     expect(fontSize).toBe(16)
-    expect(buttonBox.height).toBe(38)
+    expect(buttonBox.height).toBe(42)
   }
 })
 

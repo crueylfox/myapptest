@@ -296,6 +296,7 @@ describe('useConnectionDialogFlow', () => {
     expect(confirmDialog).toHaveBeenCalledWith(expect.objectContaining({
       title: '删除服务器',
       danger: true,
+      hideCloseButton: true,
       message: expect.stringContaining('jump-target'),
     }))
     expect(ctx.deps.markExpectedDisconnect).toHaveBeenCalledWith(7)

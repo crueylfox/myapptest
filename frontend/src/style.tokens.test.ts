@@ -3,7 +3,7 @@ import { contrastRatio } from './utils/contrast'
 
 // @ts-expect-error The app tsconfig intentionally omits Node globals; this test reads a local CSS source file.
 const { readFileSync } = await import('node:fs') as { readFileSync: (path: URL, encoding: string) => string }
-const css = readFileSync(new URL('./style.css', import.meta.url), 'utf8')
+const css = readFileSync(new URL('./style.css', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
 
 function block(selector: string) {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -128,7 +128,9 @@ describe('theme and overlay tokens', () => {
     expect(radio).toContain('background: var(--input)')
     expect(checked).toContain('box-shadow: inset 0 0 0 4px')
     expect(checked).toContain('border-color: var(--primary)')
-    expect(darkChecked).toContain('background-color: #dbeafe')
+    expect(darkChecked).toContain('border-color: #93c5fd')
+    expect(darkChecked).toContain('background-color: #2563eb')
+    expect(darkChecked).toContain('#ffffff')
   })
 
   it('keeps workspace tab close control right-aligned without layout hacks', () => {
@@ -587,9 +589,10 @@ describe('theme and overlay tokens', () => {
 
     expect(picker).toContain('width: min(380px, calc(100vw - 16px))')
     expect(pickerHeader).toContain('grid-template-columns: minmax(0, 1fr)')
-    expect(pickerActions).toContain('grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr) 1px minmax(0, 1fr) 1px minmax(0, 1fr)')
+    expect(pickerActions).toContain('display: flex')
     expect(pickerActions).toContain('align-items: center')
-    expect(pickerActions).toContain('justify-items: stretch')
+    expect(pickerActions).toContain('justify-content: center')
+    expect(pickerActions).not.toContain('grid-template-columns')
     expect(pickerActionButton).toContain('border: 0')
     expect(pickerActionButton).toContain('display: inline-flex')
     expect(pickerActionButton).toContain('gap:')
@@ -1165,9 +1168,9 @@ describe('theme and overlay tokens', () => {
     expect(navButton).toContain('justify-content: center')
     expect(navButton).toContain('text-align: center')
     expect(navButton).toContain('font-size: 16px')
-    expect(nav).toContain('gap: 8px')
-    expect(navButton).toContain('min-height: 38px')
-    expect(navButton).toContain('height: 38px')
+    expect(nav).toContain('gap: 10px')
+    expect(navButton).toContain('min-height: 42px')
+    expect(navButton).toContain('height: 42px')
     expect(navButton).toContain('gap:')
     expect(navButton).not.toContain('font-size: 12px')
     expect(navButton).not.toContain('text-align: left')

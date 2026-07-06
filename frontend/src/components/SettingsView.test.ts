@@ -482,10 +482,10 @@ describe('connection settings', () => {
     expect(buttons.map((button) => button.text())).toEqual([
       '常规',
       '终端',
-      '快捷键',
       '告警',
-      '备份 / 恢复',
+      '快捷键',
       '密钥库',
+      '备份/恢复',
     ])
     expect(buttons.map((button) => button.text()).join(' ')).not.toMatch(/[閸閺锟鎴]/)
     expect(buttons.map((button) => button.text())).not.toContain('SFTP / 文件')
@@ -499,9 +499,9 @@ describe('connection settings', () => {
       expect(button.find('.app-icon').attributes('aria-hidden')).toBe('true')
     }
     expect(navButtonCss).toContain('font-size: 16px')
-    expect(navButtonCss).toContain('height: 38px')
-    expect(navButtonCss).toContain('min-height: 38px')
-    expect(cssBlock('.settings-category-nav')).toContain('gap: 8px')
+    expect(navButtonCss).toContain('height: 42px')
+    expect(navButtonCss).toContain('min-height: 42px')
+    expect(cssBlock('.settings-category-nav')).toContain('gap: 10px')
     expect(cssBlock('.settings-page-overlay .settings-category-shell')).toContain('align-items: stretch')
     expect(cssBlock('.settings-page-overlay .settings-category-content')).toContain('flex: 1 1 auto')
     expect(cssBlock('.settings-page-overlay .settings-category-content')).toContain('min-height: 0')
@@ -545,13 +545,13 @@ describe('connection settings', () => {
     expect(wrapper.find('[data-testid="ssh-command-completion-max-setting"]').exists()).toBe(true)
 
     await navButtons[4].trigger('click')
+    expect(wrapper.find('[data-testid="add-key-vault-entry"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="key-vault-search"]').exists()).toBe(true)
+
+    await navButtons[5].trigger('click')
     expect(wrapper.getComponent({ name: 'SettingsBackupRestoreSection' }).isVisible()).toBe(true)
     expect(wrapper.find('[data-testid="backup-export-mode"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="backup-import-options"]').exists()).toBe(true)
-
-    await navButtons[5].trigger('click')
-    expect(wrapper.find('[data-testid="add-key-vault-entry"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="key-vault-search"]').exists()).toBe(true)
     expect(wrapper.text()).not.toMatch(/private key body|terminal output|remote file content|local file content|docker logs/i)
   })
 

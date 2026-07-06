@@ -251,6 +251,16 @@ func (s *Store) importBackupPayloadTx(
 		for _, key := range payload.KeyVault {
 			fingerprint := strings.TrimSpace(key.PublicKeyFingerprintSHA256)
 			if fingerprint == "" {
+				insertedID, err := insertKeyVaultTx(ctx, tx, key, backupName(key.Name), nil)
+				if err != nil {
+					return result, err
+				}
+				keyMap[key.ID] = insertedID
+				result.KeyVaultAdded++
+				result.Warnings = append(result.Warnings, domain.BackupWarning{
+					Code:    "KEY_VAULT_RESELECT_REQUIRED",
+					Message: fmt.Sprintf("密钥库“%s”缺少可匹配指纹，已导入元数据，相关服务器导入后需要重新输入密码/私钥口令。", key.Name),
+				})
 				continue
 			}
 			if existingID, ok := fingerprints[fingerprint]; ok {
@@ -265,6 +275,13 @@ func (s *Store) importBackupPayloadTx(
 				domain.KeyVaultStorageMode(key.StorageMode) == domain.KeyVaultStorageEncryptedDatabase &&
 				len(protectedKeyBlobs[key.ID]) > 0 {
 				if !protectedKeyBlobRestorableForPlatform(runtime.GOOS, protectedKeyBlobs[key.ID]) {
+					insertedID, err := insertKeyVaultTx(ctx, tx, key, backupName(key.Name), nil)
+					if err != nil {
+						return result, err
+					}
+					keyMap[key.ID] = insertedID
+					fingerprints[fingerprint] = insertedID
+					result.KeyVaultAdded++
 					result.Warnings = append(result.Warnings, domain.BackupWarning{
 						Code:    "WINDOWS_PROTECTED_CREDENTIAL_REENTER_REQUIRED",
 						Message: keyvault.WindowsProtectedCredentialHint,
@@ -281,6 +298,13 @@ func (s *Store) importBackupPayloadTx(
 				result.KeyVaultAdded++
 				continue
 			}
+			insertedID, err := insertKeyVaultTx(ctx, tx, key, backupName(key.Name), nil)
+			if err != nil {
+				return result, err
+			}
+			keyMap[key.ID] = insertedID
+			fingerprints[fingerprint] = insertedID
+			result.KeyVaultAdded++
 			result.Warnings = append(result.Warnings, domain.BackupWarning{
 				Code:    "KEY_VAULT_RESELECT_REQUIRED",
 				Message: fmt.Sprintf("本机密钥库缺少“%s”的指纹，相关服务器导入后需要重新选择密钥。", key.Name),
@@ -1011,13 +1035,16 @@ func insertKeyVaultTx(
 	name string,
 	protectedBlob []byte,
 ) (int64, error) {
+	if protectedBlob == nil {
+		protectedBlob = []byte{}
+	}
 	now := backupTimestamp(key.UpdatedAt)
 	result, err := tx.ExecContext(ctx, `INSERT INTO key_vault_entries(
 name, private_key_path, storage_mode, source_file_name, algorithm, key_bits,
 public_key_fingerprint_sha256, encrypted, requires_passphrase, protected_key_blob,
 protection_version, passphrase_credential_ref, passphrase_saved, notes, created_at, updated_at, last_used_at
 ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, '', 0, ?, ?, ?, ?)`,
-		name, keyVaultInternalPath(key.PublicKeyFingerprintSHA256), string(domain.KeyVaultStorageEncryptedDatabase),
+		name, backupKeyVaultInternalPath(key), string(domain.KeyVaultStorageEncryptedDatabase),
 		key.SourceFileName, key.Algorithm, key.KeyBits, key.PublicKeyFingerprintSHA256,
 		key.Encrypted, key.Encrypted, protectedBlob, key.Notes, backupTimestamp(key.CreatedAt), now, key.LastUsedAt,
 	)
@@ -1025,6 +1052,14 @@ protection_version, passphrase_credential_ref, passphrase_saved, notes, created_
 		return 0, err
 	}
 	return result.LastInsertId()
+}
+
+func backupKeyVaultInternalPath(key domain.BackupKeyVaultEntry) string {
+	fingerprint := strings.TrimSpace(key.PublicKeyFingerprintSHA256)
+	if fingerprint != "" {
+		return keyVaultInternalPath(fingerprint)
+	}
+	return fmt.Sprintf("vault:backup:%d", key.ID)
 }
 
 func upsertConnectionTx(

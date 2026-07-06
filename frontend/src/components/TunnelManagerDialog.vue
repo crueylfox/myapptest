@@ -815,6 +815,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 28px;
   background: rgba(2, 6, 23, 0.64);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .tunnel-dialog {

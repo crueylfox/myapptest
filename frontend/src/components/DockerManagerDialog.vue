@@ -957,7 +957,7 @@ function errorMessage(reason: unknown, fallback: string) {
         </div>
       </section>
 
-      <div class="docker-body">
+      <div v-if="activeMode === 'containers'" class="docker-body">
         <section class="docker-list-panel">
           <div class="docker-list-header">
             <label class="docker-select-all">
@@ -1114,6 +1114,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 28px;
   background: rgba(2, 6, 23, 0.64);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .docker-dialog {
@@ -1440,7 +1441,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-body {
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(640px, 1fr) minmax(340px, 420px);
+  grid-template-columns: minmax(460px, 0.88fr) minmax(520px, 1.12fr);
   gap: 16px;
   padding: 16px 20px 20px;
   overflow: hidden;

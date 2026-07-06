@@ -371,7 +371,7 @@ describe('DockerManagerDialog', () => {
   })
 
   it('locks the container list CSS against horizontal clipping regressions', () => {
-    expect(componentSource).toContain('grid-template-columns: minmax(640px, 1fr) minmax(340px, 420px);')
+    expect(componentSource).toContain('grid-template-columns: minmax(460px, 0.88fr) minmax(520px, 1.12fr);')
     expect(componentSource).toContain('overflow-x: hidden;')
     expect(componentSource).toContain('grid-template-columns: 28px minmax(160px, 1fr) minmax(104px, 112px) minmax(92px, 104px) minmax(154px, 164px);')
     expect(componentSource).toContain('.container-actions {\n  min-width: 0;\n  overflow: visible;')
@@ -394,7 +394,7 @@ describe('DockerManagerDialog', () => {
     expect(wrapper.emitted('notify')?.[0]).toEqual(['服务器未检测到 Docker。', 'error'])
   })
 
-  it('shows Docker Compose unavailable state without hiding container management', async () => {
+  it('shows Docker Compose unavailable state without rendering container management in the Compose view', async () => {
     app().DockerComposeCheck = vi.fn(async () => ({
       serverID: 7,
       available: false,
@@ -410,7 +410,13 @@ describe('DockerManagerDialog', () => {
 
     expect(app().DockerComposeCheck).toHaveBeenCalledWith(7)
     expect(wrapper.get('[data-testid="docker-compose-unavailable"]').text()).toContain('服务器未检测到 Docker Compose。')
+    expect(wrapper.findAll('[data-testid="docker-container-row"]')).toHaveLength(0)
+    expect(wrapper.find('[data-testid="docker-log-view"]').exists()).toBe(false)
+
+    await wrapper.get('[data-testid="docker-containers-tab"]').trigger('click')
+    await flush()
     expect(wrapper.findAll('[data-testid="docker-container-row"]')).toHaveLength(2)
+    expect(wrapper.find('[data-testid="docker-log-view"]').exists()).toBe(true)
   })
 
   it('lists Docker Compose projects and selected project services', async () => {
@@ -425,6 +431,8 @@ describe('DockerManagerDialog', () => {
     expect(wrapper.findAll('[data-testid="docker-compose-project-row"]')).toHaveLength(2)
     expect(wrapper.findAll('[data-testid="docker-compose-service-row"]')).toHaveLength(2)
     expect(wrapper.get('[data-testid="docker-compose-services"]').text()).toContain('nginx:alpine')
+    expect(wrapper.findAll('[data-testid="docker-container-row"]')).toHaveLength(0)
+    expect(wrapper.find('[data-testid="docker-log-view"]').exists()).toBe(false)
   })
 
   it('refreshes Docker Compose logs as a bounded snapshot', async () => {
@@ -531,7 +539,10 @@ describe('DockerManagerDialog', () => {
     expect(componentSource).toContain('.docker-compose-panel')
     expect(componentSource).toContain('grid-template-rows: minmax(0, 1fr);')
     expect(componentSource).toContain('padding-bottom: 16px;')
+    expect(wrapper.find('.detail-tabs').exists()).toBe(false)
 
+    await wrapper.get('[data-testid="docker-containers-tab"]').trigger('click')
+    await flush()
     const detailTabs = wrapper.get('.detail-tabs')
     expect(detailTabs.findAll('.command-light-action').map((button) => button.text())).toEqual(['日志', '资源', '信息'])
     expect(detailTabs.findAll('.command-action-separator')).toHaveLength(2)

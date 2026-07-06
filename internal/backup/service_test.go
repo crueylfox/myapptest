@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -230,6 +231,62 @@ func TestStandardBackupExportsOnlyKeyVaultMetadataAndRebindsByFingerprint(t *tes
 	}
 }
 
+func TestStandardBackupImportsKeyVaultMetadataWhenNoLocalFingerprintExists(t *testing.T) {
+	ctx := context.Background()
+	source := newBackupStore(t)
+	sourceKey := createEncryptedBackupKey(t, ctx, source, "source-key", "SHA256:metadata-only", "BEGIN OPENSSH PRIVATE KEY source")
+	sourceKeyID := sourceKey.ID
+	if _, err := source.SaveConnection(ctx, domain.SaveConnectionRequest{
+		Name: "metadata-key-server", Host: "203.0.113.14", Port: 22, Username: "deploy",
+		AuthType: domain.AuthPrivateKey, PrivateKeySource: domain.PrivateKeySourceKeyVault,
+		KeyVaultID: &sourceKeyID, RefreshInterval: 2,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	path := filepath.Join(t.TempDir(), "serverpilot-keyvault-metadata.spbackup")
+	password := "correct horse battery"
+	if _, err := New(source, newMemorySecrets()).Export(ctx, domain.BackupExportRequest{
+		Path: path, Password: password, ConfirmPassword: password,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	target := newBackupStore(t)
+	importResult, err := New(target).Import(ctx, domain.BackupImportRequest{
+		Path: path, Password: password,
+		Options: domain.BackupImportOptions{ImportSettings: false, ImportGroups: false, ImportServers: true, ImportKeyVault: true, ImportHostTrust: false},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if importResult.KeyVaultAdded != 1 {
+		t.Fatalf("metadata key vault entry was not imported: %+v", importResult)
+	}
+	if !hasBackupWarning(importResult.Warnings, "KEY_VAULT_RESELECT_REQUIRED") {
+		t.Fatalf("missing key vault reselect warning: %+v", importResult.Warnings)
+	}
+	keys, err := target.ListKeyVaultEntries(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(keys) != 1 ||
+		keys[0].Name != "source-key" ||
+		keys[0].StorageMode != string(domain.KeyVaultStorageEncryptedDatabase) ||
+		keys[0].PublicKeyFingerprintSHA256 != "SHA256:metadata-only" ||
+		len(keys[0].ProtectedKeyBlob) != 0 ||
+		keys[0].PassphraseSaved {
+		t.Fatalf("metadata key vault entry not imported safely: %+v", keys)
+	}
+	connections, err := target.ListConnections(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(connections) != 1 || connections[0].KeyVaultID == nil || *connections[0].KeyVaultID != keys[0].ID {
+		t.Fatalf("connection was not rebound to imported key vault metadata: connections=%+v keys=%+v", connections, keys)
+	}
+}
+
 func TestBackupTamperingAndKDFLimitsAreRejected(t *testing.T) {
 	ctx := context.Background()
 	store := newBackupStore(t)
@@ -319,7 +376,7 @@ func TestImportPreviewAndTransactionalImportSanitizeCredentials(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if result.GroupsAdded != 1 || result.ConnectionsAdded != 2 || result.KeyVaultAdded != 0 || result.HostTrustImported != 0 {
+	if result.GroupsAdded != 1 || result.ConnectionsAdded != 2 || result.KeyVaultAdded != 1 || result.HostTrustImported != 0 {
 		t.Fatalf("import result=%+v", result)
 	}
 	connections, err := target.ListConnections(ctx)
@@ -333,8 +390,8 @@ func TestImportPreviewAndTransactionalImportSanitizeCredentials(t *testing.T) {
 		if connection.CredentialSaved || connection.HostKeyFingerprint != "" {
 			t.Fatalf("imported connection not sanitized/remapped: %+v", connection)
 		}
-		if connection.PrivateKeySource == domain.PrivateKeySourceKeyVault && connection.KeyVaultID != nil {
-			t.Fatalf("missing local key should not leave dangling key vault id: %+v", connection)
+		if connection.PrivateKeySource == domain.PrivateKeySourceKeyVault && connection.KeyVaultID == nil {
+			t.Fatalf("key vault connection was not rebound to imported metadata: %+v", connection)
 		}
 		refs, err := target.ListCredentialRefs(ctx, connection.ID)
 		if err != nil {
@@ -348,8 +405,8 @@ func TestImportPreviewAndTransactionalImportSanitizeCredentials(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(keys) != 0 {
-		t.Fatalf("imported key not sanitized/remapped: %+v", keys)
+	if len(keys) != 1 || len(keys[0].ProtectedKeyBlob) != 0 || keys[0].PassphraseSaved {
+		t.Fatalf("imported key vault metadata not sanitized: %+v", keys)
 	}
 	importedSettings, err := target.GetSettings(ctx)
 	if err != nil {
@@ -444,9 +501,66 @@ func TestFullBackupRestoresSavedSecrets(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(keys) != 0 {
-		t.Fatalf("key vault entries should not be restored without local key material: %+v", keys)
+	if len(keys) != 1 || len(keys[0].ProtectedKeyBlob) != 0 || keys[0].PassphraseSaved {
+		t.Fatalf("key vault metadata should be restored without protected material: %+v", keys)
 	}
+}
+
+func TestFullBackupImportsUnrestorableWindowsKeyVaultMetadataWithWarning(t *testing.T) {
+	ctx := context.Background()
+	source := newBackupStore(t)
+	protectedBlob := []byte("windows-dpapi-blob")
+	sourceKey := createEncryptedBackupKey(t, ctx, source, "windows-key", "SHA256:windows-only", string(protectedBlob))
+	sourceKeyID := sourceKey.ID
+	if _, err := source.SaveConnection(ctx, domain.SaveConnectionRequest{
+		Name: "windows-key-server", Host: "203.0.113.88", Port: 22, Username: "deploy",
+		AuthType: domain.AuthPrivateKey, PrivateKeySource: domain.PrivateKeySourceKeyVault,
+		KeyVaultID: &sourceKeyID, RefreshInterval: 2,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	path := filepath.Join(t.TempDir(), "serverpilot-windows-keyvault.spbackup")
+	password := "correct horse battery"
+	if _, err := New(source, newMemorySecrets()).Export(ctx, domain.BackupExportRequest{
+		Path: path, Password: password, ConfirmPassword: password, Mode: string(domain.BackupModeFull),
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	target := newBackupStore(t)
+	importResult, err := New(target).Import(ctx, domain.BackupImportRequest{
+		Path: path, Password: password,
+		Options: domain.BackupImportOptions{ImportSettings: false, ImportGroups: false, ImportServers: true, ImportKeyVault: true, ImportHostTrust: false},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	keys, err := target.ListKeyVaultEntries(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if runtime.GOOS == "darwin" {
+		if importResult.KeyVaultAdded != 1 || !hasBackupWarning(importResult.Warnings, "WINDOWS_PROTECTED_CREDENTIAL_REENTER_REQUIRED") {
+			t.Fatalf("darwin import result=%+v", importResult)
+		}
+		if len(keys) != 1 || len(keys[0].ProtectedKeyBlob) != 0 || keys[0].PassphraseSaved {
+			t.Fatalf("darwin should import metadata without DPAPI material: %+v", keys)
+		}
+	} else {
+		if importResult.KeyVaultAdded != 1 || len(keys) != 1 || string(keys[0].ProtectedKeyBlob) != string(protectedBlob) {
+			t.Fatalf("non-darwin should retain protected material: result=%+v keys=%+v", importResult, keys)
+		}
+	}
+}
+
+func hasBackupWarning(warnings []domain.BackupWarning, code string) bool {
+	for _, warning := range warnings {
+		if warning.Code == code {
+			return true
+		}
+	}
+	return false
 }
 
 func TestFullBackupRestoresEncryptedKeyVaultMaterialAndPassphrase(t *testing.T) {

@@ -61,7 +61,7 @@ test('smoke: settings navigation typography and right content scroll remain stab
   for (let index = 0; index < 6; index += 1) {
     const button = navButtons.nth(index)
     expect(await button.evaluate((element) => parseFloat(window.getComputedStyle(element).fontSize))).toBe(16)
-    expect((await box(button)).height).toBe(38)
+    expect((await box(button)).height).toBe(42)
   }
 
   await openFixture(page, 'settings-content-scroll', { width: 900, height: 560 })

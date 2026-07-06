@@ -473,6 +473,7 @@ function isOnline(serverID: number) {
   padding: 24px;
   background: rgba(2, 6, 23, 0.64);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .service-dialog {

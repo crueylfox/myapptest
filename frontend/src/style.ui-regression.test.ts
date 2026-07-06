@@ -52,6 +52,7 @@ describe('first-batch UI regression contracts', () => {
 
   it('keeps ServerPicker fixed, bounded, and list-scrolled instead of panel-scrolled', () => {
     const picker = block('.server-picker')
+    const actions = block('.server-picker-actions')
     const pickerList = block('.server-picker-list')
     const pickerContent = block('.server-picker-list-content')
 
@@ -61,6 +62,9 @@ describe('first-batch UI regression contracts', () => {
     expect(picker).toContain('overflow: hidden')
     expect(picker).toContain('max-height: var(--server-picker-panel-max-height, calc(100vh - 16px))')
     expect(picker).toContain('grid-template-rows: auto auto auto var(--server-picker-list-row-size, auto)')
+    expect(actions).toContain('display: flex')
+    expect(actions).toContain('justify-content: center')
+    expect(actions).not.toContain('grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr) 1px minmax(0, 1fr) 1px minmax(0, 1fr)')
     expect(pickerList).toContain('height: var(--server-picker-list-height, auto)')
     expect(pickerList).toContain('overflow-y: var(--server-picker-list-overflow-y, hidden)')
     expect(pickerList).toContain('overscroll-behavior: contain')
@@ -167,6 +171,23 @@ describe('first-batch UI regression contracts', () => {
     expect(css).not.toContain('.settings-header-action-separator')
     expect(block('.terminal-profile-section')).toContain('border-top: 1px solid var(--border)')
     expect(css).not.toContain('.network-stat-row {')
+  })
+
+  it('keeps modal, menu, settings, and radio styles visible in macOS WebView dark mode', () => {
+    for (const selector of ['.modal-backdrop', '.settings-overlay-backdrop', '.settings-page-overlay', '.topbar-menu', '.server-picker']) {
+      const source = block(selector)
+      expect(source).toContain('background: rgba(')
+      expect(source).toContain('backdrop-filter: blur(')
+      expect(source).toContain('-webkit-backdrop-filter: blur(')
+    }
+
+    const radioChecked = block('input[type="radio"]:checked')
+    const radioDarkChecked = block(':root:not([data-theme="light"]) input[type="radio"]:checked')
+    expect(radioChecked).toContain('box-shadow: inset')
+    expect(radioChecked).toContain('background-color: var(--primary)')
+    expect(radioDarkChecked).toContain('border-color: #93c5fd')
+    expect(radioDarkChecked).toContain('box-shadow: inset')
+    expect(radioDarkChecked).toContain('#ffffff')
   })
 
   it('keeps workspace tab titles ellipsized and close clicks isolated', () => {

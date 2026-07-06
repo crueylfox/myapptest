@@ -17,6 +17,7 @@ type ConfirmDialogOptions = {
   message: string
   confirmText: string
   danger?: boolean
+  hideCloseButton?: boolean
   returnFocus?: HTMLElement | null
 }
 
@@ -204,6 +205,7 @@ export function useConnectionDialogFlow(options: ConnectionDialogFlowOptions) {
       message: `删除服务器“${connection.name}”？此操作不可撤销，并会关闭该服务器已有工作区。${affectedText}`,
       confirmText: '删除服务器',
       danger: true,
+      hideCloseButton: true,
       returnFocus: options.serverPickerAnchor.value,
     })) return
     options.markExpectedDisconnect?.(connection.id)

@@ -156,10 +156,10 @@ const activeCategory = ref('appearance')
 const categories = [
   { id: 'appearance', label: '常规', icon: 'gear' },
   { id: 'terminal', label: '终端', icon: 'terminal' },
-  { id: 'shortcuts', label: '快捷键', icon: 'keyboard' },
   { id: 'alerts', label: '告警', icon: 'bell' },
-  { id: 'backup', label: '备份 / 恢复', icon: 'backup' },
+  { id: 'shortcuts', label: '快捷键', icon: 'keyboard' },
   { id: 'keyvault', label: '密钥库', icon: 'key' },
+  { id: 'backup', label: '备份/恢复', icon: 'backup' },
 ]
 const availableCategoryIds = new Set(categories.map((category) => category.id))
 const forceFormDirty = ref(false)
