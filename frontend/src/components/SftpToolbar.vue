@@ -226,17 +226,20 @@ function updateMoreMenuPosition() {
     viewport.width - TOOLBAR_POPOVER_MARGIN - width,
     Math.max(TOOLBAR_POPOVER_MARGIN, rect.right - width),
   )
-  const top = placeAbove
-    ? Math.max(TOOLBAR_POPOVER_MARGIN, rect.top - TOOLBAR_POPOVER_GAP - maxHeight)
-    : Math.min(viewport.height - TOOLBAR_POPOVER_MARGIN - maxHeight, rect.bottom + TOOLBAR_POPOVER_GAP)
-  moreMenuStyle.value = {
+  const style: Record<string, string> = {
     position: 'fixed',
-    top: `${Math.round(top)}px`,
     left: `${Math.round(left)}px`,
     width: `${Math.round(width)}px`,
     maxHeight: `${Math.round(maxHeight)}px`,
     transformOrigin: placeAbove ? 'bottom right' : 'top right',
   }
+  if (placeAbove) {
+    style.bottom = `${Math.round(Math.max(TOOLBAR_POPOVER_MARGIN, viewport.height - rect.top + TOOLBAR_POPOVER_GAP))}px`
+  } else {
+    const top = Math.min(viewport.height - TOOLBAR_POPOVER_MARGIN - maxHeight, rect.bottom + TOOLBAR_POPOVER_GAP)
+    style.top = `${Math.round(top)}px`
+  }
+  moreMenuStyle.value = style
 }
 
 function updateBookmarkMenuPosition(anchor?: HTMLElement | null) {

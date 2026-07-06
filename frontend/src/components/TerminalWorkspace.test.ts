@@ -80,10 +80,10 @@ const defaultProfile: TerminalProfile = {
   cursorBlink: true,
   scrollback: 10000,
   themeName: 'serverpilot-dark',
-  foreground: '#dbeafe',
-  background: '#07111f',
-  selectionBackground: '#2563eb66',
-  cursorColor: '#ffffff',
+  foreground: '#eceff4',
+  background: '#17181b',
+  selectionBackground: '#5b6f8f66',
+  cursorColor: '#f5f7fa',
   createdAt: '',
   updatedAt: '',
 }
@@ -2615,6 +2615,12 @@ describe('TerminalWorkspace server states', () => {
     expect(popover.textContent).toContain('nested/new.txt')
     expect(popover.textContent).toContain('失败 0')
     expect(popover.textContent).toContain('跳过 1')
+    const tabButtons = Array.from(popover.querySelectorAll<HTMLButtonElement>('.transfer-popover-tabs button'))
+    const tabSeparator = popover.querySelector<HTMLElement>('.transfer-popover-tabs .transfer-popover-action-separator')
+    expect(tabButtons).toHaveLength(2)
+    expect(tabSeparator?.textContent).toBe('|')
+    expect(tabSeparator?.previousElementSibling).toBe(tabButtons[0])
+    expect(tabSeparator?.nextElementSibling).toBe(tabButtons[1])
     const activeRow = document.body.querySelectorAll('.transfer-popover-row')[0] as HTMLElement
     expect(activeRow.textContent).toContain('暂停')
     const activeRowButtons = Array.from(activeRow.querySelectorAll('.text-button')) as HTMLButtonElement[]
@@ -2656,13 +2662,14 @@ describe('TerminalWorkspace server states', () => {
     expect(wrapper.find('.status-transfer-wrap .transfer-popover').exists()).toBe(false)
     expect(popover?.style.position).toBe('fixed')
     const left = Number.parseInt(popover?.style.left ?? '', 10)
-    const top = Number.parseInt(popover?.style.top ?? '', 10)
+    const bottom = Number.parseInt(popover?.style.bottom ?? '', 10)
     const width = Number.parseInt(popover?.style.width ?? '', 10)
     const maxHeight = Number.parseInt(popover?.style.maxHeight ?? '', 10)
     expect(left).toBeGreaterThanOrEqual(12)
-    expect(top).toBeGreaterThanOrEqual(12)
+    expect(bottom).toBeGreaterThanOrEqual(12)
+    expect(popover?.style.top).toBe('')
     expect(left + width).toBeLessThanOrEqual(348)
-    expect(top + maxHeight).toBeLessThanOrEqual(228)
+    expect(bottom + maxHeight).toBeLessThanOrEqual(228)
     expect(width).toBeLessThanOrEqual(336)
     expect(maxHeight).toBeLessThanOrEqual(144)
     document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
@@ -2692,13 +2699,14 @@ describe('TerminalWorkspace server states', () => {
 
     const resizedPopover = document.body.querySelector('.transfer-popover') as HTMLElement
     const left = Number.parseInt(resizedPopover.style.left, 10)
-    const top = Number.parseInt(resizedPopover.style.top, 10)
+    const bottom = Number.parseInt(resizedPopover.style.bottom, 10)
     const width = Number.parseInt(resizedPopover.style.width, 10)
     const maxHeight = Number.parseInt(resizedPopover.style.maxHeight, 10)
     expect(resizedPopover.style.width).not.toBe(originalWidth)
     expect(resizedPopover.style.maxHeight).not.toBe(originalMaxHeight)
     expect(left + width).toBeLessThanOrEqual(318)
-    expect(top + maxHeight).toBeLessThanOrEqual(198)
+    expect(bottom).toBeGreaterThanOrEqual(12)
+    expect(bottom + maxHeight).toBeLessThanOrEqual(198)
 
     resizedPopover.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
     await wrapper.vm.$nextTick()
@@ -2734,13 +2742,12 @@ describe('TerminalWorkspace server states', () => {
 
     expect(popover).not.toBeNull()
     const left = Number.parseInt(popover?.style.left ?? '', 10)
-    const top = Number.parseInt(popover?.style.top ?? '', 10)
+    const bottom = Number.parseInt(popover?.style.bottom ?? '', 10)
     const width = Number.parseInt(popover?.style.width ?? '', 10)
-    const maxHeight = Number.parseInt(popover?.style.maxHeight ?? '', 10)
     expect(left + width).toBeLessThanOrEqual(1188)
-    expect(top + maxHeight).toBeLessThanOrEqual(1188)
     expect(1188 - (left + width)).toBeLessThanOrEqual(24)
-    expect(1188 - (top + maxHeight)).toBeLessThanOrEqual(24)
+    expect(bottom).toBeGreaterThanOrEqual(12)
+    expect(bottom).toBeLessThanOrEqual(24)
     document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
     await wrapper.vm.$nextTick()
   })

@@ -547,6 +547,29 @@ describe('LocalTerminalView', () => {
     vi.useRealTimers()
   })
 
+  it('drops the first isolated macOS zsh percent line when it arrives split across output chunks', async () => {
+    const { wrapper, store } = mountLocalTerminal()
+    store.sessions[0].shellKind = 'local'
+    store.subscribe()
+
+    terminalState.eventCallbacks.get('localterminal:output')?.({
+      sessionId: 'local-1',
+      dataBase64: btoa('%'),
+      timestamp: '',
+    })
+    terminalState.eventCallbacks.get('localterminal:output')?.({
+      sessionId: 'local-1',
+      dataBase64: btoa('\r\nuser@mac ~ % '),
+      timestamp: '',
+    })
+
+    expect(terminalState.writes).toHaveLength(1)
+    expect(new TextDecoder().decode(terminalState.writes[0])).toBe('user@mac ~ % ')
+    wrapper.unmount()
+    store.unsubscribe()
+    vi.useRealTimers()
+  })
+
   it('shows the local terminal menu when right-click paste is disabled', async () => {
     const { wrapper } = mountLocalTerminal({ rightClickPasteEnabled: false })
 

@@ -37,10 +37,10 @@ const profile: TerminalProfile = {
   cursorBlink: true,
   scrollback: 10000,
   themeName: 'serverpilot-dark',
-  foreground: '#dbeafe',
-  background: '#07111f',
-  selectionBackground: '#2563eb66',
-  cursorColor: '#ffffff',
+  foreground: '#eceff4',
+  background: '#17181b',
+  selectionBackground: '#5b6f8f66',
+  cursorColor: '#f5f7fa',
   createdAt: '',
   updatedAt: '',
 }
@@ -66,9 +66,10 @@ describe('terminal profile ANSI colors', () => {
     for (const key of ansiKeys) {
       expect(options.theme?.[key]).toBe(normalizeTerminalProfileTheme(profile)[key])
     }
-    expect(options.theme?.foreground).toBe('#dbeafe')
-    expect(options.theme?.background).toBe('#07111f')
-    expect(options.theme?.cursor).toBe('#ffffff')
+    expect(options.theme?.foreground).toBe('#eceff4')
+    expect(options.theme?.background).toBe('#17181b')
+    expect(options.theme?.cursor).toBe('#f5f7fa')
+    expect(options.theme?.background).not.toBe('#07111f')
   })
 
   it('keeps custom foreground and background without dropping the base ANSI palette', () => {

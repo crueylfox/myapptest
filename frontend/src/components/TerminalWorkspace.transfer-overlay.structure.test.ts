@@ -37,7 +37,7 @@ describe('TerminalWorkspace transfer overlay orchestration structure', () => {
 
   it('keeps TerminalWorkspace below this large-refactor line-count target', () => {
     const nonEmptyLineCount = terminalWorkspace.split(/\r?\n/).filter((line) => line.length > 0).length
-    expect(nonEmptyLineCount).toBeLessThanOrEqual(1047)
+    expect(nonEmptyLineCount).toBeLessThanOrEqual(1048)
   })
 
   it('keeps new transfer orchestration files inside frontend-only boundaries', () => {

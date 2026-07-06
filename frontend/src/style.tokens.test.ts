@@ -131,14 +131,14 @@ describe('theme and overlay tokens', () => {
   })
 
   it('uses the macOS gray palette as the production dark theme', () => {
-    expect(dark.bg).toBe('#1f2023')
-    expect(dark.sidebar).toBe('#242529')
-    expect(dark.panel).toBe('#2b2d31')
-    expect(dark['panel-2']).toBe('#303238')
+    expect(dark.bg).toBe('#17181b')
+    expect(dark.sidebar).toBe('#1b1c20')
+    expect(dark.panel).toBe('#202126')
+    expect(dark['panel-2']).toBe('#26272d')
     expect(dark.border).toBe('rgba(255, 255, 255, .10)')
     expect(dark.primary).toBe('#7aa2d8')
-    expect(dark['sftp-surface']).toBe('#23252a')
-    expect(dark['docker-console-bg']).toBe('#191a1e')
+    expect(dark['sftp-surface']).toBe('#1e1f24')
+    expect(dark['docker-console-bg']).toBe('#17181b')
     expect(macosGrayDark).toMatchObject({
       bg: dark.bg,
       sidebar: dark.sidebar,
@@ -1253,6 +1253,36 @@ describe('theme and overlay tokens', () => {
     expect(active).not.toContain('inset 3px 0 0')
     expect(active).not.toContain('border-left')
     expect(block('.settings-category-nav button.active .app-icon')).toContain('color:')
+  })
+
+  it('uses a full-surface checked state for radio policy options instead of a left marker only', () => {
+    const policy = block('.policy-option')
+    const checked = block('.policy-option:has(input:checked)')
+    const checkedStrong = block('.policy-option:has(input:checked) strong')
+    const checkedSmall = block('.policy-option:has(input:checked) small')
+
+    expect(policy).toContain('border: 1px solid transparent')
+    expect(checked).toContain('background:')
+    expect(checked).toContain('border-color:')
+    expect(checked).toContain('box-shadow:')
+    expect(checked).toContain('color: var(--text)')
+    expect(checked).not.toContain('border-left')
+    expect(checked).not.toContain('inset 3px 0 0')
+    expect(checkedStrong).toContain('color: var(--text)')
+    expect(checkedSmall).toContain('color:')
+  })
+
+  it('keeps transfer queue tab separators outside active button backgrounds', () => {
+    const actions = block('.transfer-popover-actions')
+    const separator = block('.transfer-popover-action-separator')
+    const active = block('.transfer-popover-actions button.active')
+
+    expect(actions).toContain('gap: 6px')
+    expect(separator).toContain('flex: 0 0 auto')
+    expect(separator).toContain('pointer-events: none')
+    expect(separator).toContain('color:')
+    expect(active).toContain('background:')
+    expect(css).not.toContain('.transfer-popover-actions button + button::before')
   })
 
   it('removes terminal profile divider chrome without negative margin hacks', () => {

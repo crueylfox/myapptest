@@ -79,12 +79,11 @@ describe('useWorkspaceTransferOverlayFlow', () => {
     await nextTick()
 
     const left = Number.parseInt(flow.transferPopoverStyle.value.left ?? '', 10)
-    const top = Number.parseInt(flow.transferPopoverStyle.value.top ?? '', 10)
-    const maxHeight = Number.parseInt(flow.transferPopoverStyle.value.maxHeight ?? '', 10)
+    const bottom = Number.parseInt(flow.transferPopoverStyle.value.bottom ?? '', 10)
     const width = Number.parseInt(flow.transferPopoverStyle.value.width ?? '', 10)
     expect(1180 - (left + width)).toBeLessThanOrEqual(24)
-    expect(1160 - (top + maxHeight)).toBeLessThanOrEqual(24)
-    expect(top).toBeGreaterThan(760)
+    expect(bottom).toBe(40)
+    expect(flow.transferPopoverStyle.value.top).toBeUndefined()
     expect(flow.transferPopoverStyle.value.width).toBe('620px')
   })
 
@@ -112,11 +111,32 @@ describe('useWorkspaceTransferOverlayFlow', () => {
     flow.updateTransferPopoverPosition()
 
     const left = Number.parseInt(flow.transferPopoverStyle.value.left ?? '', 10)
-    const top = Number.parseInt(flow.transferPopoverStyle.value.top ?? '', 10)
+    const bottom = Number.parseInt(flow.transferPopoverStyle.value.bottom ?? '', 10)
     const width = Number.parseInt(flow.transferPopoverStyle.value.width ?? '', 10)
-    const maxHeight = Number.parseInt(flow.transferPopoverStyle.value.maxHeight ?? '', 10)
     expect(900 - (left + width)).toBeLessThanOrEqual(24)
-    expect(640 - (top + maxHeight)).toBeLessThanOrEqual(24)
+    expect(bottom).toBe(80)
+    expect(flow.transferPopoverStyle.value.top).toBeUndefined()
+  })
+
+  it('uses bottom anchoring so a short transfer queue stays attached to a short SFTP workspace', async () => {
+    setViewportSize(900, 640)
+    const root = document.createElement('div')
+    root.getBoundingClientRect = () => rect({ left: 0, top: 0, right: 900, bottom: 620, width: 900, height: 620 })
+    const button = document.createElement('button')
+    button.getBoundingClientRect = () => rect({ left: 760, top: 596, right: 884, bottom: 620, width: 124, height: 24 })
+    const flow = useWorkspaceTransferOverlayFlow({
+      rootRef: ref(root),
+      sftpExpanded: ref(true),
+      scheduleAfterOpen: (callback) => nextTick(callback),
+    })
+    flow.transferButton.value = button
+
+    flow.openTransferPopover()
+    await nextTick()
+
+    expect(flow.transferPopoverStyle.value.top).toBeUndefined()
+    expect(flow.transferPopoverStyle.value.bottom).toBe('20px')
+    expect(flow.transferPopoverStyle.value.transformOrigin).toBe('bottom right')
   })
 
   it('preserves outside click and Escape close behavior without owning other workspace Escape handling', () => {

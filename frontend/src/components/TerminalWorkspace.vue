@@ -1035,6 +1035,7 @@ onBeforeUnmount(() => {
                 <strong>传输队列</strong>
                 <div class="transfer-popover-actions transfer-popover-tabs">
                   <button :class="{ active: transferScope === 'current' }" @click="transferScope = 'current'">当前服务器</button>
+                  <span class="transfer-popover-action-separator" aria-hidden="true">|</span>
                   <button :class="{ active: transferScope === 'all' }" @click="transferScope = 'all'">全部服务器</button>
                 </div>
               </header>
@@ -1060,6 +1061,7 @@ onBeforeUnmount(() => {
               </div>
               <footer class="transfer-popover-actions">
                 <button class="text-button" @click="clearFinishedTransfers">清除已完成</button>
+                <span class="transfer-popover-action-separator" aria-hidden="true">|</span>
                 <button class="text-button" @click="closeTransferPopover">关闭</button>
               </footer>
             </div>

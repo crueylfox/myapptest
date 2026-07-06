@@ -5,7 +5,7 @@ import { uiRegressionFixtures } from './ui-fixtures/uiRegressionFixtures'
 // @ts-expect-error The app tsconfig intentionally omits Node globals; this test reads local source files.
 const { readFileSync } = await import('node:fs') as { readFileSync: (path: URL, encoding: string) => string }
 
-const css = readFileSync(new URL('./style.css', import.meta.url), 'utf8')
+const css = readFileSync(new URL('./style.css', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
 const serverPickerSource = readFileSync(new URL('./components/ServerPicker.vue', import.meta.url), 'utf8')
 const terminalEmptyPaneSource = readFileSync(new URL('./components/TerminalEmptyPane.vue', import.meta.url), 'utf8')
 const workspaceTabsSource = readFileSync(new URL('./components/WorkspaceTabs.vue', import.meta.url), 'utf8')

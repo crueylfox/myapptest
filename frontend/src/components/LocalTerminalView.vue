@@ -80,6 +80,7 @@ let lastRows = 0
 let imeComposing = false
 let suppressNativePasteUntil = 0
 let stripInitialLocalPercentPrompt = true
+let initialLocalPercentPromptBuffer = ''
 const terminalClipboard = useTerminalClipboard((message) => emit('notify', message, 'error'))
 const terminalHostStyle = computed(() => terminalProfileHostStyle(props.profile))
 const effectiveShortcuts = computed(() =>
@@ -244,11 +245,49 @@ function observeLocalTerminalInput(data: string) {
 function decodeLocalTerminalOutput(dataBase64: string) {
   const bytes = decodeTerminalBase64ToBytes(dataBase64)
   if (!stripInitialLocalPercentPrompt) return bytes
+  const text = initialLocalPercentPromptBuffer + new TextDecoder().decode(bytes)
+  const stripped = stripInitialIsolatedPercentLine(text)
+  if (stripped === null) {
+    initialLocalPercentPromptBuffer = text
+    return new Uint8Array()
+  }
   stripInitialLocalPercentPrompt = false
-  const text = new TextDecoder().decode(bytes)
-  if (text.startsWith('%\r\n')) return new TextEncoder().encode(text.slice(3))
-  if (text.startsWith('%\n')) return new TextEncoder().encode(text.slice(2))
-  return bytes
+  initialLocalPercentPromptBuffer = ''
+  return new TextEncoder().encode(stripped)
+}
+
+function stripInitialIsolatedPercentLine(text: string) {
+  const prefixEnd = initialTerminalControlPrefixEnd(text)
+  if (prefixEnd < 0) return null
+  const prefix = text.slice(0, prefixEnd)
+  const body = text.slice(prefixEnd)
+  if (body === '%' || body === '%\r') return null
+  if (body.startsWith('%\r\n')) return prefix + body.slice(3)
+  if (body.startsWith('%\n')) return prefix + body.slice(2)
+  return text
+}
+
+function initialTerminalControlPrefixEnd(input: string) {
+  let index = 0
+  while (index < input.length) {
+    if (input[index] !== '\x1b') return index
+    if (index + 1 >= input.length) return -1
+    const introducer = input[index + 1]
+    if (introducer === '[') {
+      const end = findAnsiCsiEnd(input, index + 2)
+      if (end === -1) return -1
+      index = end + 1
+      continue
+    }
+    if (introducer === ']') {
+      const end = findAnsiOscEnd(input, index + 2)
+      if (end === -1) return -1
+      index = end
+      continue
+    }
+    index += 2
+  }
+  return index
 }
 
 function stripLocalCommandControlSequences(data: string) {
@@ -367,7 +406,8 @@ onMounted(async () => {
   })
   store.registerOutput(props.sessionId, (dataBase64) => {
     if (!terminal || destroyed) return
-    terminal.write(decodeLocalTerminalOutput(dataBase64))
+    const output = decodeLocalTerminalOutput(dataBase64)
+    if (output.length > 0) terminal.write(output)
   })
   observer = new ResizeObserver(() => {
     if (props.visible) scheduleFit()

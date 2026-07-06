@@ -49,11 +49,11 @@ export function useWorkspaceTransferOverlayFlow(options: WorkspaceTransferOverla
       availableHeight,
     )
     const left = workspaceRight - width
-    const top = workspaceBottom - maxHeight
+    const bottom = Math.max(TRANSFER_POPOVER_MARGIN, viewportHeight - workspaceBottom)
     transferPopoverStyle.value = {
       position: 'fixed',
       left: `${Math.round(left)}px`,
-      top: `${Math.round(top)}px`,
+      bottom: `${Math.round(bottom)}px`,
       width: `${Math.round(width)}px`,
       maxHeight: `${Math.round(maxHeight)}px`,
       transformOrigin: 'bottom right',
