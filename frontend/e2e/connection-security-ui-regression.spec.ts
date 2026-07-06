@@ -66,6 +66,7 @@ test('Connection dialog password state keeps fields, validation, and footer boun
   expectInside(await box(dialog), await box(form))
   expectInside(await box(dialog), await box(error))
   expectInside(await box(dialog), await box(footer))
+  await expect(dialog.locator('.connection-dialog-close')).toHaveCount(0)
   expectNoOverlap(await box(host), await box(user))
   await expect(dialog.getByTestId('save-connect')).toBeVisible()
   await expectNoDocumentHorizontalScroll(page)
@@ -83,6 +84,7 @@ test('Connection dialog Key Vault state keeps selected credential summary and ac
   expectInside(await box(dialog), await box(keySelect))
   expectInside(await box(dialog), await box(summary))
   expectInside(await box(dialog), await box(footer))
+  await expect(dialog.locator('.connection-dialog-close')).toHaveCount(0)
   expectInside(await box(dialog), await box(addKey))
   expect(await summary.locator('strong').evaluate((element) => window.getComputedStyle(element).textOverflow)).toBe('ellipsis')
   await expectNoDocumentHorizontalScroll(page)
@@ -102,6 +104,7 @@ test('Connection dialog advanced state keeps routing, profile, and warnings insi
   expectInside(await box(dialog), await box(profile))
   expectInside(await box(dialog), await box(warning))
   expectInside(await box(dialog), await box(footer))
+  await expect(dialog.locator('.connection-dialog-close')).toHaveCount(0)
   await expectInternalScroll(form)
 })
 

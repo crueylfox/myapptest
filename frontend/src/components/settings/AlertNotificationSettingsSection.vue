@@ -5,6 +5,7 @@ import type { AlertSettings, NativeNotificationStatus } from '../../types'
 const props = defineProps<{
   alerts: AlertSettings
   nativeNotificationStatus: NativeNotificationStatus
+  platform?: string
 }>()
 
 const emit = defineEmits<{
@@ -15,16 +16,19 @@ const emit = defineEmits<{
 }>()
 
 const nativeNotificationStatusText = computed(() => {
+  if (props.platform === 'darwin') return 'macOS 系统通知暂不可用。'
   if (!props.alerts.nativeNotifications.enabled) return '默认关闭，开启后会发送已有告警事件到系统原生通知。'
   return props.nativeNotificationStatus.message
 })
+const nativeNotificationSupported = computed(() => props.platform !== 'darwin')
+const nativeNotificationChecked = computed(() => nativeNotificationSupported.value && props.alerts.nativeNotifications.enabled)
 
 function checkboxValue(event: Event) {
   return (event.target as HTMLInputElement).checked
 }
 
 function requestNativeNotificationTest() {
-  if (!props.alerts.nativeNotifications.enabled) return
+  if (!nativeNotificationSupported.value || !props.alerts.nativeNotifications.enabled) return
   emit('testNativeNotification')
 }
 </script>
@@ -61,8 +65,9 @@ function requestNativeNotificationTest() {
   <div class="alert-native-controlbar" data-testid="alert-native-notifications">
     <label class="alert-global-control">
       <input
-        :checked="alerts.nativeNotifications.enabled"
+        :checked="nativeNotificationChecked"
         data-testid="alert-native-notifications-enabled"
+        :disabled="!nativeNotificationSupported"
         type="checkbox"
         @change="emit('updateNativeNotificationsEnabled', checkboxValue($event))"
       />
@@ -77,7 +82,7 @@ function requestNativeNotificationTest() {
         type="button"
         class="secondary alert-test-button"
         data-testid="alert-native-notification-test-button"
-        :disabled="!alerts.nativeNotifications.enabled"
+        :disabled="!nativeNotificationSupported || !alerts.nativeNotifications.enabled"
         @click="requestNativeNotificationTest"
       >
         发送系统通知

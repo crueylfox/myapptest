@@ -158,4 +158,22 @@ describe('useNativeAlertNotifications', () => {
       title: 'ServerPilot 测试通知',
     }))
   })
+
+  it('does not expose Windows native notification copy on macOS when the backend is unavailable', async () => {
+    const notify = vi.fn()
+    const runtime = fakeRuntime({ isAvailable: vi.fn(async () => false) })
+    const controller = useNativeAlertNotifications({
+      settings: ref(alertSettings(true)),
+      runtime,
+      notify,
+      platform: ref('darwin'),
+    })
+
+    await expect(controller.sendTestNotification()).resolves.toEqual({ ok: false, reason: 'unavailable' })
+
+    expect(runtime.send).not.toHaveBeenCalled()
+    expect(controller.status.value.message).toBe('macOS 系统通知暂不可用。')
+    expect(notify).toHaveBeenCalledWith('macOS 系统通知暂不可用', 'info')
+    expect(notify.mock.calls.flat().join(' ')).not.toContain('Windows 原生通知')
+  })
 })

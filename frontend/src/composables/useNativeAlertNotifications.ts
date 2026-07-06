@@ -27,6 +27,7 @@ export interface UseNativeAlertNotificationsOptions {
   settings: Ref<AlertSettings> | ComputedRef<AlertSettings>
   runtime: NativeNotificationRuntimeAdapter
   notify: (message: string, type: ToastType) => void
+  platform?: Ref<string> | ComputedRef<string>
 }
 
 export function useNativeAlertNotifications(options: UseNativeAlertNotificationsOptions) {
@@ -86,9 +87,9 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
       await options.runtime.send({
         id: 'serverpilot-native-notification-test',
         title: 'ServerPilot 测试通知',
-        body: 'Windows 原生通知已启用。',
+        body: nativeNotificationEnabledBody(platformName()),
       })
-      options.notify('Windows 原生通知测试已发送', 'success')
+      options.notify(nativeNotificationSentMessage(platformName()), 'success')
       return { ok: true }
     } catch {
       notifyFailureOnce()
@@ -105,6 +106,14 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
   }
 
   async function initializeRuntime() {
+    if (platformName() === 'darwin') {
+      status.value = {
+        initialized: true,
+        available: false,
+        message: 'macOS 系统通知暂不可用。',
+      }
+      return false
+    }
     try {
       await options.runtime.initialize()
       const available = await options.runtime.isAvailable()
@@ -113,14 +122,14 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
       status.value = {
         initialized: true,
         available: ready,
-        message: ready ? 'Windows 原生通知可用。' : 'Windows 原生通知不可用。',
+        message: ready ? nativeNotificationAvailableMessage(platformName()) : nativeNotificationUnavailableMessage(platformName()),
       }
       return ready
     } catch {
       status.value = {
         initialized: true,
         available: false,
-        message: 'Windows 原生通知初始化失败。',
+        message: nativeNotificationInitFailedMessage(platformName()),
       }
       return false
     }
@@ -129,13 +138,17 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
   function notifyUnavailableOnce() {
     if (unavailableNotified) return
     unavailableNotified = true
-    options.notify('Windows 原生通知不可用', 'info')
+    options.notify(nativeNotificationUnavailableMessage(platformName()).replace(/。$/, ''), 'info')
   }
 
   function notifyFailureOnce() {
     if (failureNotified) return
     failureNotified = true
-    options.notify('Windows 原生通知发送失败', 'error')
+    options.notify(nativeNotificationFailedMessage(platformName()), 'error')
+  }
+
+  function platformName() {
+    return options.platform?.value ?? 'windows'
   }
 
   return {
@@ -146,4 +159,28 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
     handleAlertNotifications,
     sendTestNotification,
   }
+}
+
+function nativeNotificationAvailableMessage(platform: string) {
+  return platform === 'darwin' ? 'macOS 系统通知可用。' : 'Windows 原生通知可用。'
+}
+
+function nativeNotificationUnavailableMessage(platform: string) {
+  return platform === 'darwin' ? 'macOS 系统通知暂不可用。' : 'Windows 原生通知不可用。'
+}
+
+function nativeNotificationInitFailedMessage(platform: string) {
+  return platform === 'darwin' ? 'macOS 系统通知初始化失败。' : 'Windows 原生通知初始化失败。'
+}
+
+function nativeNotificationEnabledBody(platform: string) {
+  return platform === 'darwin' ? 'macOS 系统通知已启用。' : 'Windows 原生通知已启用。'
+}
+
+function nativeNotificationSentMessage(platform: string) {
+  return platform === 'darwin' ? 'macOS 系统通知测试已发送' : 'Windows 原生通知测试已发送'
+}
+
+function nativeNotificationFailedMessage(platform: string) {
+  return platform === 'darwin' ? 'macOS 系统通知发送失败' : 'Windows 原生通知发送失败'
 }

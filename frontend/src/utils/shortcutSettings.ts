@@ -7,7 +7,9 @@ import type {
 
 export type TerminalShortcutAction = 'copy' | 'paste' | 'completion' | 'history' | 'favorites' | 'suppress_native_paste'
 
-export const shortcutBindingOptions: Array<{ value: ShortcutBinding; label: string }> = [
+export type ShortcutPlatform = 'windows' | 'darwin' | 'linux' | 'unknown' | string
+
+export const windowsShortcutBindingOptions: Array<{ value: ShortcutBinding; label: string }> = [
   { value: 'ctrl+shift+a', label: 'Ctrl+Shift+A' },
   { value: 'ctrl+shift+c', label: 'Ctrl+Shift+C' },
   { value: 'ctrl+shift+v', label: 'Ctrl+Shift+V' },
@@ -19,10 +21,35 @@ export const shortcutBindingOptions: Array<{ value: ShortcutBinding; label: stri
   { value: 'ctrl+alt+p', label: 'Ctrl+Alt+P' },
   { value: 'disabled', label: '禁用' },
 ]
+export const macosShortcutBindingOptions: Array<{ value: ShortcutBinding; label: string }> = [
+  { value: 'meta+c', label: '⌘C' },
+  { value: 'meta+v', label: '⌘V' },
+  { value: 'meta+k', label: '⌘K' },
+  { value: 'shift+meta+h', label: '⇧⌘H' },
+  { value: 'shift+meta+p', label: '⇧⌘P' },
+  { value: 'disabled', label: '禁用' },
+]
+export const shortcutBindingOptions = windowsShortcutBindingOptions
 
-const bindingLabels = new Map(shortcutBindingOptions.map((item) => [item.value, item.label]))
+const bindingLabels = new Map([...windowsShortcutBindingOptions, ...macosShortcutBindingOptions].map((item) => [item.value, item.label]))
 
-export function defaultShortcutSettings(): ShortcutSettings {
+export function shortcutBindingOptionsForPlatform(platform: ShortcutPlatform) {
+  return platform === 'darwin' ? macosShortcutBindingOptions : windowsShortcutBindingOptions
+}
+
+export function defaultShortcutSettings(platform: ShortcutPlatform = 'windows'): ShortcutSettings {
+  if (platform === 'darwin') {
+    return {
+      terminalCopyOnSelectEnabled: true,
+      terminalRightClickAction: 'paste',
+      terminalContextMenuTrigger: 'shift_right_click',
+      terminalCopy: 'meta+c',
+      terminalPaste: 'meta+v',
+      terminalCompletion: 'meta+k',
+      openCommandHistory: 'shift+meta+h',
+      openCommandFavorites: 'shift+meta+p',
+    }
+  }
   return {
     terminalCopyOnSelectEnabled: true,
     terminalRightClickAction: 'paste',
@@ -39,8 +66,9 @@ export function normalizeShortcutSettings(
   value: ShortcutSettings | null | undefined,
   legacyCopyOnSelect = true,
   legacyRightClickPaste = true,
+  platform: ShortcutPlatform = 'windows',
 ): ShortcutSettings {
-  const defaults = defaultShortcutSettings()
+  const defaults = defaultShortcutSettings(platform)
   if (!value || shortcutSettingsEmpty(value)) {
     return {
       ...defaults,
@@ -48,7 +76,7 @@ export function normalizeShortcutSettings(
       terminalRightClickAction: legacyRightClickPaste ? 'paste' : 'menu',
     }
   }
-  return {
+  const normalized = {
     terminalCopyOnSelectEnabled: Boolean(value.terminalCopyOnSelectEnabled),
     terminalRightClickAction: validRightClickAction(value.terminalRightClickAction)
       ? value.terminalRightClickAction
@@ -62,6 +90,15 @@ export function normalizeShortcutSettings(
     openCommandHistory: validShortcutBinding(value.openCommandHistory) ? value.openCommandHistory : defaults.openCommandHistory,
     openCommandFavorites: validShortcutBinding(value.openCommandFavorites) ? value.openCommandFavorites : defaults.openCommandFavorites,
   }
+  if (platform === 'darwin' && shortcutBindingsEqual(normalized, defaultShortcutSettings('windows'))) {
+    return {
+      ...defaults,
+      terminalCopyOnSelectEnabled: normalized.terminalCopyOnSelectEnabled,
+      terminalRightClickAction: normalized.terminalRightClickAction,
+      terminalContextMenuTrigger: normalized.terminalContextMenuTrigger,
+    }
+  }
+  return normalized
 }
 
 export function shortcutLabel(value: ShortcutBinding | string | null | undefined) {
@@ -75,8 +112,8 @@ export function shortcutMatches(event: KeyboardEvent, binding: ShortcutBinding |
   const wantsCtrl = parts.includes('ctrl')
   const wantsShift = parts.includes('shift')
   const wantsAlt = parts.includes('alt')
-  if (event.ctrlKey !== wantsCtrl || event.shiftKey !== wantsShift || event.altKey !== wantsAlt) return false
-  if (event.metaKey) return false
+  const wantsMeta = parts.includes('meta')
+  if (event.ctrlKey !== wantsCtrl || event.shiftKey !== wantsShift || event.altKey !== wantsAlt || event.metaKey !== wantsMeta) return false
   const eventKey = event.key.length === 1 ? event.key.toLowerCase() : event.key.toLowerCase()
   const eventCode = event.code.toLowerCase()
   return eventKey === key || eventCode === `key${key}`
@@ -154,11 +191,19 @@ function shortcutSettingsEmpty(value: ShortcutSettings) {
 }
 
 function validShortcutBinding(value: unknown): value is ShortcutBinding {
-  return shortcutBindingOptions.some((item) => item.value === value)
+  return bindingLabels.has(value as ShortcutBinding)
 }
 
 function validRightClickAction(value: unknown): value is TerminalRightClickAction {
   return value === 'paste' || value === 'menu'
+}
+
+function shortcutBindingsEqual(left: ShortcutSettings, right: ShortcutSettings) {
+  return left.terminalCopy === right.terminalCopy &&
+    left.terminalPaste === right.terminalPaste &&
+    left.terminalCompletion === right.terminalCompletion &&
+    left.openCommandHistory === right.openCommandHistory &&
+    left.openCommandFavorites === right.openCommandFavorites
 }
 
 function validContextMenuTrigger(value: unknown): value is TerminalContextMenuTrigger {

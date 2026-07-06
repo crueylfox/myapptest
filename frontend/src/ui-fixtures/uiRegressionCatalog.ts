@@ -279,7 +279,7 @@ export const uiRegressionCatalog: readonly UiRegressionSurface[] = [
     surface: 'Connection, security, modal, and form UI',
     historicalIssues: [
       'Connection and authentication dialogs combine long labels, validation states, credential status, and compact footer actions that jsdom cannot verify geometrically.',
-      'Host-key trust, Key Vault, Alert Center, App Logs, and Command Palette surfaces contain dense modal/list layouts that can clip or overflow in narrow viewports.',
+      'Host-key trust, 密钥库, Alert Center, App Logs, and Command Palette surfaces contain dense modal/list layouts that can clip or overflow in narrow viewports.',
     ],
     fixtureIds: [
       'connection-security.connection-dialog-password',
@@ -301,7 +301,7 @@ export const uiRegressionCatalog: readonly UiRegressionSurface[] = [
       {
         kind: 'fixture-state',
         target: 'frontend/src/ui-fixtures/uiRegressionFixtures.ts',
-        coverage: ['ConnectionDialog', 'AuthDialog', 'HostKeyTrust', 'Key Vault', 'Alert Center', 'Monitor alert entry', 'Dashboard alert layer', 'App Logs', 'CommandPalette'],
+        coverage: ['ConnectionDialog', 'AuthDialog', 'HostKeyTrust', '密钥库', 'Alert Center', 'Monitor alert entry', 'Dashboard alert layer', 'App Logs', 'CommandPalette'],
       },
       {
         kind: 'dom-behavior',

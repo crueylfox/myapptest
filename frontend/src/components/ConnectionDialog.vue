@@ -350,7 +350,6 @@ function submit(connectAfterSave: boolean) {
       <div class="connection-dialog-rail">
         <header class="connection-dialog-header">
           <h2>{{ form.id ? '编辑服务器' : '添加服务器' }}</h2>
-          <button type="button" class="dialog-close-button connection-dialog-close" @click="close">关闭</button>
         </header>
         <div class="connection-form">
           <div class="connection-form-row is-long-short">
@@ -526,7 +525,7 @@ function submit(connectAfterSave: boolean) {
             @click="emit('deleteCredential', form.id)"
           >删除已保存{{ form.authType === 'password' ? '密码' : '口令' }}</button>
         </div>
-        <p class="form-note">密码和私钥口令不会写入 SQLite。Key Vault 私钥会经 Windows 用户级保护后存入本地数据库。</p>
+        <p class="form-note">密码和私钥口令不会写入 SQLite。密钥库私钥会经 Windows 用户级保护后存入本地数据库。</p>
         <footer class="connection-dialog-footer">
           <button type="button" class="secondary" @click="close">取消</button>
           <button type="submit" class="secondary">保存</button>
@@ -540,7 +539,6 @@ function submit(connectAfterSave: boolean) {
     <form class="modal key-vault-modal connection-key-import-modal app-glass-surface" data-testid="connection-key-import-modal" @submit.prevent="saveImportedKey">
       <header>
         <h2>添加密钥</h2>
-        <button type="button" class="dialog-close-button" @click="closeKeyImport">关闭</button>
       </header>
       <div class="form-grid">
         <label class="span-2">名称<input v-model.trim="keyImportForm.name" /></label>

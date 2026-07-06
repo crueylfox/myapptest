@@ -52,7 +52,7 @@ export function summarizeBackupImportResult(result: BackupImportResult) {
   const summary = [
     `新增分组：${result.groupsAdded}`,
     `新增服务器：${result.connectionsAdded}`,
-    `新增 Key Vault：${result.keyVaultAdded}`,
+    `新增密钥库：${result.keyVaultAdded}`,
     `导入主机指纹：${result.hostTrustImported}`,
   ]
   if (result.secretsRestored) summary.push(`恢复凭据：${result.secretsRestored}`)

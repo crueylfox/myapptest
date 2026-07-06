@@ -92,7 +92,7 @@ describe('settingsBackupRestoreModel', () => {
     expect(summarizeBackupImportResult(result)).toEqual([
       '新增分组：1',
       '新增服务器：2',
-      '新增 Key Vault：3',
+      '新增密钥库：3',
       '导入主机指纹：4',
       '跳过：5',
       '警告：1',

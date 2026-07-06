@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import SettingsView from './SettingsView.vue'
-import type { AppSettings, Connection, KeyVaultEntry, ShortcutConflictCheckResponse, TerminalProfile } from '../types'
+import type { AppSettings, Connection, KeyVaultEntry, LocalTerminalCapabilities, ShortcutConflictCheckResponse, TerminalProfile } from '../types'
 import { choiceDialog, confirmDialog } from '../composables/useAppDialog'
 import { registerTerminalInstance, unregisterTerminalInstance } from '../utils/terminalInstanceRegistry'
 import { defaultAlertSettings } from '../utils/alertSettings'
@@ -248,6 +248,37 @@ function terminalProfile(id: string, name: string): TerminalProfile {
   }
 }
 
+function localTerminalCapabilities(overrides: Partial<LocalTerminalCapabilities> = {}): LocalTerminalCapabilities {
+  return {
+    platform: 'windows',
+    enabled: false,
+    supported: false,
+    conptyAvailable: false,
+    isProcessElevated: false,
+    supportsElevation: true,
+    shellOptions: [] as Array<{ id: string; label: string; description: string }>,
+    adminShellOptions: [] as Array<{ id: string; label: string; description: string }>,
+    defaultShellPreference: 'auto',
+    currentShellPreference: 'auto',
+    unsupportedMessage: 'LOCAL_TERMINAL_DISABLED: 本地终端暂未启用',
+    ...overrides,
+  }
+}
+
+function darwinLocalTerminalCapabilities(overrides: Partial<LocalTerminalCapabilities> = {}): LocalTerminalCapabilities {
+  return localTerminalCapabilities({
+    platform: 'darwin',
+    enabled: true,
+    supported: true,
+    supportsElevation: false,
+    shellOptions: [{ id: 'local', label: '本地终端', description: '$SHELL' }],
+    defaultShellPreference: 'local',
+    currentShellPreference: 'local',
+    unsupportedMessage: '',
+    ...overrides,
+  })
+}
+
 function keyVaultEntry(overrides: Partial<KeyVaultEntry> = {}): KeyVaultEntry {
   return {
     id: 9,
@@ -277,19 +308,7 @@ describe('connection settings', () => {
     vi.clearAllMocks()
     localStorage.clear()
     apiMock.listKeyVaultEntries.mockResolvedValue([])
-    apiMock.getLocalTerminalCapabilities.mockResolvedValue({
-      platform: 'windows',
-      enabled: false,
-      supported: false,
-      conptyAvailable: false,
-      isProcessElevated: false,
-      supportsElevation: true,
-      shellOptions: [] as Array<{ id: string; label: string; description: string }>,
-      adminShellOptions: [] as Array<{ id: string; label: string; description: string }>,
-      defaultShellPreference: 'auto',
-      currentShellPreference: 'auto',
-      unsupportedMessage: 'LOCAL_TERMINAL_DISABLED: 本地终端暂未启用',
-    })
+    apiMock.getLocalTerminalCapabilities.mockResolvedValue(localTerminalCapabilities())
     apiMock.selectBackupExportPath.mockResolvedValue('C:/tmp/serverpilot.spbackup')
     apiMock.selectBackupImportFile.mockResolvedValue('C:/tmp/serverpilot.spbackup')
     apiMock.createTerminalProfile.mockImplementation((request) => Promise.resolve({
@@ -377,25 +396,45 @@ describe('connection settings', () => {
   })
 
   it('hides the Windows administrator local terminal setting on macOS', async () => {
-    apiMock.getLocalTerminalCapabilities.mockResolvedValue({
-      platform: 'darwin',
-      enabled: true,
-      supported: true,
-      conptyAvailable: false,
-      isProcessElevated: false,
-      supportsElevation: false,
-      shellOptions: [{ id: 'local', label: '本地终端', description: '$SHELL' }],
-      adminShellOptions: [],
-      defaultShellPreference: 'local',
-      currentShellPreference: 'local',
-      unsupportedMessage: '',
-    })
+    apiMock.getLocalTerminalCapabilities.mockResolvedValue(darwinLocalTerminalCapabilities())
     const wrapper = mount(SettingsView, { props: { settings } })
 
     await flushSettingsView()
 
     expect(wrapper.find('[data-testid="local-terminal-admin-setting"]').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('以管理员模式打开本地终端')
+  })
+
+  it('disables unavailable macOS system notification controls without Windows copy', async () => {
+    apiMock.getLocalTerminalCapabilities.mockResolvedValue(darwinLocalTerminalCapabilities())
+    const wrapper = mount(SettingsView, {
+      props: {
+        settings: {
+          ...settings,
+          alerts: {
+            ...settings.alerts,
+            nativeNotifications: { enabled: true },
+          },
+        },
+        nativeNotificationStatus: {
+          initialized: true,
+          available: false,
+          message: 'Windows 原生通知不可用。',
+        },
+      },
+    })
+    await flushSettingsView()
+    await wrapper.findAll('.settings-category-nav button')
+      .find((button) => button.text() === '告警')!
+      .trigger('click')
+
+    const panel = wrapper.get('[data-testid="alert-native-notifications"]')
+    expect(panel.text()).not.toContain('Windows 原生通知')
+    expect(panel.text()).toContain('macOS 系统通知暂不可用')
+    expect(wrapper.get<HTMLInputElement>('[data-testid="alert-native-notifications-enabled"]').element.disabled).toBe(true)
+    expect(wrapper.get<HTMLButtonElement>('[data-testid="alert-native-notification-test-button"]').element.disabled).toBe(true)
+    await wrapper.get('[data-testid="alert-native-notification-test-button"]').trigger('click')
+    expect(wrapper.emitted('testNativeNotification')).toBeUndefined()
   })
 
   it('keeps settings header actions visible and supports save-and-close plus shortcuts', async () => {
@@ -508,6 +547,9 @@ describe('connection settings', () => {
     expect(navButtonCss).toContain('height: 42px')
     expect(navButtonCss).toContain('min-height: 42px')
     expect(cssBlock('.settings-category-nav')).toContain('gap: 10px')
+    expect(cssBlock('.settings-category-nav button.active')).toContain('background:')
+    expect(cssBlock('.settings-category-nav button.active')).toContain('border-radius:')
+    expect(cssBlock('.settings-category-nav button.active')).not.toContain('inset 3px 0 0')
     expect(cssBlock('.settings-page-overlay .settings-category-shell')).toContain('align-items: stretch')
     expect(cssBlock('.settings-page-overlay .settings-category-content')).toContain('flex: 1 1 auto')
     expect(cssBlock('.settings-page-overlay .settings-category-content')).toContain('min-height: 0')
@@ -1931,6 +1973,30 @@ describe('connection settings', () => {
     await wrapper.get('button.settings-save-button').trigger('click')
     const saved = wrapper.emitted('save')?.at(-1)?.[0] as AppSettings
     expect(saved.uiFontSize).toBe('max')
+  })
+
+  it('uses macOS shortcut defaults and labels when the platform capability is darwin', async () => {
+    apiMock.getLocalTerminalCapabilities.mockResolvedValue(darwinLocalTerminalCapabilities())
+    const wrapper = mount(SettingsView, { props: { settings } })
+    await flushSettingsView()
+    await wrapper.findAll('.settings-category-nav button')
+      .find((button) => button.text() === '快捷键')!
+      .trigger('click')
+
+    const shortcutPanel = wrapper.get('[data-testid="shortcut-settings"]')
+    const completionSelect = shortcutPanel.get<HTMLSelectElement>('[data-testid="shortcut-row-terminalCompletion"] select')
+    expect(completionSelect.element.value).toBe('meta+k')
+    expect(shortcutPanel.text()).toContain('⌘K')
+    expect(shortcutPanel.text()).toContain('⌘V')
+    expect(shortcutPanel.text()).not.toContain('Ctrl+Shift+A')
+    expect(shortcutPanel.text()).not.toContain('Windows')
+  })
+
+  it('does not show user-facing Key Vault copy in settings surfaces', async () => {
+    const wrapper = mount(SettingsView, { props: { settings } })
+    await flushSettingsView()
+    expect(wrapper.text()).not.toContain('Key Vault')
+    expect(wrapper.text()).toContain('密钥库')
   })
 
 })

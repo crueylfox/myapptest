@@ -45,7 +45,7 @@ function checkedValue(event: Event) {
     <div class="settings-card-header">
       <div>
         <h2>备份与恢复</h2>
-        <p>备份文件会被加密，包含设置、分组、服务器、Key Vault 元数据和主机指纹记录。</p>
+        <p>备份文件会被加密，包含设置、分组、服务器、密钥库元数据和主机指纹记录。</p>
       </div>
     </div>
     <p class="form-note">
@@ -63,7 +63,7 @@ function checkedValue(event: Event) {
         />
         <span>
           <strong>标准备份（安全）</strong>
-          <small>包含设置、分组、服务器、Key Vault 元数据和主机指纹；不包含密码与私钥口令。</small>
+          <small>包含设置、分组、服务器、密钥库元数据和主机指纹；不包含密码与私钥口令。</small>
         </span>
       </label>
       <label class="policy-option backup-mode-danger">
@@ -75,7 +75,7 @@ function checkedValue(event: Event) {
         />
         <span>
           <strong>完整备份（高风险）</strong>
-          <small>此备份包含所有敏感信息，存在安全风险；包含 SSH 密码、私钥口令与 Key Vault 口令。</small>
+          <small>此备份包含所有敏感信息，存在安全风险；包含 SSH 密码、私钥口令与密钥库口令。</small>
         </span>
       </label>
     </div>

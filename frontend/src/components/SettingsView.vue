@@ -29,9 +29,10 @@ import { uiFontPixels, uiFontSizeSteps } from '../utils/appearance'
 import {
   findShortcutConflicts,
   normalizeShortcutSettings,
-  shortcutBindingOptions,
+  shortcutBindingOptionsForPlatform,
   shortcutLabel,
 } from '../utils/shortcutSettings'
+import { keyboardShortcutRowsForPlatform } from '../utils/settingsShortcutRows'
 import { cloneBackupImportOptions } from '../composables/settingsBackupRestoreModel'
 
 const props = withDefaults(defineProps<{
@@ -107,7 +108,7 @@ const backupFlow = useSettingsBackupRestoreFlow({
   importBackup: (request) => api.importBackup(request),
   confirmFullExport: () => confirmDialog({
     title: '确认完整备份',
-    message: '完整备份会包含已保存的 SSH 密码、私钥口令和 Key Vault 口令，并写入加密备份文件。请确认你会妥善保存备份密码和备份文件。',
+    message: '完整备份会包含已保存的 SSH 密码、私钥口令和密钥库口令，并写入加密备份文件。请确认你会妥善保存备份密码和备份文件。',
     confirmText: '创建完整备份',
     danger: true,
   }),
@@ -165,7 +166,8 @@ const categories = [
 const availableCategoryIds = new Set(categories.map((category) => category.id))
 const forceFormDirty = ref(false)
 const appVersion = ref('')
-const { showLocalTerminalAdminSetting, loadLocalTerminalCapabilities } = useLocalTerminalSettingsCapabilities(() => { form.localTerminalElevatedEnabled = false })
+const { capabilities: localTerminalCapabilities, showLocalTerminalAdminSetting, loadLocalTerminalCapabilities } = useLocalTerminalSettingsCapabilities(() => { form.localTerminalElevatedEnabled = false })
+const platform = computed(() => localTerminalCapabilities.value?.platform ?? 'windows')
 const formDirty = computed(() => forceFormDirty.value ||
   JSON.stringify(normalizeSettings(settingsDraft())) !== JSON.stringify(normalizeSettings(props.settings)))
 const appVersionLabel = computed(() => appVersion.value ? `ServerPilot v${appVersion.value}` : 'ServerPilot')
@@ -173,13 +175,8 @@ const shortcutConflicts = computed(() => findShortcutConflicts(form.shortcutSett
 const externalShortcutConflicts = ref<ShortcutConflictEntry[]>([])
 let shortcutConflictCheckTimer: number | null = null
 let shortcutConflictCheckSerial = 0
-const keyboardShortcutRows = [
-  { key: 'terminalCopy', label: '复制终端选区', detail: '默认 Ctrl+Shift+C，只在终端存在选区时拦截。' },
-  { key: 'terminalPaste', label: '粘贴到终端', detail: '默认 Ctrl+Shift+V，写入当前 SSH / 本地终端。' },
-  { key: 'terminalCompletion', label: '命令补全', detail: '默认 Ctrl+Shift+A，SSH 终端中打开历史、收藏和内置命令候选。' },
-  { key: 'openCommandHistory', label: '历史命令', detail: '默认 Ctrl+Shift+H，打开命令面板的历史命令。' },
-  { key: 'openCommandFavorites', label: '常用命令', detail: '默认 Ctrl+Shift+P，打开命令面板的常用命令。' },
-] as const
+const shortcutBindingOptions = computed(() => shortcutBindingOptionsForPlatform(platform.value))
+const keyboardShortcutRows = computed(() => keyboardShortcutRowsForPlatform(platform.value))
 
 watch(() => props.settings, (value) => {
   forceFormDirty.value = false
@@ -189,6 +186,17 @@ watch(() => props.settings, (value) => {
 watch(() => form.shortcutSettings, () => {
   if (activeCategory.value === 'shortcuts') scheduleShortcutConflictCheck()
 }, { deep: true })
+
+watch(platform, (value) => {
+  form.shortcutSettings = normalizeShortcutSettings(
+    form.shortcutSettings,
+    form.terminalCopyOnSelectEnabled ?? true,
+    form.terminalRightClickPasteEnabled ?? true,
+    value,
+  )
+  if (value === 'darwin') { externalShortcutConflicts.value = []; form.alerts.nativeNotifications.enabled = false }
+  if (activeCategory.value === 'shortcuts') scheduleShortcutConflictCheck()
+})
 
 watch(activeCategory, (category) => {
   if (category === 'shortcuts') scheduleShortcutConflictCheck()
@@ -206,6 +214,7 @@ function applySettingsToForm(value: AppSettings) {
       value.shortcutSettings,
       value.terminalCopyOnSelectEnabled ?? true,
       value.terminalRightClickPasteEnabled ?? true,
+      platform.value,
     ),
     localTerminalShellPreference: value.localTerminalShellPreference || 'auto',
     localTerminalElevatedEnabled: Boolean(value.localTerminalElevatedEnabled),
@@ -320,6 +329,14 @@ function enabledShortcutBindings() {
 }
 
 function scheduleShortcutConflictCheck() {
+  if (platform.value === 'darwin') {
+    externalShortcutConflicts.value = [{
+      shortcut: '',
+      status: 'unknown',
+      message: 'macOS 快捷键冲突检测暂不可用。ServerPilot 仍可保存这些设置。',
+    }]
+    return
+  }
   if (shortcutConflictCheckTimer !== null) {
     window.clearTimeout(shortcutConflictCheckTimer)
     shortcutConflictCheckTimer = null
@@ -356,6 +373,7 @@ function settingsPayload(): AppSettings {
     form.shortcutSettings,
     form.terminalCopyOnSelectEnabled ?? true,
     form.terminalRightClickPasteEnabled ?? true,
+    platform.value,
   )
   return {
     ...form,
@@ -407,6 +425,7 @@ function normalizeSettings(value: AppSettings) {
       value.shortcutSettings,
       value.terminalCopyOnSelectEnabled ?? true,
       value.terminalRightClickPasteEnabled ?? true,
+      platform.value,
     ),
     hostKeyPolicy: value.hostKeyPolicy,
     themeMode: value.themeMode,
@@ -1315,7 +1334,8 @@ function errorMessage(reason: unknown, fallback: string) {
         <p v-for="entry in externalShortcutConflicts" :key="`${entry.shortcut}-${entry.status}`">
           {{ entry.message }}
         </p>
-        <small>此检测为 best-effort，只能尽量发现 Windows 或其他应用注册的全局快捷键，不能保证发现所有应用内快捷键。</small>
+        <small v-if="platform === 'darwin'">macOS 全局快捷键冲突检测暂不可用，不能保证发现所有应用内快捷键。</small>
+        <small v-else>此检测为 best-effort，只能尽量发现 Windows 或其他应用注册的全局快捷键，不能保证发现所有应用内快捷键。</small>
       </div>
       <p class="settings-note">
         当前补全快捷键：{{ shortcutLabel(form.shortcutSettings.terminalCompletion) }}。Tab 仍保留给终端程序本身，避免破坏 shell、vim、tmux 等交互。
@@ -1334,6 +1354,7 @@ function errorMessage(reason: unknown, fallback: string) {
       <AlertNotificationSettingsSection
         :alerts="form.alerts"
         :native-notification-status="props.nativeNotificationStatus"
+        :platform="platform"
         @update-alerts-enabled="form.alerts.enabled = $event"
         @update-notify-recovery="form.alerts.notifyRecovery = $event"
         @update-native-notifications-enabled="form.alerts.nativeNotifications.enabled = $event"

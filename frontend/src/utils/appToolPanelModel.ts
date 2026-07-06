@@ -71,7 +71,7 @@ export function buildToolPanelActions(context: ToolPanelActionContext): ToolPane
     },
     {
       id: 'keyvault',
-      label: 'Key Vault',
+      label: '密钥库',
       targetView: 'settings',
       disabled: false,
       tooltip: '',

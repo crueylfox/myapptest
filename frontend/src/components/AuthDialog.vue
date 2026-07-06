@@ -41,7 +41,7 @@ function submitLabel() {
 <template>
   <div v-if="open && connection" class="modal-backdrop" @click.self="emit('close')">
     <form class="modal auth-modal" @submit.prevent="submit">
-      <header><h2>{{ dialogTitle() }}</h2><button type="button" class="dialog-close-button" @click="emit('close')">关闭</button></header>
+      <header><h2>{{ dialogTitle() }}</h2></header>
       <p class="target">{{ connection.username }}@{{ connection.host }}:{{ connection.port }}</p>
       <p v-if="issue" class="form-error">{{ issue }}</p>
       <p v-else-if="connection.credentialSaved" class="saved-credential">系统凭据库中已有保存的{{ connection.authType === 'password' ? '密码' : '私钥口令' }}</p>

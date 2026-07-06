@@ -2439,14 +2439,14 @@ const appBlurOverlayFixture = computed(() =>
         <div class="ui-fixture-settings-card" data-testid="settings-native-notification">
           <div class="alert-native-controlbar" data-testid="alert-native-notifications">
             <label class="alert-global-control">
-              <input type="checkbox" :checked="settingsData.nativeNotifications?.enabled" />
+              <input type="checkbox" :checked="false" disabled data-testid="alert-native-notifications-enabled" />
               <span class="alert-global-control__text">
-                <strong>系统原生通知</strong>
-                <small>不可用时保持应用内告警，不改变已有告警中心行为。</small>
+                <strong>macOS 系统通知</strong>
+                <small>macOS 系统通知暂不可用；应用内告警中心行为不变。</small>
               </span>
             </label>
             <div class="alert-native-controlbar__status">
-              <span data-testid="alert-native-notifications-status">当前环境不可用，稍后可重试</span>
+              <span data-testid="alert-native-notifications-status">macOS 系统通知暂不可用。</span>
               <button type="button" disabled>发送系统通知</button>
             </div>
           </div>
@@ -2463,7 +2463,6 @@ const appBlurOverlayFixture = computed(() =>
             <div class="connection-dialog-rail">
               <header class="connection-dialog-header">
                 <h2>{{ shouldRender('connection-dialog-advanced') ? '编辑服务器' : '添加服务器' }}</h2>
-                <button type="button" class="dialog-close-button connection-dialog-close">关闭</button>
               </header>
               <div class="connection-form">
                 <div class="connection-form-row is-long-short">
@@ -2579,7 +2578,7 @@ const appBlurOverlayFixture = computed(() =>
               >
                 请填写主机地址并确认认证信息。
               </p>
-              <p class="form-note">密码和私钥口令不会写入 SQLite。Key Vault 私钥会经 Windows 用户级保护后存入本地数据库。</p>
+              <p class="form-note">密码和私钥口令不会写入 SQLite。密钥库私钥会经 Windows 用户级保护后存入本地数据库。</p>
               <footer class="connection-dialog-footer">
                 <button type="button" class="secondary">取消</button>
                 <button type="submit" class="secondary">保存</button>
@@ -2599,7 +2598,6 @@ const appBlurOverlayFixture = computed(() =>
           <form class="modal auth-modal" @submit.prevent>
             <header>
               <h2>{{ shouldRender('auth-dialog-key-passphrase') ? '打开 SSH 终端' : '输入认证信息' }}</h2>
-              <button type="button" class="dialog-close-button">关闭</button>
             </header>
             <p class="target">fixture-user@fixture-server-with-long-hostname.example.invalid:22</p>
             <p v-if="shouldRender('auth-dialog-password-error')" class="form-error">认证失败，请重新输入认证信息。</p>

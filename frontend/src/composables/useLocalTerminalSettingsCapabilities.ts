@@ -16,5 +16,5 @@ export function useLocalTerminalSettingsCapabilities(onAdminSettingHidden?: () =
     if (!showLocalTerminalAdminSetting.value) onAdminSettingHidden?.()
   }
 
-  return { showLocalTerminalAdminSetting, loadLocalTerminalCapabilities }
+  return { capabilities, showLocalTerminalAdminSetting, loadLocalTerminalCapabilities }
 }

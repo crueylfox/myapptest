@@ -1236,11 +1236,15 @@ test('Settings native notification controls stay visible in narrow layout', asyn
   await openFixture(page, 'settings-native-notification', { width: 800, height: 600 })
 
   const panel = page.locator('[data-testid="alert-native-notifications"]')
-  const toggleLabel = panel.getByText('系统原生通知')
+  const toggleLabel = panel.locator('.alert-global-control__text strong')
   const status = panel.locator('[data-testid="alert-native-notifications-status"]')
   const sendButton = panel.getByRole('button', { name: '发送系统通知' })
 
   await expect(toggleLabel).toBeVisible()
+  await expect(panel).not.toContainText('Windows 原生通知')
+  await expect(status).toContainText('macOS 系统通知暂不可用')
+  await expect(panel.locator('[data-testid="alert-native-notifications-enabled"]')).toBeDisabled()
+  await expect(sendButton).toBeDisabled()
   await expect(status).toBeVisible()
   await expect(sendButton).toBeVisible()
   expectInside(await box(panel), await box(sendButton))
@@ -1256,6 +1260,15 @@ test('Settings final navigation labels are centered and readable', async ({ page
   await expect(buttons).toHaveCount(6)
   await expect(nav.locator('.app-icon')).toHaveCount(6)
   await expect(separators).toHaveCount(0)
+  const active = buttons.first()
+  const inactive = buttons.nth(1)
+  const activeBackground = await active.evaluate((element) => window.getComputedStyle(element).backgroundColor)
+  const inactiveBackground = await inactive.evaluate((element) => window.getComputedStyle(element).backgroundColor)
+  expect(activeBackground).not.toBe('rgba(0, 0, 0, 0)')
+  expect(activeBackground).not.toBe(inactiveBackground)
+  await inactive.hover()
+  const hoverBackground = await inactive.evaluate((element) => window.getComputedStyle(element).backgroundColor)
+  expect(hoverBackground).not.toBe(activeBackground)
 
   for (let index = 0; index < 6; index += 1) {
     const button = buttons.nth(index)

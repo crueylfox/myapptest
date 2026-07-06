@@ -29,9 +29,9 @@ func startPlatformPTY(ctx context.Context, shell string, cwd string, cols int, r
 		_ = term.Close()
 		return nil, nil, errors.New("调整本地终端尺寸失败")
 	}
-	cmd := term.CommandContext(ctx, shell)
+	cmd := term.CommandContext(ctx, shell, platformShellArgs("darwin", shell)...)
 	cmd.Dir = cwd
-	cmd.Env = append(os.Environ(), "TERM=xterm-256color")
+	cmd.Env = platformShellEnv("darwin", os.Environ())
 	if err := cmd.Start(); err != nil {
 		_ = term.Close()
 		return nil, nil, errors.New("启动 macOS 本地 shell 失败")

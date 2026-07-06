@@ -99,6 +99,7 @@ const nativeAlertNotifications = useNativeAlertNotifications({
   settings: computed(() => settings.value.alerts),
   runtime: createWailsNativeNotificationRuntime(),
   notify: showToast,
+  platform: computed(() => localTerminalStore.capabilities?.platform ?? 'windows'),
 })
 let authFlow: ReturnType<typeof useAuthDialogFlow>
 let hostKeyTrustFlow: ReturnType<typeof useHostKeyTrustFlow>

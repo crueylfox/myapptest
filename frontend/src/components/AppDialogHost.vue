@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { resolveAppDialog, useAppDialog } from '../composables/useAppDialog'
 
 const { dialog } = useAppDialog()
@@ -7,6 +7,7 @@ const input = ref('')
 const error = ref('')
 const submitting = ref(false)
 const inputElement = ref<HTMLInputElement>()
+const showHeaderClose = computed(() => dialog.value?.hideCloseButton === false)
 let previousFocus: HTMLElement | null = null
 
 watch(() => dialog.value?.id, async () => {
@@ -89,7 +90,7 @@ onBeforeUnmount(() => {
         <header>
           <h2>{{ dialog.title }}</h2>
           <button
-            v-if="!dialog.hideCloseButton"
+            v-if="showHeaderClose"
             type="button"
             class="dialog-close-button"
             :disabled="submitting"

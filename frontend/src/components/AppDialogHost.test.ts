@@ -28,7 +28,7 @@ describe('AppDialogHost', () => {
     })
     await nextTick()
     const form = document.body.querySelector<HTMLFormElement>('.app-dialog')!
-    expect(document.body.querySelector<HTMLButtonElement>('.app-dialog .dialog-close-button')?.textContent).toBe('关闭')
+    expect(document.body.querySelector('.app-dialog .dialog-close-button')).toBeNull()
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
     await Promise.resolve()
     expect(document.body.textContent).toContain('请输入分组名称')
@@ -81,14 +81,13 @@ describe('AppDialogHost', () => {
     await expect(result).resolves.toBe(false)
   })
 
-  it('can hide the redundant header close button for destructive confirmations', async () => {
+  it('hides the redundant header close button whenever the footer already has cancel actions', async () => {
     wrapper = mount(AppDialogHost, { attachTo: document.body })
     void confirmDialog({
       title: '删除命令历史',
       message: '确定删除这条命令历史吗？',
       confirmText: '删除',
       danger: true,
-      hideCloseButton: true,
     })
     await nextTick()
 
@@ -111,6 +110,7 @@ describe('AppDialogHost', () => {
     await nextTick()
 
     const buttons = [...document.body.querySelectorAll<HTMLButtonElement>('.app-dialog footer button')]
+    expect(document.body.querySelector('.app-dialog header .dialog-close-button')).toBeNull()
     expect(buttons.map((button) => button.textContent)).toEqual(['取消', '不保存', '保存'])
     buttons[1].click()
 

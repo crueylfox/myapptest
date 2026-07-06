@@ -457,6 +457,28 @@ func TestResolveDarwinLocalShellPrefersUserShellThenZshThenBash(t *testing.T) {
 	}
 }
 
+func TestDarwinLocalTerminalCommandUsesLoginShellAndColorEnv(t *testing.T) {
+	if args := platformShellArgs("darwin", "/bin/zsh"); !sameStrings(args, []string{"-l"}) {
+		t.Fatalf("darwin zsh args = %v", args)
+	}
+	if args := platformShellArgs("darwin", "/bin/bash"); !sameStrings(args, []string{"-l"}) {
+		t.Fatalf("darwin bash args = %v", args)
+	}
+	if args := platformShellArgs("windows", `C:\Windows\System32\cmd.exe`); len(args) != 0 {
+		t.Fatalf("windows args = %v", args)
+	}
+
+	env := platformShellEnv("darwin", []string{"TERM=dumb", "PATH=/usr/bin"})
+	if !containsString(env, "TERM=xterm-256color") ||
+		!containsString(env, "COLORTERM=truecolor") ||
+		!containsString(env, "CLICOLOR=1") {
+		t.Fatalf("darwin color env missing: %v", env)
+	}
+	if containsString(env, "TERM=dumb") {
+		t.Fatalf("darwin color env should override stale TERM: %v", env)
+	}
+}
+
 func TestResolveShellPreferences(t *testing.T) {
 	lookPath := func(existing map[string]string) lookPathFunc {
 		return func(name string) (string, error) {
@@ -495,6 +517,15 @@ func TestResolveShellPreferences(t *testing.T) {
 	if _, err = resolveShellForPlatform("windows", "invalid", lookPath(nil)); err == nil {
 		t.Fatal("invalid shell preference was accepted")
 	}
+}
+
+func containsString(values []string, expected string) bool {
+	for _, value := range values {
+		if value == expected {
+			return true
+		}
+	}
+	return false
 }
 
 func shellOptionIDs(options []domain.LocalTerminalShellOption) []string {

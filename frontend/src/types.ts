@@ -192,6 +192,11 @@ export type ShortcutBinding =
   | 'ctrl+alt+v'
   | 'ctrl+alt+h'
   | 'ctrl+alt+p'
+  | 'meta+c'
+  | 'meta+v'
+  | 'meta+k'
+  | 'shift+meta+h'
+  | 'shift+meta+p'
 
 export type TerminalRightClickAction = 'paste' | 'menu'
 export type TerminalContextMenuTrigger = 'shift_right_click' | 'ctrl_right_click' | 'disabled'

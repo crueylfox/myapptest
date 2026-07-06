@@ -184,7 +184,7 @@ describe('ConnectionDialog', () => {
     expect(rail.element.contains(wrapper.get('.connection-dialog-header').element)).toBe(true)
     expect(rail.element.contains(wrapper.get('.connection-form').element)).toBe(true)
     expect(rail.element.contains(wrapper.get('.connection-dialog-footer').element)).toBe(true)
-    expect(wrapper.get('.connection-dialog-header .connection-dialog-close').text()).toBe('关闭')
+    expect(wrapper.find('.connection-dialog-header .connection-dialog-close').exists()).toBe(false)
     expect(rows[0].classes()).toEqual(expect.arrayContaining(['is-long-short']))
     expect(rows[0].find('[data-testid="name"]').exists()).toBe(true)
     expect(rows[0].find('[data-testid="group"]').exists()).toBe(true)
@@ -623,6 +623,7 @@ describe('ConnectionDialog', () => {
 
     expect(wrapper.get('[data-testid="connection-key-vault-empty"]').text()).toContain('密钥库中还没有私钥')
     await wrapper.get('[data-testid="connection-add-key"]').trigger('click')
+    expect(wrapper.find('.connection-key-import-modal .dialog-close-button').exists()).toBe(false)
     await wrapper.get('.connection-key-import-modal .file-input button').trigger('click')
     await flushPromises()
     await wrapper.get('.connection-key-import-modal .validation-panel button').trigger('click')
