@@ -216,7 +216,9 @@ button { border: 0; cursor: pointer; background: transparent; }
 .welcome { height: 100%; display: grid; place-content: center; justify-items: center; text-align: center; }
 .welcome h1 { margin: 20px 0 4px; }
 .welcome p { color: var(--muted); margin: 0 0 20px; }
-.modal-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; background: rgba(2, 5, 10, .3); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transform: translateZ(0); }
+.app-glass-backdrop { background: rgba(3, 7, 18, .08); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transform: translateZ(0); }
+.app-glass-surface { background: rgba(18, 27, 39, .88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.modal-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; background: rgba(3, 7, 18, .08); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transform: translateZ(0); }
 .modal-backdrop.danger-modal { z-index: var(--z-danger-modal); }
 .app-dialog-backdrop,
 .app-dialog-backdrop.danger-modal { z-index: var(--z-app-dialog); }
@@ -358,7 +360,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .dashboard-summary-list em { color: var(--muted); font-style: normal; white-space: nowrap; }
 .dashboard-summary-actions { min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .dashboard-summary-actions button { min-width: 0; height: 28px; padding: 0 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
-.settings-overlay-backdrop { position: fixed; inset: 0; z-index: var(--z-popover); display: flex; justify-content: center; align-items: center; padding: 32px; background: rgba(3, 7, 18, .22); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); overflow: hidden; transform: translateZ(0); }
+.settings-overlay-backdrop { position: fixed; inset: 0; z-index: var(--z-popover); display: flex; justify-content: center; align-items: center; padding: 32px; background: rgba(3, 7, 18, .08); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); overflow: hidden; transform: translateZ(0); }
 .settings-page { width: min(920px, 100%); max-width: 920px; min-width: 0; margin: 0 auto; padding: 32px; }
 .settings-page-overlay { display: flex; flex-direction: column; width: min(920px, calc(100vw - 64px)); height: min(760px, calc(100vh - 64px)); max-width: calc(100vw - 64px); max-height: calc(100vh - 64px); min-height: 0; margin: 0; padding: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: rgba(13, 20, 30, .84); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 24px 80px var(--shadow-strong); }
 .settings-page > header { margin-bottom: 14px; }
@@ -1125,9 +1127,9 @@ button { border: 0; cursor: pointer; background: transparent; }
 
 :root[data-theme="light"] .modal-backdrop,
 :root[data-theme="light"] .multi-server-dashboard-backdrop {
-  background: rgba(226, 232, 240, .58);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(226, 232, 240, .08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 :root[data-theme="light"] .modal {
@@ -1137,9 +1139,9 @@ button { border: 0; cursor: pointer; background: transparent; }
 }
 
 :root[data-theme="light"] .settings-overlay-backdrop {
-  background: rgba(226, 232, 240, .5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(226, 232, 240, .08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 :root[data-theme="light"] .settings-page-overlay {

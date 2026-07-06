@@ -59,6 +59,21 @@ async function expectBlurredTranslucentSurface(locator: Locator) {
   expect(styles.backdropFilter).toContain('blur(')
 }
 
+async function expectGlassBackdrop(locator: Locator) {
+  await expect(locator).toBeVisible()
+  const styles = await locator.evaluate((element) => {
+    const style = window.getComputedStyle(element)
+    return {
+      backgroundColor: style.backgroundColor,
+      backdropFilter: style.backdropFilter || style.webkitBackdropFilter,
+    }
+  })
+  expect(styles.backgroundColor).toMatch(/rgba\(/)
+  const alpha = Number(styles.backgroundColor.match(/,\s*([.\d]+)\)$/)?.[1] ?? '1')
+  expect(alpha).toBeLessThanOrEqual(0.12)
+  expect(styles.backdropFilter).toContain('blur(')
+}
+
 async function textRightGapToSeparator(control: Locator, separator: Locator) {
   const controlBox = await box(control)
   const separatorBox = await box(separator)
@@ -866,6 +881,15 @@ test('macOS dark settings radios and overlay menus use visible checked state and
     '.settings-page-overlay .settings-category-nav',
   ]) {
     await expectBlurredTranslucentSurface(page.locator(selector).first())
+  }
+  await expectGlassBackdrop(page.locator('.settings-overlay-backdrop').first())
+  await expectGlassBackdrop(page.locator('.app-dialog-backdrop').first())
+})
+
+test('macOS app dialogs use glass backdrops without full-screen gray wash', async ({ page }) => {
+  for (const fixture of ['connection-dialog-password', 'connection-dialog-advanced'] as const) {
+    await openFixture(page, fixture, { width: 900, height: 640 })
+    await expectGlassBackdrop(page.locator('.modal-backdrop').first())
   }
 })
 

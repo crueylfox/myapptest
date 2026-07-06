@@ -185,7 +185,7 @@ function updateLogQuery(event: Event) {
 
   <div
     v-if="settingsOverlayOpen"
-    class="settings-overlay-backdrop"
+    class="settings-overlay-backdrop app-glass-backdrop"
     data-testid="settings-overlay"
   >
     <SettingsView

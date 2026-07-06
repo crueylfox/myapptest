@@ -961,7 +961,7 @@ function errorMessage(reason: unknown, fallback: string) {
 </script>
 
 <template>
-  <section class="settings-page" :class="{ 'settings-page-overlay': overlay }">
+  <section class="settings-page" :class="{ 'settings-page-overlay': overlay, 'app-glass-surface': overlay }">
     <header class="settings-page-header">
       <div>
         <h1>设置</h1>
@@ -1543,8 +1543,8 @@ function errorMessage(reason: unknown, fallback: string) {
       </div>
     </div>
 
-    <div v-if="keyVaultModalOpen" class="modal-backdrop" @click.self="closeKeyModal" @keydown.esc.prevent="closeKeyModal">
-      <form class="modal key-vault-modal" @submit.prevent="saveKeyEntry">
+    <div v-if="keyVaultModalOpen" class="modal-backdrop app-glass-backdrop" @click.self="closeKeyModal" @keydown.esc.prevent="closeKeyModal">
+      <form class="modal key-vault-modal app-glass-surface" @submit.prevent="saveKeyEntry">
         <header>
           <h2>{{ editingKey ? '编辑密钥' : '新增密钥' }}</h2>
           <button type="button" class="dialog-close-button" @click="closeKeyModal">关闭</button>

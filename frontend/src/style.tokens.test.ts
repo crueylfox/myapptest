@@ -162,8 +162,8 @@ describe('theme and overlay tokens', () => {
   })
 
   it('keeps macOS overlay backdrops translucent enough for blur to be visible', () => {
-    expect(rgbaAlpha(declaration(block('.modal-backdrop'), 'background'))).toBeLessThanOrEqual(0.34)
-    expect(rgbaAlpha(declaration(block('.settings-overlay-backdrop'), 'background'))).toBeLessThanOrEqual(0.26)
+    expect(rgbaAlpha(declaration(block('.modal-backdrop'), 'background'))).toBeLessThanOrEqual(0.12)
+    expect(rgbaAlpha(declaration(block('.settings-overlay-backdrop'), 'background'))).toBeLessThanOrEqual(0.12)
     expect(declaration(block('.modal-backdrop'), 'backdrop-filter')).toContain('blur(')
     expect(declaration(block('.settings-overlay-backdrop'), 'backdrop-filter')).toContain('blur(')
   })

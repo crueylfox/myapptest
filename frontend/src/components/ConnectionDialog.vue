@@ -345,8 +345,8 @@ function submit(connectAfterSave: boolean) {
 </script>
 
 <template>
-  <div v-if="open" class="modal-backdrop" @pointerdown.self.stop @keydown.esc.prevent="close">
-    <form ref="formElement" class="modal connection-modal" @submit.prevent="submit(false)">
+  <div v-if="open" class="modal-backdrop app-glass-backdrop" @pointerdown.self.stop @keydown.esc.prevent="close">
+    <form ref="formElement" class="modal connection-modal app-glass-surface" @submit.prevent="submit(false)">
       <div class="connection-dialog-rail">
         <header class="connection-dialog-header">
           <h2>{{ form.id ? '编辑服务器' : '添加服务器' }}</h2>
@@ -536,8 +536,8 @@ function submit(connectAfterSave: boolean) {
     </form>
   </div>
 
-  <div v-if="keyImportOpen" class="modal-backdrop key-import-backdrop" @click.self="closeKeyImport" @keydown.esc.prevent="closeKeyImport">
-    <form class="modal key-vault-modal connection-key-import-modal" data-testid="connection-key-import-modal" @submit.prevent="saveImportedKey">
+  <div v-if="keyImportOpen" class="modal-backdrop key-import-backdrop app-glass-backdrop" @click.self="closeKeyImport" @keydown.esc.prevent="closeKeyImport">
+    <form class="modal key-vault-modal connection-key-import-modal app-glass-surface" data-testid="connection-key-import-modal" @submit.prevent="saveImportedKey">
       <header>
         <h2>添加密钥</h2>
         <button type="button" class="dialog-close-button" @click="closeKeyImport">关闭</button>

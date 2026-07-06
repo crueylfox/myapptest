@@ -2109,7 +2109,7 @@ function shouldRender(name: FixtureName | string) {
 
       <section
         v-if="shouldRender('settings-macos-dark-overlays')"
-        class="settings-overlay-backdrop"
+        class="settings-overlay-backdrop app-glass-backdrop"
         data-testid="settings-macos-dark-overlays"
       >
         <div class="topbar-menu">
@@ -2119,8 +2119,8 @@ function shouldRender(name: FixtureName | string) {
             <span class="topbar-menu-trailing"></span>
           </button>
         </div>
-        <div class="modal-backdrop app-dialog-backdrop ui-fixture-modal-backdrop">
-          <form class="modal app-dialog" @submit.prevent>
+        <div class="modal-backdrop app-dialog-backdrop app-glass-backdrop ui-fixture-modal-backdrop">
+          <form class="modal app-dialog app-glass-surface" @submit.prevent>
             <header>
               <h2>Delete server</h2>
             </header>
@@ -2422,8 +2422,8 @@ function shouldRender(name: FixtureName | string) {
         class="ui-fixture-security-shell"
         :data-testid="fixtureName"
       >
-        <div class="modal-backdrop ui-fixture-modal-backdrop">
-          <form class="modal connection-modal" @submit.prevent>
+        <div class="modal-backdrop app-glass-backdrop ui-fixture-modal-backdrop">
+          <form class="modal connection-modal app-glass-surface" @submit.prevent>
             <div class="connection-dialog-rail">
               <header class="connection-dialog-header">
                 <h2>{{ shouldRender('connection-dialog-advanced') ? '编辑服务器' : '添加服务器' }}</h2>

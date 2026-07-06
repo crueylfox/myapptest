@@ -79,13 +79,13 @@ onBeforeUnmount(() => {
   <Teleport to="body">
     <div
       v-if="dialog"
-      class="modal-backdrop app-dialog-backdrop"
+      class="modal-backdrop app-dialog-backdrop app-glass-backdrop"
       :class="{ 'danger-modal': dialog.danger }"
       data-testid="app-dialog"
       @keydown="onKeydown"
       @pointerdown.self="close(dialog.kind === 'confirm' ? false : null)"
     >
-      <form class="modal app-dialog" @submit.prevent="submit">
+      <form class="modal app-dialog app-glass-surface" @submit.prevent="submit">
         <header>
           <h2>{{ dialog.title }}</h2>
           <button
