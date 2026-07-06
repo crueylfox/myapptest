@@ -278,12 +278,13 @@ const policies: Array<{ value: HostKeyPolicy; title: string; detail: string }> =
     detail: '未知主机或指纹变化会暂停连接，用户确认信任并更新后再继续。',
   },
 ]
-const themes: Array<{ value: ThemePreviewMode; title: string; detail: string; previewOnly?: boolean; testId?: string }> = [{ value: 'dark', title: '深色', detail: '使用完整深色界面。' }, { value: 'light', title: '浅色', detail: '使用基础浅色界面。' }, { value: 'system', title: '跟随系统', detail: '随系统外观自动切换。' }, { value: 'macos_gray_dark', title: 'macOS 灰色深色（预览）', detail: '只预览 macOS 灰色深色，不改变正式深色设置。', previewOnly: true, testId: 'theme-preview-macos-gray-dark' }]
+const themes: Array<{ value: ThemeMode; title: string; detail: string }> = [{ value: 'dark', title: '深色', detail: '灰黑深色界面，适合 macOS 和低亮度环境。' }, { value: 'light', title: '浅色', detail: '使用基础浅色界面。' }, { value: 'system', title: '跟随系统', detail: '随系统外观自动切换。' }]
 const currentUIFontSizeIndex = computed(() => uiFontSizeSteps.includes(form.uiFontSize) ? uiFontSizeSteps.indexOf(form.uiFontSize) : uiFontSizeSteps.indexOf('large'))
 const currentUIFontSizePixels = computed(() => uiFontPixels(uiFontSizeSteps[currentUIFontSizeIndex.value]))
 const uiFontSizeByPixels = new Map(uiFontSizeSteps.map((size) => [uiFontPixels(size), size]))
+const uiFontTickLabels = ['小', '13', '正常', '15', '较大', '大', '最大']
 
-function selectTheme(theme: { value: ThemePreviewMode; previewOnly?: boolean }) { previewThemeSelection.value = theme.value; if (!theme.previewOnly) form.themeMode = theme.value as ThemeMode; emit('previewTheme', theme.value) }
+function selectTheme(theme: { value: ThemeMode }) { previewThemeSelection.value = theme.value; form.themeMode = theme.value; emit('previewTheme', theme.value) }
 function updateUIFontSizeFromSlider(event: Event) { const pixels = Math.min(18, Math.max(12, Number((event.target as HTMLInputElement).value) || 15)); const size = uiFontSizeByPixels.get(pixels) ?? 'large'; form.uiFontSize = size; emit('previewFontSize', size) }
 
 async function submit() {
@@ -1015,7 +1016,7 @@ function errorMessage(reason: unknown, fallback: string) {
       <h2>外观</h2>
       <div class="settings-horizontal-options" data-testid="settings-appearance-options">
         <label v-for="theme in themes" :key="theme.value" class="policy-option">
-          <input type="radio" :value="theme.value" :checked="previewThemeSelection === theme.value" :data-testid="theme.testId" @change="selectTheme(theme)" />
+          <input type="radio" :value="theme.value" :checked="previewThemeSelection === theme.value" @change="selectTheme(theme)" />
           <span><strong>{{ theme.title }}</strong><small>{{ theme.detail }}</small></span>
         </label>
       </div>
@@ -1023,6 +1024,7 @@ function errorMessage(reason: unknown, fallback: string) {
       <div class="settings-font-slider" data-testid="ui-font-size-stepper">
         <input type="range" min="12" max="18" step="1" :value="currentUIFontSizePixels" data-testid="ui-font-size-slider" aria-label="界面字体大小" @input="updateUIFontSizeFromSlider" />
         <span class="settings-font-size-value" data-testid="ui-font-size-value">{{ currentUIFontSizePixels }}px</span>
+        <div class="settings-font-ticks" data-testid="ui-font-size-ticks" aria-hidden="true"><span v-for="label in uiFontTickLabels" :key="label" class="settings-font-tick"><span class="settings-font-tick-label">{{ label }}</span></span></div>
       </div>
       <p class="settings-note">SSH 终端字体保持独立，不受此设置影响。</p>
     </article>

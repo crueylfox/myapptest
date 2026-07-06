@@ -1938,9 +1938,10 @@ describe('connection settings', () => {
   it('previews and saves dark, light, and system theme modes', async () => {
     const wrapper = mount(SettingsView, { props: { settings } })
     const appearanceOptions = wrapper.get('[data-testid="settings-appearance-options"]')
-    expect(appearanceOptions.findAll('.policy-option')).toHaveLength(4)
-    expect(cssBlock('.settings-horizontal-options')).toContain('grid-template-columns: repeat(4, minmax(0, 1fr))')
+    expect(appearanceOptions.findAll('.policy-option')).toHaveLength(3)
+    expect(cssBlock('.settings-horizontal-options')).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
     expect(appearanceOptions.text()).not.toContain('Windows')
+    expect(appearanceOptions.text()).not.toContain('预览')
     const system = wrapper.get<HTMLInputElement>('input[value="system"]')
     await system.setValue()
     expect(wrapper.emitted('previewTheme')?.at(-1)).toEqual(['system'])
@@ -1952,27 +1953,20 @@ describe('connection settings', () => {
     expect(wrapper.text()).toContain('跟随系统')
   })
 
-  it('previews macOS gray dark without saving it as the production theme mode', async () => {
-    const wrapper = mount(SettingsView, { props: { settings } })
-    const preview = wrapper.get('[data-testid="theme-preview-macos-gray-dark"]')
-
-    await preview.setValue()
-
-    expect(wrapper.emitted('previewTheme')?.at(-1)).toEqual(['macos_gray_dark'])
-    await wrapper.get('button.settings-save-button').trigger('click')
-    const saved = wrapper.emitted('save')?.at(-1)?.[0] as AppSettings
-    expect(saved.themeMode).toBe(settings.themeMode)
-  })
-
   it('previews and saves UI font sizes with the 12-18px slider bounds', async () => {
     const wrapper = mount(SettingsView, { props: { settings } })
     const value = wrapper.get('[data-testid="ui-font-size-value"]')
     const slider = wrapper.get<HTMLInputElement>('[data-testid="ui-font-size-slider"]')
+    const ticks = wrapper.get('[data-testid="ui-font-size-ticks"]')
 
     expect(value.text()).toBe('15px')
     expect(slider.attributes('min')).toBe('12')
     expect(slider.attributes('max')).toBe('18')
     expect(slider.attributes('step')).toBe('1')
+    expect(ticks.findAll('.settings-font-tick')).toHaveLength(7)
+    expect(ticks.text()).toContain('小')
+    expect(ticks.text()).toContain('正常')
+    expect(ticks.text()).toContain('最大')
     await slider.setValue('12')
     expect(value.text()).toBe('12px')
     await slider.setValue('18')

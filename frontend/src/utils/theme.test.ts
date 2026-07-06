@@ -21,14 +21,14 @@ describe('theme mode', () => {
     expect(document.documentElement.dataset.theme).toBe('light')
   })
 
-  it('applies the macOS gray dark preview without changing the production theme modes', () => {
+  it('keeps the legacy macOS gray dark preview name as a dark-theme alias', () => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({
       matches: false,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
     })))
-    expect(applyTheme('macos_gray_dark')).toBe('macos-gray-dark')
-    expect(document.documentElement.dataset.theme).toBe('macos-gray-dark')
+    expect(applyTheme('macos_gray_dark')).toBe('dark')
+    expect(document.documentElement.dataset.theme).toBe('dark')
     expect(document.documentElement.style.colorScheme).toBe('dark')
     expect(resolvedTheme('dark', false)).toBe('dark')
     expect(resolvedTheme('light', true)).toBe('light')

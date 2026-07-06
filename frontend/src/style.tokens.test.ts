@@ -130,13 +130,22 @@ describe('theme and overlay tokens', () => {
     }
   })
 
-  it('defines a macOS gray dark preview theme without replacing the production dark root', () => {
-    expect(macosGrayDark.bg).toBe('#1f2023')
-    expect(macosGrayDark.sidebar).toBe('#242529')
-    expect(macosGrayDark.panel).toBe('#2b2d31')
-    expect(macosGrayDark['panel-2']).toBe('#303238')
-    expect(macosGrayDark.border).toBe('rgba(255, 255, 255, .10)')
-    expect(dark.bg).not.toBe(macosGrayDark.bg)
+  it('uses the macOS gray palette as the production dark theme', () => {
+    expect(dark.bg).toBe('#1f2023')
+    expect(dark.sidebar).toBe('#242529')
+    expect(dark.panel).toBe('#2b2d31')
+    expect(dark['panel-2']).toBe('#303238')
+    expect(dark.border).toBe('rgba(255, 255, 255, .10)')
+    expect(dark.primary).toBe('#7aa2d8')
+    expect(dark['sftp-surface']).toBe('#23252a')
+    expect(dark['docker-console-bg']).toBe('#191a1e')
+    expect(macosGrayDark).toMatchObject({
+      bg: dark.bg,
+      sidebar: dark.sidebar,
+      panel: dark.panel,
+      'panel-2': dark['panel-2'],
+      border: dark.border,
+    })
   })
 
   it('keeps checked radio controls visible in dark and light settings groups', () => {

@@ -1379,9 +1379,9 @@ test('Settings header actions render as original button styles without pipe sepa
   const closeBox = await box(close)
   expect(Math.abs(saveBox.height - closeBox.height)).toBeLessThanOrEqual(1)
   expect(Math.abs((saveBox.y + saveBox.height / 2) - (closeBox.y + closeBox.height / 2))).toBeLessThanOrEqual(1)
-  expect(await primary.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe('rgb(79, 140, 255)')
+  expect(await primary.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe('rgb(122, 162, 216)')
   await primary.hover()
-  expect(await primary.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe('rgb(79, 140, 255)')
+  expect(await primary.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe('rgb(122, 162, 216)')
 })
 
 test('transfer popover many items stays bounded with internal scrolling', async ({ page }) => {

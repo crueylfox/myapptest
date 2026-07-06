@@ -16,13 +16,13 @@ export function stopThemeSync() {
   mediaListener = null
 }
 
-export function applyTheme(mode: ThemePreviewMode): 'dark' | 'light' | 'macos-gray-dark' {
+export function applyTheme(mode: ThemePreviewMode): 'dark' | 'light' {
   stopThemeSync()
   if (mode === 'macos_gray_dark') {
-    document.documentElement.dataset.theme = 'macos-gray-dark'
+    document.documentElement.dataset.theme = 'dark'
     document.documentElement.style.colorScheme = 'dark'
     window.dispatchEvent(new Event('serverpilot:appearance'))
-    return 'macos-gray-dark'
+    return 'dark'
   }
   const query = window.matchMedia('(prefers-color-scheme: dark)')
   const apply = (systemDark: boolean) => {
