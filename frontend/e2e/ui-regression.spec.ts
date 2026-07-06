@@ -54,7 +54,8 @@ async function expectBlurredTranslucentSurface(locator: Locator) {
     }
   })
   expect(styles.backgroundColor).toMatch(/rgba\(/)
-  expect(styles.backgroundColor).not.toMatch(/,\s*1\)$/)
+  const alpha = Number(styles.backgroundColor.match(/,\s*([.\d]+)\)$/)?.[1] ?? '1')
+  expect(alpha).toBeLessThan(1)
   expect(styles.backdropFilter).toContain('blur(')
 }
 
@@ -832,13 +833,19 @@ test('macOS dark settings radios and overlay menus use visible checked state and
   await expect(checkedRadio).toBeChecked()
   const radioStyle = await checkedRadio.evaluate((element) => {
     const style = window.getComputedStyle(element)
-    return { backgroundColor: style.backgroundColor, boxShadow: style.boxShadow }
+    return {
+      backgroundColor: style.backgroundColor,
+      backgroundImage: style.backgroundImage,
+      boxShadow: style.boxShadow,
+    }
   })
   expect(radioStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+  expect(radioStyle.backgroundImage).toContain('radial-gradient')
   expect(radioStyle.boxShadow).toContain('inset')
 
   for (const selector of [
     '.topbar-menu',
+    '.app-dialog-backdrop',
     '.settings-overlay-backdrop',
     '.settings-page-overlay',
     '.settings-page-overlay .settings-page-header',

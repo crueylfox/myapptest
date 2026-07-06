@@ -41,10 +41,26 @@ async function expectInternalScroll(locator: Locator) {
   expect(await locator.evaluate((element) => window.getComputedStyle(element).overflowY)).toMatch(/auto|scroll/)
 }
 
+async function expectBlurredTranslucentSurface(locator: Locator) {
+  await expect(locator).toBeVisible()
+  const styles = await locator.evaluate((element) => {
+    const style = window.getComputedStyle(element)
+    return {
+      backgroundColor: style.backgroundColor,
+      backdropFilter: style.backdropFilter || style.webkitBackdropFilter,
+    }
+  })
+  expect(styles.backgroundColor).toMatch(/rgba\(/)
+  const alpha = Number(styles.backgroundColor.match(/,\s*([.\d]+)\)$/)?.[1] ?? '1')
+  expect(alpha).toBeLessThan(1)
+  expect(styles.backdropFilter).toContain('blur(')
+}
+
 test('Docker Manager container list keeps toolbar, rows, actions, and details bounded', async ({ page }) => {
   await openManagerFixture(page, 'docker-manager-container-list')
 
   const dialog = page.locator('[data-testid="docker-manager-container-list"] .docker-dialog')
+  await expectBlurredTranslucentSurface(page.locator('[data-testid="docker-manager-container-list"] .docker-dialog-backdrop'))
   const toolbar = dialog.locator('.docker-toolbar')
   const list = dialog.locator('.docker-list-panel')
   const rows = list.locator('.docker-container-card')

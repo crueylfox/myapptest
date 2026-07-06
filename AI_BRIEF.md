@@ -7,7 +7,8 @@ Updated: 2026-07-06
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
 - Current VERSION: `0.5.0-beta.30`.
-- Current round: beta30 same-version macOS smoke hotfix.
+- Recommended delivery version: `0.5.0-beta.30` user-smoke-required.
+- Current round: beta30 macOS usability adaptation / same-version blocker hotfix.
 - Version bump this round: no.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Current hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
@@ -22,9 +23,10 @@ Updated: 2026-07-06
 - macOS KeyVault protector stores the application master key in Keychain and encrypts private-key material locally.
 - Windows backup restore keeps non-sensitive config and reports DPAPI-bound credential warnings instead of silently dropping data.
 - Windows backup imports now preserve legacy key vault private-key auth mapping so restored servers resolve to publickey auth when the key material is restorable.
-- macOS local terminal is a single local terminal entry with `$SHELL`, `/bin/zsh`, then `/bin/bash` resolution.
+- macOS local terminal is a single `本地终端` entry with `$SHELL`, `/bin/zsh`, then `/bin/bash` resolution.
 - macOS local monitor and local file manager cover the MVP resource/file workflows without Windows CMD/PowerShell labels.
-- Dark/light radio checked states and macOS WebView menu/settings/modal blur surfaces have regression coverage.
+- Dark radio checked state and macOS WebView menu/settings blur surfaces have regression coverage.
+- Dark/light radio checked states and AppDialogHost/Docker/modal blur surfaces are covered by computed-style smoke tests.
 - Docker Manager permission failures now explain that manager commands run through independent SSH exec and do not inherit terminal `su/root` state; the UI exposes current-user and non-interactive `sudo -n` retry modes.
 - Light mode Docker/Settings/ServerPicker/dialog/menu surfaces now use theme tokens instead of hardcoded dark surfaces.
 - Compose no longer renders the visible empty text `No Compose projects`.

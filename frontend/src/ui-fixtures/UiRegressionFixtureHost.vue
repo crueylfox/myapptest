@@ -2119,6 +2119,18 @@ function shouldRender(name: FixtureName | string) {
             <span class="topbar-menu-trailing"></span>
           </button>
         </div>
+        <div class="modal-backdrop app-dialog-backdrop ui-fixture-modal-backdrop">
+          <form class="modal app-dialog" @submit.prevent>
+            <header>
+              <h2>Delete server</h2>
+            </header>
+            <p class="app-dialog-message">Delete this fixture server?</p>
+            <footer>
+              <button type="button" class="secondary">Cancel</button>
+              <button type="submit" class="danger">Delete server</button>
+            </footer>
+          </form>
+        </div>
         <section class="settings-page settings-page-overlay">
           <header class="settings-page-header">
             <div>
