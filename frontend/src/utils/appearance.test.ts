@@ -10,11 +10,11 @@ describe('UI font size', () => {
     delete document.documentElement.dataset.uiFont
   })
 
-  it('maps and applies all four supported sizes', () => {
-    const sizes: UIFontSize[] = ['small', 'standard', 'large', 'extra_large']
-    expect(sizes.map(uiFontPixels)).toEqual([13, 14, 15, 16])
-    expect(applyUIFontSize('extra_large')).toBe(16)
-    expect(document.documentElement.style.getPropertyValue('--ui-font-size')).toBe('16px')
-    expect(document.documentElement.dataset.uiFont).toBe('extra_large')
+  it('maps and applies all supported sizes from 12px through 18px', () => {
+    const sizes: UIFontSize[] = ['tiny', 'small', 'standard', 'large', 'extra_large', 'huge', 'max']
+    expect(sizes.map(uiFontPixels)).toEqual([12, 13, 14, 15, 16, 17, 18])
+    expect(applyUIFontSize('max')).toBe(18)
+    expect(document.documentElement.style.getPropertyValue('--ui-font-size')).toBe('18px')
+    expect(document.documentElement.dataset.uiFont).toBe('max')
   })
 })

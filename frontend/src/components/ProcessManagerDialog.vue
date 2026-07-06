@@ -632,7 +632,8 @@ function safeStringList(value: unknown): string[] {
   align-items: center;
   justify-content: center;
   padding: 28px;
-  background: rgba(3, 7, 18, 0.66);
+  background: rgba(3, 7, 18, 0.08);
+  transform: translateZ(0);
 }
 
 .process-dialog {

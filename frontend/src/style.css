@@ -31,7 +31,7 @@
   --toast-info-border: #4f8cff66;
   --toast-error-text: #f3a0a7;
   --toast-error-border: #ef5b6777;
-  --docker-dialog-backdrop: rgba(2, 6, 23, 0.64);
+  --docker-dialog-backdrop: rgba(2, 6, 23, 0.08);
   --docker-dialog-bg: var(--panel);
   --docker-panel-bg: rgba(15, 23, 42, 0.5);
   --docker-panel-strong-bg: var(--panel-2);
@@ -84,7 +84,7 @@
   --toast-info-border: #326fde77;
   --toast-error-text: #b4232f;
   --toast-error-border: #d83f4d77;
-  --docker-dialog-backdrop: rgba(222, 229, 239, 0.58);
+  --docker-dialog-backdrop: rgba(226, 232, 240, 0.08);
   --docker-dialog-bg: rgba(255, 255, 255, 0.9);
   --docker-panel-bg: rgba(255, 255, 255, 0.72);
   --docker-panel-strong-bg: rgba(248, 250, 252, 0.86);
@@ -106,7 +106,13 @@ button { font: inherit; color: inherit; }
 .app-visual-root { height: 100%; display: grid; grid-template-rows: 44px minmax(0, 1fr); transform: translateZ(0); transition: filter 120ms ease; will-change: filter; }
 .app-shell.terminal-layout .app-visual-root { display: block; }
 body:has(.modal-backdrop) .app-visual-root,
-body:has(.settings-overlay-backdrop) .app-visual-root { filter: blur(10px) brightness(.72); }
+body:has(.settings-overlay-backdrop) .app-visual-root,
+body:has(.multi-server-dashboard-backdrop) .app-visual-root,
+body:has(.alert-center-backdrop) .app-visual-root,
+body:has(.docker-dialog-backdrop) .app-visual-root,
+body:has(.tunnel-dialog-backdrop) .app-visual-root,
+body:has(.process-dialog-backdrop) .app-visual-root,
+body:has(.service-dialog-backdrop) .app-visual-root { filter: blur(10px) brightness(.72); }
 .terminal-layout .content { width: 100%; height: 100%; }
 .sidebar { display: flex; flex-direction: column; min-width: 0; background: var(--sidebar); border-right: 1px solid var(--border); padding: 18px 14px 12px; }
 .brand { display: flex; align-items: center; gap: 11px; padding: 2px 5px 18px; }
@@ -266,7 +272,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .auth-modal { width: min(430px, calc(100vw - 40px)); }
 .auth-modal .checkbox { display: flex; grid-template-columns: 17px 1fr; flex-direction: row; align-items: center; margin-top: 15px; line-height: 1.5; }
 .checkbox input { width: auto; }
-.multi-server-dashboard-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: flex; align-items: stretch; justify-content: stretch; padding: 16px; background: rgba(2, 5, 10, .3); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transform: translateZ(0); }
+.multi-server-dashboard-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: flex; align-items: stretch; justify-content: stretch; padding: 16px; background: rgba(2, 5, 10, .08); transform: translateZ(0); }
 .multi-server-dashboard { width: 100%; height: 100%; max-width: none; max-height: none; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); box-shadow: 0 24px 80px var(--shadow-strong); }
 .multi-server-dashboard-header { flex: 0 0 auto; min-width: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px 16px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--sidebar); }
 .dashboard-panel-title { min-width: 0; flex: 1 1 auto; }
@@ -385,7 +391,8 @@ button { border: 0; cursor: pointer; background: transparent; }
 .settings-category-nav .app-icon { width: 18px; height: 18px; color: #8fa4bf; }
 .settings-category-nav-label { min-width: 0; justify-self: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .settings-category-nav button:hover { background: color-mix(in srgb, var(--panel-2) 70%, transparent); color: var(--text); }
-.settings-category-nav button.active { background: color-mix(in srgb, var(--panel-2) 82%, var(--primary) 18%); color: var(--text); font-weight: 700; }
+.settings-category-nav button.active { background: color-mix(in srgb, var(--panel-2) 72%, var(--primary) 28%); color: var(--text); font-weight: 700; box-shadow: inset 3px 0 0 var(--primary), 0 0 0 1px color-mix(in srgb, var(--primary) 24%, transparent); }
+.settings-category-nav button.active .app-icon { color: #93c5fd; }
 .settings-category-nav button:focus-visible { outline: 1px solid #79a7ff; outline-offset: -1px; }
 .settings-category-content { min-width: 0; min-height: 0; }
 .settings-page-overlay .settings-category-content { flex: 1 1 auto; min-height: 0; height: 100%; overflow-x: hidden; overflow-y: auto; padding-right: 4px; }
@@ -402,6 +409,10 @@ button { border: 0; cursor: pointer; background: transparent; }
 .settings-warning { margin: 8px 0 0; padding: 8px 10px; border: 1px solid color-mix(in srgb, #facc15 42%, var(--border)); border-radius: 8px; background: color-mix(in srgb, #facc15 13%, var(--panel)); color: var(--text); font-size: var(--ui-font-size-small); line-height: 1.45; }
 .settings-warning.danger { border-color: color-mix(in srgb, var(--danger) 50%, var(--border)); background: color-mix(in srgb, var(--danger) 12%, var(--panel)); }
 .settings-card-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 14px; }
+.settings-horizontal-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.settings-font-stepper { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; }
+.settings-font-stepper button { width: 36px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 8px; font-size: 18px; line-height: 1; }
+.settings-font-size-value { min-width: 58px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 8px; background: var(--input); color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
 .settings-number-field { display: grid; grid-template-columns: minmax(0, 1fr) minmax(120px, 180px); align-items: center; gap: 16px; color: var(--text); }
 .settings-number-field span { display: grid; gap: 4px; min-width: 0; }
 .settings-number-field small { color: var(--muted); line-height: 1.5; }
@@ -1134,8 +1145,6 @@ button { border: 0; cursor: pointer; background: transparent; }
 
 :root[data-theme="light"] .multi-server-dashboard-backdrop {
   background: rgba(226, 232, 240, .08);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
 }
 
 :root[data-theme="light"] .modal {
@@ -1264,7 +1273,7 @@ button { border: 0; cursor: pointer; background: transparent; }
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
-.alert-center-backdrop { position: fixed; z-index: calc(var(--z-modal) + 1); inset: 0; display: flex; justify-content: flex-end; background: rgba(3, 7, 18, .36); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+.alert-center-backdrop { position: fixed; z-index: calc(var(--z-modal) + 1); inset: 0; display: flex; justify-content: flex-end; background: rgba(3, 7, 18, .08); transform: translateZ(0); }
 .alert-center-panel { position: fixed; width: min(500px, calc(100vw - 18px)); height: 100%; min-width: 0; overflow: hidden; display: grid; grid-template-rows: auto auto auto minmax(0, 1fr); border-left: 1px solid var(--border); background: var(--sidebar); box-shadow: -18px 0 60px var(--shadow-strong); }
 .alert-center-panel > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
 .alert-center-panel h2 { margin: 0 0 2px; font-size: 17px; }

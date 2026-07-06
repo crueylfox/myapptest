@@ -471,9 +471,8 @@ function isOnline(serverID: number) {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(2, 6, 23, 0.64);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(2, 6, 23, 0.08);
+  transform: translateZ(0);
 }
 
 .service-dialog {

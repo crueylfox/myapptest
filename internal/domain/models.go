@@ -81,10 +81,13 @@ const (
 type UIFontSize string
 
 const (
+	UIFontTiny     UIFontSize = "tiny"
 	UIFontSmall    UIFontSize = "small"
 	UIFontStandard UIFontSize = "standard"
 	UIFontLarge    UIFontSize = "large"
 	UIFontXLarge   UIFontSize = "extra_large"
+	UIFontHuge     UIFontSize = "huge"
+	UIFontMax      UIFontSize = "max"
 )
 
 type LocalTerminalShellPreference string

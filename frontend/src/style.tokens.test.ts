@@ -162,18 +162,24 @@ describe('theme and overlay tokens', () => {
 
   it('uses app content blur instead of full-screen gray modal scrims', () => {
     const visualRoot = block('.app-visual-root')
-    const modalOpenRule = block('body:has(.modal-backdrop) .app-visual-root,\nbody:has(.settings-overlay-backdrop) .app-visual-root')
+    const modalOpenRule = block('body:has(.modal-backdrop) .app-visual-root,\nbody:has(.settings-overlay-backdrop) .app-visual-root,\nbody:has(.multi-server-dashboard-backdrop) .app-visual-root,\nbody:has(.alert-center-backdrop) .app-visual-root,\nbody:has(.docker-dialog-backdrop) .app-visual-root,\nbody:has(.tunnel-dialog-backdrop) .app-visual-root,\nbody:has(.process-dialog-backdrop) .app-visual-root,\nbody:has(.service-dialog-backdrop) .app-visual-root')
     const modalBackdrop = block('.modal-backdrop')
     const settingsBackdrop = block('.settings-overlay-backdrop')
+    const monitorBackdrop = block('.multi-server-dashboard-backdrop')
+    const alertBackdrop = block('.alert-center-backdrop')
 
     expect(visualRoot).toContain('transition: filter 120ms ease')
     expect(modalOpenRule).toContain('filter: blur(10px) brightness(.72)')
     expect(rgbaAlpha(declaration(modalBackdrop, 'background'))).toBeLessThanOrEqual(0.18)
     expect(rgbaAlpha(declaration(settingsBackdrop, 'background'))).toBeLessThanOrEqual(0.18)
+    expect(rgbaAlpha(declaration(monitorBackdrop, 'background'))).toBeLessThanOrEqual(0.18)
+    expect(rgbaAlpha(declaration(alertBackdrop, 'background'))).toBeLessThanOrEqual(0.18)
     expect(modalBackdrop).not.toContain('backdrop-filter')
     expect(modalBackdrop).not.toContain('-webkit-backdrop-filter')
     expect(settingsBackdrop).not.toContain('backdrop-filter')
     expect(settingsBackdrop).not.toContain('-webkit-backdrop-filter')
+    expect(monitorBackdrop).not.toContain('backdrop-filter')
+    expect(alertBackdrop).not.toContain('backdrop-filter')
   })
 
   it('keeps workspace tab close control right-aligned without layout hacks', () => {
@@ -1224,6 +1230,8 @@ describe('theme and overlay tokens', () => {
     expect(navLabel).toContain('overflow: hidden')
     expect(hover).toContain('background:')
     expect(active).toContain('font-weight: 700')
+    expect(active).toContain('box-shadow:')
+    expect(block('.settings-category-nav button.active .app-icon')).toContain('color:')
   })
 
   it('removes terminal profile divider chrome without negative margin hacks', () => {

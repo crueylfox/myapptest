@@ -187,7 +187,7 @@ describe('first-batch UI regression contracts', () => {
   })
 
   it('keeps modal, menu, settings, and radio styles visible in macOS WebView dark mode', () => {
-    const visualBlurRule = block('body:has(.modal-backdrop) .app-visual-root,\nbody:has(.settings-overlay-backdrop) .app-visual-root')
+    const visualBlurRule = block('body:has(.modal-backdrop) .app-visual-root,\nbody:has(.settings-overlay-backdrop) .app-visual-root,\nbody:has(.multi-server-dashboard-backdrop) .app-visual-root,\nbody:has(.alert-center-backdrop) .app-visual-root,\nbody:has(.docker-dialog-backdrop) .app-visual-root,\nbody:has(.tunnel-dialog-backdrop) .app-visual-root,\nbody:has(.process-dialog-backdrop) .app-visual-root,\nbody:has(.service-dialog-backdrop) .app-visual-root')
     expect(visualBlurRule).toContain('filter: blur(10px) brightness(.72)')
 
     for (const selector of ['.settings-page-overlay', '.topbar-menu', '.server-picker']) {
@@ -203,8 +203,12 @@ describe('first-batch UI regression contracts', () => {
     const checkboxDarkChecked = block(':root:not([data-theme="light"]) input[type="checkbox"]:checked')
     expect(rgbaAlpha(declaration(block('.modal-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
     expect(rgbaAlpha(declaration(block('.settings-overlay-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
+    expect(rgbaAlpha(declaration(block('.multi-server-dashboard-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
+    expect(rgbaAlpha(declaration(block('.alert-center-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
     expect(block('.modal-backdrop')).not.toContain('backdrop-filter')
     expect(block('.settings-overlay-backdrop')).not.toContain('backdrop-filter')
+    expect(block('.multi-server-dashboard-backdrop')).not.toContain('backdrop-filter')
+    expect(block('.alert-center-backdrop')).not.toContain('backdrop-filter')
     expect(radioChecked).toContain('background-image: radial-gradient')
     expect(radioChecked).toContain('background-color: var(--primary)')
     expect(radioDarkChecked).toContain('border-color: #93c5fd')

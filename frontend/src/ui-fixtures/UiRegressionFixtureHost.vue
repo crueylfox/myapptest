@@ -1569,7 +1569,15 @@ function shouldRender(name: FixtureName | string) {
 }
 
 const appBlurOverlayFixture = computed(() =>
-  shouldRender('settings-macos-dark-overlays') || fixtureName.value.startsWith('connection-dialog'))
+  shouldRender('settings-macos-dark-overlays') ||
+  fixtureName.value.startsWith('connection-dialog') ||
+  isDockerManagerFixture(fixtureName.value) ||
+  isTunnelManagerFixture(fixtureName.value) ||
+  isProcessManagerFixture(fixtureName.value) ||
+  isServiceManagerFixture(fixtureName.value) ||
+  shouldRender('network-diagnostics-summary') ||
+  shouldRender('dashboard-alert-center-layer') ||
+  shouldRender('alert-center-list'))
 </script>
 
 <template>
@@ -2433,7 +2441,7 @@ const appBlurOverlayFixture = computed(() =>
             <label class="alert-global-control">
               <input type="checkbox" :checked="settingsData.nativeNotifications?.enabled" />
               <span class="alert-global-control__text">
-                <strong>Windows 原生通知</strong>
+                <strong>系统原生通知</strong>
                 <small>不可用时保持应用内告警，不改变已有告警中心行为。</small>
               </span>
             </label>
@@ -2734,6 +2742,7 @@ const appBlurOverlayFixture = computed(() =>
         class="ui-fixture-security-shell ui-fixture-alert-shell"
         data-testid="alert-center-list"
       >
+        <div class="alert-center-backdrop">
         <aside class="viewport-popover alert-center-panel">
           <header>
             <div>
@@ -2776,6 +2785,7 @@ const appBlurOverlayFixture = computed(() =>
             </article>
           </div>
         </aside>
+        </div>
       </section>
 
       <section
@@ -3760,51 +3770,55 @@ const appBlurOverlayFixture = computed(() =>
 
       <section
         v-if="isServiceManagerFixture(fixtureName)"
-        class="ui-fixture-service-manager ui-fixture-service-manager-narrow"
+        class="ui-fixture-manager-shell"
         :data-testid="fixtureName"
       >
-        <ServiceManagerList
-          :capability="serviceCapability"
-          :services="serviceSummaries"
-          :raw-count="serviceSummaries.length"
-          :selected-unit-name="selectedService.unitName"
-        />
-        <ServiceManagerDetails
-          v-model:active-detail-tab="activeDetailTab"
-          :action-busy="null"
-          :action-disabled="{ start: false, stop: false, restart: false, enable: false, disable: false }"
-          :capability="serviceCapability"
-          :critical-warning-text="''"
-          :detail="serviceDetail"
-          :detail-error="''"
-          :detail-loading="false"
-          :journal-props="{
-            autoScroll: true,
-            currentBootOnly: true,
-            journalCountText: `${serviceLines.length} 行`,
-            journalFollowBusy: false,
-            journalFollowDisabledReason: serviceData.journalFollowDisabledReason || '',
-            journalFollowSupported: serviceData.journalFollowSupported !== false,
-            journalFollowing: false,
-            journalLoading: false,
-            journalRefreshSupported: serviceData.journalRefreshSupported !== false,
-            journalSourceText: serviceData.journalSourceText || '',
-            journalStatus: 'ready',
-            journalStatusText: 'Synthetic fixture lines',
-            journalSupported: serviceCapability.available && (serviceCapability.initSystem === 'openwrt-procd' || serviceCapability.supportsJournal),
-            lineLimit: 100,
-            priority: 'all',
-            query: '',
-            selectedUnitName: selectedService.unitName,
-            visibleLines: serviceLines,
-            wordWrap: true,
-          }"
-          :partial-warning-text="''"
-          :resource-metrics-supported="true"
-          :selected-service="selectedService"
-          :show-critical-warning="false"
-          :show-partial-warning="false"
-        />
+        <div class="service-dialog-backdrop">
+          <section class="service-dialog ui-fixture-service-manager ui-fixture-service-manager-narrow">
+            <ServiceManagerList
+              :capability="serviceCapability"
+              :services="serviceSummaries"
+              :raw-count="serviceSummaries.length"
+              :selected-unit-name="selectedService.unitName"
+            />
+            <ServiceManagerDetails
+              v-model:active-detail-tab="activeDetailTab"
+              :action-busy="null"
+              :action-disabled="{ start: false, stop: false, restart: false, enable: false, disable: false }"
+              :capability="serviceCapability"
+              :critical-warning-text="''"
+              :detail="serviceDetail"
+              :detail-error="''"
+              :detail-loading="false"
+              :journal-props="{
+                autoScroll: true,
+                currentBootOnly: true,
+                journalCountText: `${serviceLines.length} 行`,
+                journalFollowBusy: false,
+                journalFollowDisabledReason: serviceData.journalFollowDisabledReason || '',
+                journalFollowSupported: serviceData.journalFollowSupported !== false,
+                journalFollowing: false,
+                journalLoading: false,
+                journalRefreshSupported: serviceData.journalRefreshSupported !== false,
+                journalSourceText: serviceData.journalSourceText || '',
+                journalStatus: 'ready',
+                journalStatusText: 'Synthetic fixture lines',
+                journalSupported: serviceCapability.available && (serviceCapability.initSystem === 'openwrt-procd' || serviceCapability.supportsJournal),
+                lineLimit: 100,
+                priority: 'all',
+                query: '',
+                selectedUnitName: selectedService.unitName,
+                visibleLines: serviceLines,
+                wordWrap: true,
+              }"
+              :partial-warning-text="''"
+              :resource-metrics-supported="true"
+              :selected-service="selectedService"
+              :show-critical-warning="false"
+              :show-partial-warning="false"
+            />
+          </section>
+        </div>
       </section>
     </div>
   </main>

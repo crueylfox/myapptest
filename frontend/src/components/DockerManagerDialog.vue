@@ -1143,8 +1143,6 @@ function errorMessage(reason: unknown, fallback: string) {
   place-items: center;
   padding: 28px;
   background: var(--docker-dialog-backdrop);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .docker-dialog {
@@ -1195,9 +1193,12 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-toolbar {
   padding: 14px 20px;
   border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: end;
   gap: 12px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .docker-toolbar label,
@@ -1209,13 +1210,13 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .docker-server-select-field {
-  flex: 0 1 420px;
-  max-width: 520px;
-  min-width: 260px;
+  flex: 1 1 300px;
+  max-width: 420px;
+  min-width: 220px;
 }
 
 .docker-search-field {
-  flex: 1 1 240px;
+  flex: 1 1 220px;
   min-width: 180px;
 }
 
@@ -1251,6 +1252,11 @@ function errorMessage(reason: unknown, fallback: string) {
   gap: 4px;
 }
 
+.docker-toolbar > button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 .docker-execution-mode .command-light-action {
   min-height: 30px;
   padding: 3px 8px;
@@ -1266,15 +1272,14 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-compose-panel {
   min-height: 0;
-  max-height: min(620px, calc(100vh - 260px));
+  max-height: none;
   display: grid;
   grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   gap: 14px;
   padding: 14px 20px 16px;
   padding-bottom: 16px;
-  overflow: auto;
-  border-bottom: 1px solid var(--border);
+  overflow: hidden;
 }
 
 .docker-compose-sidebar,
@@ -1296,8 +1301,8 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-compose-detail {
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(120px, 1fr) auto;
-  align-content: start;
+  grid-template-rows: auto auto auto auto minmax(180px, 1fr) auto;
+  align-content: stretch;
   gap: 8px;
 }
 
@@ -1469,7 +1474,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-compose-logs {
   min-height: 100px;
   height: 100%;
-  max-height: 170px;
+  max-height: none;
   overflow: auto;
   margin: 0;
   padding: 10px;
@@ -1485,7 +1490,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-body {
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(460px, 0.88fr) minmax(520px, 1.12fr);
+  grid-template-columns: minmax(360px, 0.88fr) minmax(420px, 1.12fr);
   gap: 16px;
   padding: 16px 20px 20px;
   overflow: hidden;
@@ -1696,15 +1701,25 @@ function errorMessage(reason: unknown, fallback: string) {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 12px;
-  align-content: start;
+  align-content: stretch;
   align-items: stretch;
   justify-content: stretch;
+  overflow: hidden;
 }
 
 .detail-content {
   min-height: 0;
-  align-self: start;
-  display: block;
+  min-width: 0;
+  align-self: stretch;
+  display: grid;
+  align-content: start;
+  justify-items: stretch;
+  overflow: auto;
+}
+
+.detail-content > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .detail-tabs button.active {
@@ -1737,8 +1752,12 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .docker-log-view {
+  box-sizing: border-box;
+  width: 100%;
   min-height: 220px;
-  max-height: 46vh;
+  max-height: none;
+  max-width: 100%;
+  min-width: 0;
   overflow: auto;
   margin: 10px 0 0;
   padding: 10px;

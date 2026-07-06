@@ -56,11 +56,60 @@ async function expectBlurredTranslucentSurface(locator: Locator) {
   expect(styles.backdropFilter).toContain('blur(')
 }
 
+async function expectGlassClickCatcher(locator: Locator) {
+  await expect(locator).toBeVisible()
+  const backgroundColor = await locator.evaluate((element) => window.getComputedStyle(element).backgroundColor)
+  expect(backgroundColor).toMatch(/rgba\(/)
+  const alpha = Number(backgroundColor.match(/,\s*([.\d]+)\)$/)?.[1] ?? '1')
+  expect(alpha).toBeLessThanOrEqual(0.18)
+}
+
+async function expectAppBlurOverlay(page: Page, backdrop: Locator, surface: Locator) {
+  await expectGlassClickCatcher(backdrop)
+  await expect(surface).toBeVisible()
+  const visualRoot = page.locator('[data-testid="app-visual-root"]').first()
+  await expect(visualRoot).toBeVisible()
+  const visualFilter = await visualRoot.evaluate((element) => window.getComputedStyle(element).filter)
+  expect(visualFilter).toContain('blur(')
+  expect(visualFilter).toContain('brightness(')
+  const surfaceState = await surface.evaluate((element) => {
+    const style = window.getComputedStyle(element)
+    return {
+      filter: style.filter,
+      insideVisualRoot: Boolean(element.closest('.app-visual-root')),
+    }
+  })
+  expect(surfaceState.filter).toBe('none')
+  expect(surfaceState.insideVisualRoot).toBe(false)
+}
+
+test('management dialogs use app visual root blur instead of gray scrims', async ({ page }) => {
+  const cases = [
+    ['docker-manager-container-list', '.docker-dialog-backdrop', '.docker-dialog'],
+    ['tunnel-manager-profile-list', '.tunnel-dialog-backdrop', '.tunnel-dialog'],
+    ['process-manager-list-long-command', '.process-dialog-backdrop', '.process-dialog'],
+    ['service-manager-journal-narrow', '.service-dialog-backdrop', '.service-dialog'],
+    ['network-diagnostics-summary', '.modal-backdrop', '.network-diagnostics-modal'],
+    ['dashboard-alert-center-layer', '.multi-server-dashboard-backdrop', '.multi-server-dashboard'],
+    ['alert-center-list', '.alert-center-backdrop', '.alert-center-panel'],
+  ] as const
+
+  for (const [fixture, backdropSelector, surfaceSelector] of cases) {
+    await openManagerFixture(page, fixture)
+    const shell = page.locator(`[data-testid="${fixture}"]`)
+    await expectAppBlurOverlay(page, shell.locator(backdropSelector).first(), shell.locator(surfaceSelector).first())
+  }
+})
+
 test('Docker Manager container list keeps toolbar, rows, actions, and details bounded', async ({ page }) => {
   await openManagerFixture(page, 'docker-manager-container-list')
 
   const dialog = page.locator('[data-testid="docker-manager-container-list"] .docker-dialog')
-  await expectBlurredTranslucentSurface(page.locator('[data-testid="docker-manager-container-list"] .docker-dialog-backdrop'))
+  await expectAppBlurOverlay(
+    page,
+    page.locator('[data-testid="docker-manager-container-list"] .docker-dialog-backdrop'),
+    dialog,
+  )
   const toolbar = dialog.locator('.docker-toolbar')
   const list = dialog.locator('.docker-list-panel')
   const rows = list.locator('.docker-container-card')
@@ -98,6 +147,9 @@ test('Docker Manager container list keeps toolbar, rows, actions, and details bo
   expect(Math.abs((followBox.y + followBox.height / 2) - (logActionBox.y + logActionBox.height / 2))).toBeLessThanOrEqual(2)
   await expectInternalScroll(list)
   await expectNoDocumentHorizontalScroll(page)
+  const dialogBox = await box(dialog)
+  const dockerLogBox = await box(dialog.locator('[data-testid="docker-log-view"]'))
+  expectInside(dialogBox, dockerLogBox)
 })
 
 test('Docker Manager narrow logs and stats keep internal scroll and non-overlapping summary cards', async ({ page }) => {
@@ -191,6 +243,10 @@ test('Docker Manager Compose supported fixture shows projects, services, and int
   expect(filteredDetailBox.y - (filteredServiceBox.y + filteredServiceBox.height)).toBeLessThanOrEqual(16)
   await expect(logs).toContainText('synthetic compose log')
   await expectInternalScroll(logs)
+  const detailBox = await box(shell.locator('.docker-compose-detail'))
+  const logsBox = await box(logs)
+  expect(logsBox.height).toBeGreaterThan(detailBox.height * 0.36)
+  expect(detailBox.y + detailBox.height - (logsBox.y + logsBox.height)).toBeLessThanOrEqual(32)
   await expectNoDocumentHorizontalScroll(page)
 })
 

@@ -1236,7 +1236,7 @@ test('Settings native notification controls stay visible in narrow layout', asyn
   await openFixture(page, 'settings-native-notification', { width: 800, height: 600 })
 
   const panel = page.locator('[data-testid="alert-native-notifications"]')
-  const toggleLabel = panel.getByText('Windows 原生通知')
+  const toggleLabel = panel.getByText('系统原生通知')
   const status = panel.locator('[data-testid="alert-native-notifications-status"]')
   const sendButton = panel.getByRole('button', { name: '发送系统通知' })
 

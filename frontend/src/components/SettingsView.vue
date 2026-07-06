@@ -25,6 +25,7 @@ import {
   validateTerminalFontFamily,
 } from '../utils/terminalProfile'
 import { cloneAlertSettings, normalizeAlertSettings } from '../utils/alertSettings'
+import { uiFontPixels, uiFontSizeSteps } from '../utils/appearance'
 import {
   findShortcutConflicts,
   normalizeShortcutSettings,
@@ -268,14 +269,14 @@ const policies: Array<{ value: HostKeyPolicy; title: string; detail: string }> =
 const themes: Array<{ value: ThemeMode; title: string; detail: string }> = [
   { value: 'dark', title: '深色', detail: '使用完整深色界面。' },
   { value: 'light', title: '浅色', detail: '使用基础浅色界面。' },
-  { value: 'system', title: '跟随系统', detail: '随 Windows 或 macOS 外观变化自动切换。' },
+  { value: 'system', title: '跟随系统', detail: '随系统外观自动切换。' },
 ]
-const fontSizes: Array<{ value: UIFontSize; title: string; detail: string }> = [
-  { value: 'small', title: '小', detail: '13 px，适合高信息密度。' },
-  { value: 'standard', title: '标准', detail: '14 px，兼顾空间和可读性。' },
-  { value: 'large', title: '较大', detail: '15 px，默认设置，适合长时间查看。' },
-  { value: 'extra_large', title: '大', detail: '16 px，优先提高可读性。' },
-]
+const currentUIFontSizeIndex = computed(() => uiFontSizeSteps.includes(form.uiFontSize) ? uiFontSizeSteps.indexOf(form.uiFontSize) : uiFontSizeSteps.indexOf('large'))
+const currentUIFontSizePixels = computed(() => uiFontPixels(uiFontSizeSteps[currentUIFontSizeIndex.value]))
+const canDecreaseUIFontSize = computed(() => currentUIFontSizeIndex.value > 0)
+const canIncreaseUIFontSize = computed(() => currentUIFontSizeIndex.value < uiFontSizeSteps.length - 1)
+
+function adjustUIFontSize(delta: number) { const nextIndex = Math.min(uiFontSizeSteps.length - 1, Math.max(0, currentUIFontSizeIndex.value + delta)); if (nextIndex !== currentUIFontSizeIndex.value) { form.uiFontSize = uiFontSizeSteps[nextIndex]; emit('previewFontSize', form.uiFontSize) } }
 
 async function submit() {
   if (!validateSettingsForm()) return
@@ -970,23 +971,12 @@ function errorMessage(reason: unknown, fallback: string) {
       </div>
       <div class="settings-header-actions" data-testid="settings-action-bar">
         <span v-if="formDirty" class="settings-dirty-indicator">有未保存修改</span>
-        <button
-          class="secondary settings-reset-defaults-button"
-          type="button"
-          data-testid="settings-reset-defaults"
-          :disabled="saving"
-          @click="resetSettingsDefaults"
-        >恢复默认设置</button>
+        <button class="secondary settings-reset-defaults-button" type="button" data-testid="settings-reset-defaults" :disabled="saving" @click="resetSettingsDefaults">恢复默认设置</button>
         <button class="secondary settings-save-button" type="button" :disabled="saving" @click="submit">
           {{ saving ? '保存中...' : '保存' }}
         </button>
+        <button v-if="overlay" type="button" class="secondary dialog-close-button settings-close-button" @click="requestClose">关闭</button>
         <button v-if="overlay" class="primary settings-save-close-button" type="button" :disabled="saving" @click="submitAndClose">保存并关闭</button>
-        <button
-          v-if="overlay"
-          type="button"
-          class="dialog-close-button settings-close-button"
-          @click="requestClose"
-        >关闭</button>
       </div>
     </header>
 
@@ -1005,25 +995,18 @@ function errorMessage(reason: unknown, fallback: string) {
 
     <article v-show="activeCategory === 'appearance'" class="settings-card">
       <h2>外观</h2>
-      <label v-for="theme in themes" :key="theme.value" class="policy-option">
-        <input
-          v-model="form.themeMode"
-          type="radio"
-          :value="theme.value"
-          @change="emit('previewTheme', form.themeMode)"
-        />
-        <span><strong>{{ theme.title }}</strong><small>{{ theme.detail }}</small></span>
-      </label>
+      <div class="settings-horizontal-options" data-testid="settings-appearance-options">
+        <label v-for="theme in themes" :key="theme.value" class="policy-option">
+          <input v-model="form.themeMode" type="radio" :value="theme.value" @change="emit('previewTheme', form.themeMode)" />
+          <span><strong>{{ theme.title }}</strong><small>{{ theme.detail }}</small></span>
+        </label>
+      </div>
       <h3 class="settings-subheading">界面字体大小</h3>
-      <label v-for="size in fontSizes" :key="size.value" class="policy-option">
-        <input
-          v-model="form.uiFontSize"
-          type="radio"
-          :value="size.value"
-          @change="emit('previewFontSize', form.uiFontSize)"
-        />
-        <span><strong>{{ size.title }}</strong><small>{{ size.detail }}</small></span>
-      </label>
+      <div class="settings-font-stepper" data-testid="ui-font-size-stepper">
+        <button type="button" class="secondary" data-testid="ui-font-size-decrease" :disabled="!canDecreaseUIFontSize" aria-label="减小界面字体" @click="adjustUIFontSize(-1)">−</button>
+        <span class="settings-font-size-value" data-testid="ui-font-size-value">{{ currentUIFontSizePixels }}px</span>
+        <button type="button" class="secondary" data-testid="ui-font-size-increase" :disabled="!canIncreaseUIFontSize" aria-label="增大界面字体" @click="adjustUIFontSize(1)">+</button>
+      </div>
       <p class="settings-note">SSH 终端字体保持独立，不受此设置影响。</p>
     </article>
 
@@ -1547,7 +1530,6 @@ function errorMessage(reason: unknown, fallback: string) {
       <form class="modal key-vault-modal app-glass-surface" @submit.prevent="saveKeyEntry">
         <header>
           <h2>{{ editingKey ? '编辑密钥' : '新增密钥' }}</h2>
-          <button type="button" class="dialog-close-button" @click="closeKeyModal">关闭</button>
         </header>
         <div class="form-grid">
           <label class="span-2">名称<input v-model.trim="keyForm.name" required /></label>

@@ -369,8 +369,18 @@ body,
 }
 
 .ui-fixture-alert-shell {
+  position: relative;
   display: flex;
   justify-content: flex-end;
+}
+
+.ui-fixture-alert-shell .alert-center-backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(3, 7, 18, .08);
+  transform: translateZ(0);
 }
 
 .ui-fixture-alert-shell .alert-center-panel {
@@ -602,20 +612,21 @@ body,
 .ui-fixture-manager-shell .docker-dialog-backdrop,
 .ui-fixture-manager-shell .tunnel-dialog-backdrop,
 .ui-fixture-manager-shell .process-dialog-backdrop,
+.ui-fixture-manager-shell .service-dialog-backdrop,
 .ui-fixture-manager-shell .network-diagnostics-backdrop {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(2, 6, 23, 0.64);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(2, 6, 23, 0.08);
+  transform: translateZ(0);
   box-sizing: border-box;
 }
 
 .ui-fixture-manager-shell .docker-dialog,
 .ui-fixture-manager-shell .process-dialog,
+.ui-fixture-manager-shell .service-dialog,
 .ui-fixture-manager-shell .tunnel-dialog {
   min-width: 0;
   min-height: 0;
@@ -684,8 +695,11 @@ body,
 .ui-fixture-manager-shell .process-toolbar {
   padding: 12px 18px;
   border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: end;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .ui-fixture-manager-shell .docker-toolbar label,
@@ -778,8 +792,8 @@ body,
 
 .ui-fixture-manager-shell .docker-compose-detail {
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(120px, 1fr);
-  align-content: start;
+  grid-template-rows: auto auto auto auto minmax(180px, 1fr);
+  align-content: stretch;
   gap: 8px;
 }
 
@@ -938,6 +952,7 @@ body,
 .ui-fixture-manager-shell .docker-compose-logs {
   min-height: 120px;
   height: 100%;
+  max-height: none;
   margin: 0;
   padding: 10px;
   overflow: auto;
@@ -954,7 +969,7 @@ body,
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(360px, 1fr) minmax(260px, 340px);
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
   gap: 12px;
   overflow: hidden;
   padding: 12px 18px 16px;
@@ -1011,9 +1026,12 @@ body,
 
 .ui-fixture-manager-shell .docker-container-card {
   display: grid;
-  grid-template-columns: 24px minmax(150px, 1fr) minmax(94px, 110px) minmax(86px, 96px) minmax(154px, 164px);
+  grid-template-columns: 24px minmax(0, 1fr) minmax(118px, auto);
+  grid-template-areas:
+    "check main actions"
+    "check meta stats";
   align-items: center;
-  gap: 8px;
+  gap: 6px 8px;
   min-width: 0;
   min-height: 70px;
   padding: 8px 10px;
@@ -1021,6 +1039,23 @@ body,
   border: 1px solid rgba(148, 163, 184, 0.16);
   border-radius: 10px;
   background: rgba(15, 23, 42, 0.58);
+}
+
+.ui-fixture-manager-shell .container-check {
+  grid-area: check;
+}
+
+.ui-fixture-manager-shell .container-main {
+  grid-area: main;
+}
+
+.ui-fixture-manager-shell .container-meta {
+  grid-area: meta;
+}
+
+.ui-fixture-manager-shell .container-stats {
+  grid-area: stats;
+  justify-self: end;
 }
 
 .ui-fixture-manager-shell .docker-container-card.selected {
@@ -1071,6 +1106,9 @@ body,
 }
 
 .ui-fixture-manager-shell .container-actions {
+  grid-area: actions;
+  width: min(154px, 100%);
+  min-width: 0;
   justify-content: flex-end;
   flex-wrap: wrap;
 }
@@ -1107,6 +1145,7 @@ body,
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 10px;
+  overflow: hidden;
 }
 
 .ui-fixture-manager-shell .detail-tabs button.active {
@@ -1117,14 +1156,26 @@ body,
 
 .ui-fixture-manager-shell .detail-content {
   min-height: 0;
+  min-width: 0;
   display: grid;
   gap: 10px;
   align-content: start;
+  justify-items: stretch;
+  overflow: auto;
+}
+
+.ui-fixture-manager-shell .detail-content > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .ui-fixture-manager-shell .docker-log-view {
+  box-sizing: border-box;
+  width: 100%;
   min-height: 64px;
   max-height: 64px;
+  max-width: 100%;
+  min-width: 0;
   margin: 0;
   padding: 10px;
   overflow: auto;

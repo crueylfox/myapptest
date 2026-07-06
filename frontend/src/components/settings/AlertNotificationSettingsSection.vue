@@ -15,7 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const nativeNotificationStatusText = computed(() => {
-  if (!props.alerts.nativeNotifications.enabled) return '默认关闭，开启后会发送已有告警事件到 Windows 原生通知。'
+  if (!props.alerts.nativeNotifications.enabled) return '默认关闭，开启后会发送已有告警事件到系统原生通知。'
   return props.nativeNotificationStatus.message
 })
 
@@ -67,7 +67,7 @@ function requestNativeNotificationTest() {
         @change="emit('updateNativeNotificationsEnabled', checkboxValue($event))"
       />
       <span class="alert-global-control__text">
-        <strong>Windows 原生通知</strong>
+        <strong>系统原生通知</strong>
         <small>开启后，新的告警和已恢复事件会通过系统通知显示。</small>
       </span>
     </label>

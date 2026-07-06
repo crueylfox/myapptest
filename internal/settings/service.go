@@ -80,7 +80,8 @@ func Validate(value domain.AppSettings) error {
 		return errors.New("主题模式无效")
 	}
 	switch value.UIFontSize {
-	case domain.UIFontSmall, domain.UIFontStandard, domain.UIFontLarge, domain.UIFontXLarge:
+	case domain.UIFontTiny, domain.UIFontSmall, domain.UIFontStandard, domain.UIFontLarge, domain.UIFontXLarge,
+		domain.UIFontHuge, domain.UIFontMax:
 	default:
 		return errors.New("界面字体大小无效")
 	}

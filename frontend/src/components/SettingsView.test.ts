@@ -440,6 +440,12 @@ describe('connection settings', () => {
 
     expect(actionBar.classes()).not.toContain('settings-header-action-row')
     expect(buttons).toHaveLength(4)
+    expect(buttons.map((button) => button.classes().find((name) => name.startsWith('settings-') && name.endsWith('-button')))).toEqual([
+      'settings-reset-defaults-button',
+      'settings-save-button',
+      'settings-close-button',
+      'settings-save-close-button',
+    ])
     expect(separators).toHaveLength(0)
     expect(actionBar.get('.settings-reset-defaults-button').classes()).toContain('secondary')
     expect(actionBar.get('.settings-save-button').classes()).toContain('secondary')
@@ -596,6 +602,8 @@ describe('connection settings', () => {
     expect((wrapper.get<HTMLInputElement>('[data-testid="alert-enabled"]').element).checked).toBe(true)
     expect((wrapper.get<HTMLInputElement>('[data-testid="alert-latency-enabled"]').element).checked).toBe(false)
     expect((wrapper.get<HTMLInputElement>('[data-testid="alert-native-notifications-enabled"]').element).checked).toBe(false)
+    expect(wrapper.get('[data-testid="alert-native-notifications"]').text()).toContain('系统原生通知')
+    expect(wrapper.get('[data-testid="alert-native-notifications"]').text()).not.toContain('Windows 原生通知')
     expect(wrapper.get('[data-testid="alert-native-notifications-status"]').text()).toContain('默认关闭')
     await wrapper.get('[data-testid="alert-test-button"]').trigger('click')
     expect(wrapper.emitted('testAlert')).toEqual([[]])
@@ -1619,6 +1627,8 @@ describe('connection settings', () => {
     await Promise.resolve()
     expect(wrapper.find('[data-testid="key-vault-empty"]').exists()).toBe(true)
     await wrapper.get('[data-testid="add-key-vault-entry"]').trigger('click')
+    expect(wrapper.find('.key-vault-modal header .dialog-close-button').exists()).toBe(false)
+    expect(wrapper.findAll('.key-vault-modal footer button').map((button) => button.text())).toEqual(['取消', '导入密钥'])
     await wrapper.find('.key-vault-modal input[type="password"]').setValue(testValue)
     await wrapper.find('.file-input button').trigger('click')
     await Promise.resolve()
@@ -1885,6 +1895,10 @@ describe('connection settings', () => {
 
   it('previews and saves dark, light, and system theme modes', async () => {
     const wrapper = mount(SettingsView, { props: { settings } })
+    const appearanceOptions = wrapper.get('[data-testid="settings-appearance-options"]')
+    expect(appearanceOptions.findAll('.policy-option')).toHaveLength(3)
+    expect(cssBlock('.settings-horizontal-options')).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
+    expect(appearanceOptions.text()).not.toContain('Windows')
     const system = wrapper.get<HTMLInputElement>('input[value="system"]')
     await system.setValue()
     expect(wrapper.emitted('previewTheme')?.at(-1)).toEqual(['system'])
@@ -1896,17 +1910,27 @@ describe('connection settings', () => {
     expect(wrapper.text()).toContain('跟随系统')
   })
 
-  it('previews and saves all four UI font sizes', async () => {
+  it('previews and saves UI font sizes with the 12-18px stepper bounds', async () => {
     const wrapper = mount(SettingsView, { props: { settings } })
-    const values = wrapper.findAll<HTMLInputElement>('input[type="radio"]')
-      .map((item) => item.element.value)
-      .filter((value) => ['small', 'standard', 'large', 'extra_large'].includes(value))
-    expect([...new Set(values)]).toEqual(['small', 'standard', 'large', 'extra_large'])
-    await wrapper.get<HTMLInputElement>('input[value="extra_large"]').setValue()
-    expect(wrapper.emitted('previewFontSize')?.at(-1)).toEqual(['extra_large'])
+    const value = wrapper.get('[data-testid="ui-font-size-value"]')
+    const decrease = wrapper.get<HTMLButtonElement>('[data-testid="ui-font-size-decrease"]')
+    const increase = wrapper.get<HTMLButtonElement>('[data-testid="ui-font-size-increase"]')
+
+    expect(value.text()).toBe('15px')
+    await decrease.trigger('click')
+    await decrease.trigger('click')
+    await decrease.trigger('click')
+    expect(value.text()).toBe('12px')
+    expect(decrease.element.disabled).toBe(true)
+    await decrease.trigger('click')
+    expect(value.text()).toBe('12px')
+    for (let index = 0; index < 6; index += 1) await increase.trigger('click')
+    expect(value.text()).toBe('18px')
+    expect(increase.element.disabled).toBe(true)
+    expect(wrapper.emitted('previewFontSize')?.at(-1)).toEqual(['max'])
     await wrapper.get('button.settings-save-button').trigger('click')
     const saved = wrapper.emitted('save')?.at(-1)?.[0] as AppSettings
-    expect(saved.uiFontSize).toBe('extra_large')
+    expect(saved.uiFontSize).toBe('max')
   })
 
 })

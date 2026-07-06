@@ -338,8 +338,10 @@ describe('DockerManagerDialog', () => {
     expect(wrapper.get('.docker-search-field').find('[data-testid="docker-search"]').exists()).toBe(true)
     expect(wrapper.get('.docker-filter-field').find('[data-testid="docker-filter"]').exists()).toBe(true)
     expect(componentSource).toContain('.docker-server-select-field')
-    expect(componentSource).toContain('flex: 0 1 420px;')
-    expect(componentSource).toContain('max-width: 520px;')
+    expect(componentSource).toContain('flex: 1 1 300px;')
+    expect(componentSource).toContain('max-width: 420px;')
+    expect(componentSource).toContain('flex-wrap: nowrap;')
+    expect(componentSource).toContain('overflow-x: auto;')
     expect(componentSource).toContain('align-items: end;')
   })
 
@@ -387,7 +389,7 @@ describe('DockerManagerDialog', () => {
   })
 
   it('locks the container list CSS against horizontal clipping regressions', () => {
-    expect(componentSource).toContain('grid-template-columns: minmax(460px, 0.88fr) minmax(520px, 1.12fr);')
+    expect(componentSource).toContain('grid-template-columns: minmax(360px, 0.88fr) minmax(420px, 1.12fr);')
     expect(componentSource).toContain('overflow-x: hidden;')
     expect(componentSource).toContain('grid-template-columns: 28px minmax(160px, 1fr) minmax(104px, 112px) minmax(92px, 104px) minmax(154px, 164px);')
     expect(componentSource).toContain('.container-actions {\n  min-width: 0;\n  overflow: visible;')
@@ -521,7 +523,7 @@ describe('DockerManagerDialog', () => {
     expect(componentSource).toContain('flex-wrap: nowrap;')
     expect(componentSource).toContain('.docker-compose-section-header > div:not(.docker-compose-action-row)')
     expect(componentSource).toContain('.docker-compose-service-toolbar {')
-    expect(componentSource).toContain('grid-template-rows: auto auto auto auto minmax(120px, 1fr) auto;')
+    expect(componentSource).toContain('grid-template-rows: auto auto auto auto minmax(180px, 1fr) auto;')
     expect(componentSource).not.toContain('grid-template-rows: auto auto minmax(72px, auto) auto minmax(120px, 1fr) auto;')
     expect(componentSource).not.toContain('min-height: 72px;')
     expect(componentSource).toContain('max-height: 118px;')

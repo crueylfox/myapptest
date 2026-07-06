@@ -574,7 +574,8 @@ func validateSettings(value domain.AppSettings) error {
 		return errors.New("BACKUP_FILE_INVALID: 备份包含无效主题设置")
 	}
 	switch value.UIFontSize {
-	case domain.UIFontSmall, domain.UIFontStandard, domain.UIFontLarge, domain.UIFontXLarge:
+	case domain.UIFontTiny, domain.UIFontSmall, domain.UIFontStandard, domain.UIFontLarge, domain.UIFontXLarge,
+		domain.UIFontHuge, domain.UIFontMax:
 	default:
 		return errors.New("BACKUP_FILE_INVALID: 备份包含无效界面字体设置")
 	}
