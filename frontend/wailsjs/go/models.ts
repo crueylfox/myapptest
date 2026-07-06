@@ -1245,6 +1245,7 @@ export namespace domain {
 	export class DockerBatchContainerRequest {
 	    serverID: number;
 	    containerIDs: string[];
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerBatchContainerRequest(source);
@@ -1254,6 +1255,7 @@ export namespace domain {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.serverID = source["serverID"];
 	        this.containerIDs = source["containerIDs"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerBatchContainerResult {
@@ -1346,6 +1348,7 @@ export namespace domain {
 	    projectName: string;
 	    serviceName: string;
 	    tailLines: number;
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerComposeLogsRequest(source);
@@ -1357,6 +1360,7 @@ export namespace domain {
 	        this.projectName = source["projectName"];
 	        this.serviceName = source["serviceName"];
 	        this.tailLines = source["tailLines"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerComposeLogsSnapshot {
@@ -1404,6 +1408,7 @@ export namespace domain {
 	export class DockerComposeProjectRequest {
 	    serverID: number;
 	    projectName: string;
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerComposeProjectRequest(source);
@@ -1413,10 +1418,12 @@ export namespace domain {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.serverID = source["serverID"];
 	        this.projectName = source["projectName"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerComposeProjectsRequest {
 	    serverID: number;
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerComposeProjectsRequest(source);
@@ -1425,6 +1432,7 @@ export namespace domain {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.serverID = source["serverID"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerComposeService {
@@ -1465,6 +1473,7 @@ export namespace domain {
 	    serverID: number;
 	    projectName: string;
 	    serviceName: string;
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerComposeServiceDetailRequest(source);
@@ -1475,6 +1484,7 @@ export namespace domain {
 	        this.serverID = source["serverID"];
 	        this.projectName = source["projectName"];
 	        this.serviceName = source["serviceName"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerComposeServicesResponse {
@@ -1517,6 +1527,7 @@ export namespace domain {
 	export class DockerContainerRequest {
 	    serverID: number;
 	    containerID: string;
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerContainerRequest(source);
@@ -1526,6 +1537,7 @@ export namespace domain {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.serverID = source["serverID"];
 	        this.containerID = source["containerID"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerContainerStats {
@@ -1596,6 +1608,7 @@ export namespace domain {
 	}
 	export class DockerListContainersRequest {
 	    serverID: number;
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerListContainersRequest(source);
@@ -1604,6 +1617,7 @@ export namespace domain {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.serverID = source["serverID"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerLogStreamRequest {
@@ -1611,6 +1625,7 @@ export namespace domain {
 	    containerID: string;
 	    tailLines: number;
 	    streamID: string;
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerLogStreamRequest(source);
@@ -1622,12 +1637,14 @@ export namespace domain {
 	        this.containerID = source["containerID"];
 	        this.tailLines = source["tailLines"];
 	        this.streamID = source["streamID"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerLogsRequest {
 	    serverID: number;
 	    containerID: string;
 	    tailLines: number;
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerLogsRequest(source);
@@ -1638,6 +1655,21 @@ export namespace domain {
 	        this.serverID = source["serverID"];
 	        this.containerID = source["containerID"];
 	        this.tailLines = source["tailLines"];
+	        this.executionMode = source["executionMode"];
+	    }
+	}
+	export class DockerServerRequest {
+	    serverID: number;
+	    executionMode?: string;
+
+	    static createFrom(source: any = {}) {
+	        return new DockerServerRequest(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.serverID = source["serverID"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerStatsWatchRequest {
@@ -1645,6 +1677,7 @@ export namespace domain {
 	    containerID: string;
 	    watchID: string;
 	    intervalMs: number;
+	    executionMode?: string;
 
 	    static createFrom(source: any = {}) {
 	        return new DockerStatsWatchRequest(source);
@@ -1656,6 +1689,7 @@ export namespace domain {
 	        this.containerID = source["containerID"];
 	        this.watchID = source["watchID"];
 	        this.intervalMs = source["intervalMs"];
+	        this.executionMode = source["executionMode"];
 	    }
 	}
 	export class DockerStopLogStreamRequest {

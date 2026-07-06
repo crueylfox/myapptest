@@ -6,13 +6,13 @@ Updated: 2026-07-06
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.30`.
-- Recommended delivery version: `0.5.0-beta.30` user-smoke-required.
-- Current round: beta30 macOS usability adaptation / same-version blocker hotfix.
-- Version bump this round: no.
+- Current VERSION: `0.5.0-beta.31`.
+- Recommended delivery version: `0.5.0-beta.31` user-smoke-required.
+- Current round: beta31 cross-platform Key Vault backup / Windows EXE rebuild.
+- Version bump this round: `0.5.0-beta.30` -> `0.5.0-beta.31`.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
-- Current blocker hotfix commit: `ee3c5bd` (`fix: complete beta30 macos smoke blockers`).
+- Current blocker hotfix commit: `9f71fe5` (`fix: make full backup key vault portable across platforms`).
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -59,6 +59,8 @@ Updated: 2026-07-06
 - `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `1478dad92cd7062648d16eb4beeb0b1c10b19dc5d755a0ad5caebbf632abccc5`.
 - GitHub Actions artifact digest: `sha256:96a31b3b2c7f55faae7d96841829863f8cfb58df3d785dbcc1b0ac995d3d0c45`.
 - macOS artifact came from the GitHub Actions macOS runner.
+- Beta31 Windows EXE: pending local build.
+- Beta31 Windows EXE SHA-256: pending local build.
 
 ## 5. Next
 - Download or smoke-test the GitHub Actions `ServerPilot-macos-unsigned` artifact.

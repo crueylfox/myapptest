@@ -158,8 +158,16 @@ export function DockerCheck(arg1) {
   return window['go']['main']['App']['DockerCheck'](arg1);
 }
 
+export function DockerCheckWithOptions(arg1) {
+  return window['go']['main']['App']['DockerCheckWithOptions'](arg1);
+}
+
 export function DockerComposeCheck(arg1) {
   return window['go']['main']['App']['DockerComposeCheck'](arg1);
+}
+
+export function DockerComposeCheckWithOptions(arg1) {
+  return window['go']['main']['App']['DockerComposeCheckWithOptions'](arg1);
 }
 
 export function DockerComposeGetLogs(arg1) {

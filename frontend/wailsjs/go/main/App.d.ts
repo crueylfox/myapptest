@@ -81,7 +81,11 @@ export function DockerBatchStopContainers(arg1:domain.DockerBatchContainerReques
 
 export function DockerCheck(arg1:number):Promise<domain.DockerAvailability>;
 
+export function DockerCheckWithOptions(arg1:domain.DockerServerRequest):Promise<domain.DockerAvailability>;
+
 export function DockerComposeCheck(arg1:number):Promise<domain.DockerComposeCapability>;
+
+export function DockerComposeCheckWithOptions(arg1:domain.DockerServerRequest):Promise<domain.DockerComposeCapability>;
 
 export function DockerComposeGetLogs(arg1:domain.DockerComposeLogsRequest):Promise<domain.DockerComposeLogsSnapshot>;
 
