@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { confirmDialog } from '../composables/useAppDialog'
 import { useDockerStore } from '../stores/docker'
-import type { Connection, DockerComposeProject, DockerContainer } from '../types'
+import type { Connection, DockerComposeProject, DockerContainer, DockerExecutionMode } from '../types'
 
 type ContainerAction = 'start' | 'stop' | 'restart' | 'remove'
 
@@ -44,8 +44,13 @@ let composeFollowTimer: ReturnType<typeof setInterval> | null = null
 
 const selectedConnection = computed(() =>
   props.connections.find((connection) => connection.id === selectedServerID.value) ?? null)
+const executionMode = computed(() => dockerStore.executionMode(selectedServerID.value))
 
 const availability = computed(() => dockerStore.availability(selectedServerID.value))
+const permissionHelpVisible = computed(() => {
+  const message = availability.value?.error ?? ''
+  return message.includes('独立 SSH 执行') || message.includes('sudo')
+})
 const containers = computed(() => dockerStore.containers(selectedServerID.value))
 const selectedContainer = computed(() =>
   containers.value.find((container) => container.id === selectedContainerID.value) ?? null)
@@ -205,6 +210,13 @@ async function refreshServer() {
   } finally {
     loading.value = false
   }
+}
+
+async function setExecutionMode(mode: DockerExecutionMode) {
+  if (!selectedServerID.value || executionMode.value === mode) return
+  dockerStore.setExecutionMode(selectedServerID.value, mode)
+  await refreshServer()
+  if (activeMode.value === 'compose') await refreshCompose()
 }
 
 async function refreshContainers() {
@@ -789,6 +801,27 @@ function errorMessage(reason: unknown, fallback: string) {
             <option value="stopped">已停止</option>
           </select>
         </label>
+        <div class="docker-execution-mode" data-testid="docker-execution-mode" role="group" aria-label="Docker execution mode">
+          <button
+            type="button"
+            class="command-light-action"
+            :class="{ active: executionMode === 'current_user' }"
+            data-testid="docker-execution-current"
+            @click="setExecutionMode('current_user')"
+          >
+            当前用户
+          </button>
+          <span class="command-action-separator" aria-hidden="true">|</span>
+          <button
+            type="button"
+            class="command-light-action"
+            :class="{ active: executionMode === 'sudo' }"
+            data-testid="docker-execution-sudo"
+            @click="setExecutionMode('sudo')"
+          >
+            sudo 重试
+          </button>
+        </div>
         <button class="secondary" type="button" :disabled="loading || !selectedServerID" @click="refreshServer">
           {{ loading ? '检测中…' : '检测 Docker' }}
         </button>
@@ -797,7 +830,7 @@ function errorMessage(reason: unknown, fallback: string) {
         </button>
       </div>
 
-      <div class="docker-status-line">
+      <div class="docker-status-line" :data-testid="permissionHelpVisible ? 'docker-permission-help' : undefined">
         <template v-if="!selectedConnection">请选择服务器后管理远程 Docker 容器。</template>
         <template v-else-if="availability?.available">
           <span v-if="availability.version">Docker v{{ availability.version }}</span>
@@ -843,9 +876,6 @@ function errorMessage(reason: unknown, fallback: string) {
           </header>
           <p v-if="composeCapability && !composeCapability.available" class="empty" data-testid="docker-compose-unavailable">
             {{ composeCapability.error || '服务器未检测到 Docker Compose。' }}
-          </p>
-          <p v-else-if="composeCapability?.available && composeProjects.length === 0" class="empty">
-            暂无 Compose 项目。
           </p>
           <label v-if="composeCapability?.available" class="docker-compose-filter docker-compose-project-filter">
             筛选
@@ -1112,7 +1142,7 @@ function errorMessage(reason: unknown, fallback: string) {
   display: grid;
   place-items: center;
   padding: 28px;
-  background: rgba(2, 6, 23, 0.64);
+  background: var(--docker-dialog-backdrop);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -1123,10 +1153,10 @@ function errorMessage(reason: unknown, fallback: string) {
   overflow: hidden;
   display: grid;
   grid-template-rows: auto auto auto auto minmax(0, auto) minmax(0, 1fr);
-  border: 1px solid var(--border, rgba(148, 163, 184, 0.22));
+  border: 1px solid var(--border);
   border-radius: 18px;
-  background: var(--panel, #101827);
-  color: var(--text, #e5edf8);
+  background: var(--docker-dialog-bg);
+  color: var(--text);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
 }
 
@@ -1148,7 +1178,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-dialog-header {
   justify-content: space-between;
   padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--border, rgba(148, 163, 184, 0.18));
+  border-bottom: 1px solid var(--border);
 }
 
 .docker-dialog-header h2 {
@@ -1158,13 +1188,13 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-dialog-header p {
   margin: 6px 0 0;
-  color: var(--muted, #9aa8ba);
+  color: var(--muted);
   font-size: 13px;
 }
 
 .docker-toolbar {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--border, rgba(148, 163, 184, 0.16));
+  border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
   align-items: end;
   gap: 12px;
@@ -1174,7 +1204,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .detail-actions label:not(.detail-tail-control) {
   display: grid;
   gap: 6px;
-  color: var(--muted, #9aa8ba);
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -1208,14 +1238,28 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-status-line {
   padding: 9px 20px;
-  color: var(--muted, #9aa8ba);
-  border-bottom: 1px solid var(--border, rgba(148, 163, 184, 0.12));
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
   font-size: 13px;
+}
+
+.docker-execution-mode {
+  flex: 0 0 auto;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.docker-execution-mode .command-light-action {
+  min-height: 30px;
+  padding: 3px 8px;
+  white-space: nowrap;
 }
 
 .docker-mode-tabs {
   padding: 10px 20px;
-  border-bottom: 1px solid var(--border, rgba(148, 163, 184, 0.12));
+  border-bottom: 1px solid var(--border);
 }
 
 .docker-mode-tabs .command-light-action { min-height: 30px; font-size: 14px; padding: 3px 8px; }
@@ -1230,7 +1274,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 14px 20px 16px;
   padding-bottom: 16px;
   overflow: auto;
-  border-bottom: 1px solid var(--border, rgba(148, 163, 184, 0.12));
+  border-bottom: 1px solid var(--border);
 }
 
 .docker-compose-sidebar,
@@ -1238,9 +1282,9 @@ function errorMessage(reason: unknown, fallback: string) {
   min-width: 0;
   min-height: 0;
   overflow: auto;
-  border: 1px solid var(--border, rgba(148, 163, 184, 0.16));
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.5);
+  background: var(--docker-panel-bg);
   padding: 10px;
 }
 
@@ -1286,7 +1330,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-compose-project-row span,
 .docker-compose-project-row small,
 .docker-compose-service-row span {
-  color: var(--muted, #9aa8ba);
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -1295,7 +1339,7 @@ function errorMessage(reason: unknown, fallback: string) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--muted, #9aa8ba);
+  color: var(--muted);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -1321,7 +1365,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-compose-filter {
   display: grid;
   gap: 4px;
-  color: var(--muted, #9aa8ba);
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -1365,12 +1409,12 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-compose-project-row.selected {
   border-color: rgba(96, 165, 250, 0.62);
-  background: rgba(37, 99, 235, 0.16);
+  background: var(--docker-selected-bg);
 }
 
 .docker-compose-service-row.selected {
   border-color: rgba(96, 165, 250, 0.62);
-  background: rgba(37, 99, 235, 0.14);
+  background: var(--docker-selected-soft-bg);
 }
 
 .docker-compose-services {
@@ -1391,7 +1435,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 8px 9px;
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 10px;
-  background: rgba(15, 23, 42, 0.38);
+  background: var(--docker-row-bg);
 }
 
 .docker-compose-service-detail {
@@ -1403,7 +1447,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 8px 9px;
   border: 1px solid rgba(96, 165, 250, 0.24);
   border-radius: 10px;
-  background: rgba(15, 23, 42, 0.42);
+  background: var(--docker-row-strong-bg);
 }
 
 .docker-compose-service-detail span,
@@ -1430,8 +1474,8 @@ function errorMessage(reason: unknown, fallback: string) {
   margin: 0;
   padding: 10px;
   border-radius: 12px;
-  background: #050816;
-  color: #dbeafe;
+  background: var(--docker-console-bg);
+  color: var(--docker-console-text);
   font-family: var(--mono-font, 'Cascadia Mono', Consolas, monospace);
   font-size: 12px;
   line-height: 1.45;
@@ -1453,9 +1497,9 @@ function errorMessage(reason: unknown, fallback: string) {
   min-width: 0;
   min-height: 0;
   overflow: auto;
-  border: 1px solid var(--border, rgba(148, 163, 184, 0.16));
+  border: 1px solid var(--border);
   border-radius: 14px;
-  background: var(--panel-2, rgba(15, 23, 42, 0.72));
+  background: var(--docker-panel-strong-bg);
   padding: 12px;
 }
 
@@ -1517,7 +1561,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 8px 10px;
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.38);
+  background: var(--docker-row-bg);
   cursor: pointer;
   overflow: hidden;
 }
@@ -1664,9 +1708,9 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .detail-tabs button.active {
-  color: var(--text, #e5edf8);
+  color: var(--text);
   border-color: transparent;
-  background: rgba(37, 99, 235, 0.18);
+  background: var(--docker-selected-bg);
   box-shadow: inset 0 -2px 0 var(--primary, #60a5fa);
 }
 
@@ -1682,7 +1726,7 @@ function errorMessage(reason: unknown, fallback: string) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--muted, #9aa8ba);
+  color: var(--muted);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -1699,8 +1743,8 @@ function errorMessage(reason: unknown, fallback: string) {
   margin: 10px 0 0;
   padding: 10px;
   border-radius: 12px;
-  background: #050816;
-  color: #dbeafe;
+  background: var(--docker-console-bg);
+  color: var(--docker-console-text);
   font-family: var(--mono-font, 'Cascadia Mono', Consolas, monospace);
   font-size: 12px;
   line-height: 1.45;
@@ -1716,7 +1760,7 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .docker-info-grid dt {
-  color: var(--muted, #9aa8ba);
+  color: var(--muted);
 }
 
 .docker-info-grid dd {
@@ -1727,12 +1771,12 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .empty {
   margin: 0;
-  color: var(--muted, #9aa8ba);
+  color: var(--muted);
 }
 
 .inspect-security-note {
   margin: 10px 0 0;
-  color: var(--muted, #9aa8ba);
+  color: var(--muted);
   font-size: 12px;
 }
 

@@ -2,8 +2,10 @@ package backup
 
 import (
 	"context"
+	"crypto/ed25519"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"os"
 	"path/filepath"
@@ -13,10 +15,13 @@ import (
 	"testing"
 
 	"serverpilot/internal/commands"
+	"serverpilot/internal/credential"
 	"serverpilot/internal/domain"
 	"serverpilot/internal/keyvault"
 	"serverpilot/internal/persistence"
 	"serverpilot/internal/secretstore"
+
+	"golang.org/x/crypto/ssh"
 )
 
 type memorySecrets struct {
@@ -57,6 +62,17 @@ func (failingSecrets) Set(context.Context, string, []byte) error {
 
 func (failingSecrets) Delete(context.Context, string) error {
 	return nil
+}
+
+type backupTestProtector struct{}
+
+func (backupTestProtector) Protect(plaintext []byte) ([]byte, error) {
+	out := append([]byte(keyvault.LocalProtectorBlobPrefix), plaintext...)
+	return out, nil
+}
+
+func (backupTestProtector) Unprotect(ciphertext []byte) ([]byte, error) {
+	return append([]byte(nil), ciphertext[len(keyvault.LocalProtectorBlobPrefix):]...), nil
 }
 
 func TestExportEncryptsBusinessDataAndInspectRejectsWrongPassword(t *testing.T) {
@@ -641,6 +657,83 @@ func TestFullBackupRestoresEncryptedKeyVaultMaterialAndPassphrase(t *testing.T) 
 	}
 }
 
+func TestFullBackupRestoresLegacyKeyVaultConnectionAsPublicKeyAuth(t *testing.T) {
+	ctx := context.Background()
+	sourceKeyID := int64(91)
+	privateKeyPEM := generatedBackupTestPrivateKeyPEM(t)
+	protectedBlob := append([]byte(keyvault.LocalProtectorBlobPrefix), privateKeyPEM...)
+	payload := domain.BackupPayload{
+		SchemaVersion: 1,
+		Mode:          domain.BackupModeFull,
+		KeyVault: []domain.BackupKeyVaultEntry{{
+			ID:                         sourceKeyID,
+			Name:                       "legacy-windows-key",
+			StorageMode:                string(domain.KeyVaultStorageEncryptedDatabase),
+			SourceFileName:             "id_ed25519",
+			Algorithm:                  "ssh-ed25519",
+			KeyBits:                    256,
+			PublicKeyFingerprintSHA256: "SHA256:legacy-windows-key",
+			Encrypted:                  false,
+		}},
+		Connections: []domain.BackupConnection{{
+			ID:               700,
+			Name:             "legacy-key-server",
+			Host:             "203.0.113.70",
+			Port:             22,
+			Username:         "deploy",
+			AuthType:         domain.AuthPrivateKey,
+			PrivateKeySource: "",
+			KeyVaultID:       &sourceKeyID,
+			RefreshInterval:  2,
+		}},
+		Secrets: []domain.BackupSecret{{
+			Scope:   "key_vault",
+			OwnerID: sourceKeyID,
+			Kind:    "protected_key_blob",
+			Value:   protectedBlob,
+		}},
+	}
+	contents, _, err := encryptPayload(payload, "correct horse battery")
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "legacy-windows-keyvault.spbackup")
+	if err := os.WriteFile(path, contents, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	target := newBackupStore(t)
+	targetSecrets := newMemorySecrets()
+	importResult, err := New(target, targetSecrets).Import(ctx, domain.BackupImportRequest{
+		Path: path, Password: "correct horse battery",
+		Options: domain.BackupImportOptions{ImportSettings: false, ImportGroups: false, ImportServers: true, ImportKeyVault: true, ImportHostTrust: false},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if importResult.KeyVaultAdded != 1 || importResult.ConnectionsAdded != 1 {
+		t.Fatalf("import result=%+v", importResult)
+	}
+	connections, err := target.ListConnections(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(connections) != 1 ||
+		connections[0].AuthType != domain.AuthPrivateKey ||
+		connections[0].PrivateKeySource != domain.PrivateKeySourceKeyVault ||
+		connections[0].KeyVaultID == nil {
+		t.Fatalf("connection did not keep key vault publickey auth: %+v", connections)
+	}
+	auth, err := credential.New(target, targetSecrets, backupTestProtector{}).Resolve(ctx, connections[0], domain.AuthRequest{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer wipeBytes(auth.ResolvedPrivateKeyPEM)
+	if auth.ResolvedKeyVaultID <= 0 || len(auth.ResolvedPrivateKeyPEM) == 0 || auth.Password != "" {
+		t.Fatalf("resolved auth did not use key vault publickey: %+v", auth)
+	}
+}
+
 func TestFullBackupKeepsConfigWhenSecretStoreCannotSave(t *testing.T) {
 	ctx := context.Background()
 	source := newBackupStore(t)
@@ -878,6 +971,23 @@ func TestBackupPasswordPreservesLeadingAndTrailingSpaces(t *testing.T) {
 	if _, err := service.Inspect(ctx, domain.BackupInspectRequest{Path: path, Password: "1234"}); !errors.Is(err, ErrWeakPassword) {
 		t.Fatalf("trimmed password error=%v", err)
 	}
+}
+
+func generatedBackupTestPrivateKeyPEM(t *testing.T) []byte {
+	t.Helper()
+	_, privateKey, err := ed25519.GenerateKey(strings.NewReader(strings.Repeat("a", 128)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	block, err := ssh.MarshalPrivateKey(privateKey, "serverpilot-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return pemEncodeToMemory(block)
+}
+
+func pemEncodeToMemory(block *pem.Block) []byte {
+	return pem.EncodeToMemory(block)
 }
 
 func newBackupStore(t *testing.T) *persistence.Store {

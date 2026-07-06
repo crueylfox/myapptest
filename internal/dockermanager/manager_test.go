@@ -132,7 +132,7 @@ func TestCheckClassifiesDockerUnavailableAndPermission(t *testing.T) {
 		want string
 	}{
 		{name: "not installed", err: errors.New("docker: command not found"), want: "服务器未检测到 Docker。"},
-		{name: "permission", err: errors.New("permission denied while trying to connect to the Docker daemon socket"), want: "当前用户无权限访问 Docker，请将用户加入 docker 组或使用 root。"},
+		{name: "permission", err: errors.New("permission denied while trying to connect to the Docker daemon socket"), want: "Docker Manager 使用独立 SSH 执行，不会继承终端中 su/root 状态。当前用户无权限访问 Docker，可使用 sudo 重试；若服务器需要 sudo 密码，请配置免密 sudo、加入 docker 组，或使用 root 凭据连接。"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -149,6 +149,60 @@ func TestCheckClassifiesDockerUnavailableAndPermission(t *testing.T) {
 				t.Fatalf("state = %+v", state)
 			}
 		})
+	}
+}
+
+func TestCheckPermissionExplainsIndependentSSHExecAndSudoRetry(t *testing.T) {
+	transport := &fakeTransport{
+		responses: map[string]string{},
+		errors:    map[string]error{dockerVersionCommand: errors.New("permission denied while trying to connect to the Docker daemon socket")},
+	}
+	state, err := testManager(transport, nil).Check(testConnection(), domain.AuthRequest{})
+	if err == nil {
+		t.Fatal("expected permission error")
+	}
+	for _, text := range []string{
+		"Docker Manager 使用独立 SSH 执行，不会继承终端中 su/root 状态。",
+		"sudo 重试",
+	} {
+		if !strings.Contains(err.Error(), text) || !strings.Contains(state.Error, text) {
+			t.Fatalf("permission message missing %q: error=%q state=%q", text, err.Error(), state.Error)
+		}
+	}
+}
+
+func TestCheckWithSudoUsesNonInteractiveDockerCommand(t *testing.T) {
+	transport := &fakeTransport{
+		responses: map[string]string{
+			"sudo -n " + dockerVersionCommand: `{"Server":{"Version":"27.3.1"},"Client":{"Version":"27.3.1"}}`,
+		},
+		errors: map[string]error{},
+	}
+	state, err := testManager(transport, nil).CheckWithExecutionMode(testConnection(), domain.AuthRequest{}, domain.DockerExecutionSudo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !state.Available || state.Version != "27.3.1" {
+		t.Fatalf("state = %+v", state)
+	}
+	if !transport.hasCommand("sudo -n " + dockerVersionCommand) {
+		t.Fatalf("sudo command was not used: %v", transport.commands)
+	}
+}
+
+func TestSudoPasswordRequiredShowsActionableDockerPermissionError(t *testing.T) {
+	transport := &fakeTransport{
+		responses: map[string]string{},
+		errors:    map[string]error{"sudo -n " + dockerVersionCommand: errors.New("sudo: a password is required")},
+	}
+	_, err := testManager(transport, nil).CheckWithExecutionMode(testConnection(), domain.AuthRequest{}, domain.DockerExecutionSudo)
+	if err == nil {
+		t.Fatal("expected sudo password error")
+	}
+	for _, text := range []string{"sudo -n", "免密 sudo", "docker 组", "root 凭据"} {
+		if !strings.Contains(err.Error(), text) {
+			t.Fatalf("sudo password message missing %q: %q", text, err.Error())
+		}
 	}
 }
 
@@ -571,7 +625,7 @@ func TestComposeServiceDetailParsesSelectedService(t *testing.T) {
 	output := `[{"ID":"abc123","Name":"edge-web-1","Project":"edge","Service":"web","Image":"nginx:alpine","State":"running","Status":"Up 2 minutes","Publishers":[{"URL":"0.0.0.0","TargetPort":80,"PublishedPort":8080,"Protocol":"tcp"}]}]`
 	transport := &fakeTransport{
 		responses: map[string]string{
-			dockerComposePluginVersionCommand:                         "Docker Compose version v2.27.1\n",
+			dockerComposePluginVersionCommand:                 "Docker Compose version v2.27.1\n",
 			"docker compose -p 'edge' ps 'web' --format json": output,
 		},
 		errors: map[string]error{},
@@ -592,7 +646,7 @@ func TestComposeServiceDetailParsesSelectedService(t *testing.T) {
 func TestComposeLogsSnapshotSupportsServiceAndClampsTail(t *testing.T) {
 	transport := &fakeTransport{
 		responses: map[string]string{
-			dockerComposePluginVersionCommand:                                      "Docker Compose version v2.27.1\n",
+			dockerComposePluginVersionCommand:                                 "Docker Compose version v2.27.1\n",
 			"docker compose -p 'edge' logs --no-color --tail 1000 'web' 2>&1": "web synthetic compose log\n",
 		},
 		errors: map[string]error{},
@@ -630,10 +684,10 @@ func TestComposeReadOnlyCommandsDoNotContainDestructiveActions(t *testing.T) {
 	output := `[{"ID":"abc123","Name":"edge-web-1","Project":"edge","Service":"web","Image":"nginx:alpine","State":"running","Status":"Up 2 minutes"}]`
 	transport := &fakeTransport{
 		responses: map[string]string{
-			dockerComposePluginVersionCommand:                         "Docker Compose version v2.27.1\n",
-			"docker compose ls --format json":                         `[{"Name":"edge","Status":"running(1)"}]`,
-			"docker compose -p 'edge' ps --format json":               output,
-			"docker compose -p 'edge' ps 'web' --format json":         output,
+			dockerComposePluginVersionCommand:                          "Docker Compose version v2.27.1\n",
+			"docker compose ls --format json":                          `[{"Name":"edge","Status":"running(1)"}]`,
+			"docker compose -p 'edge' ps --format json":                output,
+			"docker compose -p 'edge' ps 'web' --format json":          output,
 			"docker compose -p 'edge' logs --no-color --tail 200 2>&1": "project log\n",
 		},
 		errors: map[string]error{},

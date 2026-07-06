@@ -14,6 +14,7 @@ import type {
   DockerContainerStats,
   DockerContainersEvent,
   DockerErrorEvent,
+  DockerExecutionMode,
   DockerInspectSummary,
   DockerLogEvent,
   DockerStateEvent,
@@ -36,6 +37,7 @@ export const useDockerStore = defineStore('docker', () => {
   const composeServiceDetailByService = ref<Record<string, DockerComposeService>>({})
   const composeLogsByProject = ref<Record<string, DockerComposeLogsSnapshot>>({})
   const selectedIDsByServerId = ref<Record<number, string[]>>({})
+  const executionModeByServerId = ref<Record<number, DockerExecutionMode>>({})
   const lastError = ref<DockerErrorEvent | null>(null)
 
   const serverIDsWithState = computed(() => Object.keys(availabilityByServerId.value).map(Number))
@@ -104,12 +106,30 @@ export const useDockerStore = defineStore('docker', () => {
     return selectedIDs(serverID).length
   }
 
+  function executionMode(serverID: number | null | undefined): DockerExecutionMode {
+    if (!serverID) return 'current_user'
+    return executionModeByServerId.value[serverID] ?? 'current_user'
+  }
+
+  function setExecutionMode(serverID: number, mode: DockerExecutionMode) {
+    const next = { ...executionModeByServerId.value }
+    if (mode === 'sudo') next[serverID] = 'sudo'
+    else delete next[serverID]
+    executionModeByServerId.value = next
+  }
+
+  function requestExecutionMode(serverID: number): DockerExecutionMode | undefined {
+    const mode = executionMode(serverID)
+    return mode === 'sudo' ? mode : undefined
+  }
+
   function isSelected(serverID: number | null | undefined, containerID: string) {
     return selectedIDs(serverID).includes(containerID)
   }
 
   async function check(serverID: number) {
-    const state = await api.dockerCheck(serverID)
+    const mode = requestExecutionMode(serverID)
+    const state = await api.dockerCheck(serverID, mode)
     availabilityByServerId.value[serverID] = state
     if (Array.isArray(state.containers)) {
       containersByServerId.value[serverID] = state.containers
@@ -119,7 +139,8 @@ export const useDockerStore = defineStore('docker', () => {
   }
 
   async function refresh(serverID: number) {
-    const rows = await api.dockerListContainers(serverID)
+    const mode = requestExecutionMode(serverID)
+    const rows = await api.dockerListContainers(serverID, mode)
     containersByServerId.value[serverID] = rows ?? []
     availabilityByServerId.value[serverID] = {
       serverID,
@@ -134,41 +155,41 @@ export const useDockerStore = defineStore('docker', () => {
   }
 
   async function start(serverID: number, containerID: string) {
-    await api.dockerStartContainer(serverID, containerID)
+    await api.dockerStartContainer(serverID, containerID, requestExecutionMode(serverID))
     return refresh(serverID)
   }
 
   async function stop(serverID: number, containerID: string) {
-    await api.dockerStopContainer(serverID, containerID)
+    await api.dockerStopContainer(serverID, containerID, requestExecutionMode(serverID))
     return refresh(serverID)
   }
 
   async function restart(serverID: number, containerID: string) {
-    await api.dockerRestartContainer(serverID, containerID)
+    await api.dockerRestartContainer(serverID, containerID, requestExecutionMode(serverID))
     return refresh(serverID)
   }
 
   async function remove(serverID: number, containerID: string) {
     await stopContainerRuntime(serverID, containerID)
-    await api.dockerRemoveContainer(serverID, containerID)
+    await api.dockerRemoveContainer(serverID, containerID, requestExecutionMode(serverID))
     return refresh(serverID)
   }
 
   async function batchStart(serverID: number, containerIDs: string[]) {
-    return runBatch(serverID, () => api.dockerBatchStartContainers(serverID, containerIDs))
+    return runBatch(serverID, () => api.dockerBatchStartContainers(serverID, containerIDs, requestExecutionMode(serverID)))
   }
 
   async function batchStop(serverID: number, containerIDs: string[]) {
-    return runBatch(serverID, () => api.dockerBatchStopContainers(serverID, containerIDs))
+    return runBatch(serverID, () => api.dockerBatchStopContainers(serverID, containerIDs, requestExecutionMode(serverID)))
   }
 
   async function batchRestart(serverID: number, containerIDs: string[]) {
-    return runBatch(serverID, () => api.dockerBatchRestartContainers(serverID, containerIDs))
+    return runBatch(serverID, () => api.dockerBatchRestartContainers(serverID, containerIDs, requestExecutionMode(serverID)))
   }
 
   async function batchRemove(serverID: number, containerIDs: string[]) {
     await Promise.allSettled(containerIDs.map((containerID) => stopContainerRuntime(serverID, containerID)))
-    return runBatch(serverID, () => api.dockerBatchRemoveContainers(serverID, containerIDs))
+    return runBatch(serverID, () => api.dockerBatchRemoveContainers(serverID, containerIDs, requestExecutionMode(serverID)))
   }
 
   async function runBatch(serverID: number, task: () => Promise<DockerBatchContainerResponse>) {
@@ -178,7 +199,7 @@ export const useDockerStore = defineStore('docker', () => {
   }
 
   async function loadLogs(serverID: number, containerID: string, tailLines = 200) {
-    const output = await api.dockerGetContainerLogs(serverID, containerID, tailLines)
+    const output = await api.dockerGetContainerLogs(serverID, containerID, tailLines, requestExecutionMode(serverID))
     const key = containerKey(serverID, containerID)
     logsByContainer.value[key] = trimLogs(output.split(/\r?\n/).filter((line) => line.length > 0))
     return logsByContainer.value[key]
@@ -187,7 +208,7 @@ export const useDockerStore = defineStore('docker', () => {
   async function startLogStream(serverID: number, containerID: string, tailLines = 200) {
     const key = containerKey(serverID, containerID)
     if (activeLogStreams.value[key]) return activeLogStreams.value[key]
-    const streamID = await api.dockerStartLogStream(serverID, containerID, tailLines)
+    const streamID = await api.dockerStartLogStream(serverID, containerID, tailLines, '', requestExecutionMode(serverID))
     activeLogStreams.value[key] = streamID
     return streamID
   }
@@ -203,13 +224,13 @@ export const useDockerStore = defineStore('docker', () => {
   }
 
   async function inspect(serverID: number, containerID: string) {
-    const summary = await api.dockerGetContainerInspectSummary(serverID, containerID)
+    const summary = await api.dockerGetContainerInspectSummary(serverID, containerID, requestExecutionMode(serverID))
     inspectByContainer.value[containerKey(serverID, containerID)] = summary
     return summary
   }
 
   async function stats(serverID: number, containerID: string) {
-    const value = await api.dockerGetContainerStats(serverID, containerID)
+    const value = await api.dockerGetContainerStats(serverID, containerID, requestExecutionMode(serverID))
     statsByContainer.value[containerKey(serverID, containerID)] = value
     return value
   }
@@ -217,7 +238,7 @@ export const useDockerStore = defineStore('docker', () => {
   async function startStatsWatch(serverID: number, containerID: string, intervalMs = 1500) {
     const key = containerKey(serverID, containerID)
     if (activeStatsWatchers.value[key]) return activeStatsWatchers.value[key]
-    const watchID = await api.dockerStartStatsWatch(serverID, containerID, intervalMs)
+    const watchID = await api.dockerStartStatsWatch(serverID, containerID, intervalMs, '', requestExecutionMode(serverID))
     activeStatsWatchers.value[key] = watchID
     return watchID
   }
@@ -233,31 +254,31 @@ export const useDockerStore = defineStore('docker', () => {
   }
 
   async function composeCheck(serverID: number) {
-    const capability = await api.dockerComposeCheck(serverID)
+    const capability = await api.dockerComposeCheck(serverID, requestExecutionMode(serverID))
     composeCapabilityByServerId.value[serverID] = capability
     return capability
   }
 
   async function composeRefreshProjects(serverID: number) {
-    const projects = await api.dockerComposeListProjects(serverID)
+    const projects = await api.dockerComposeListProjects(serverID, requestExecutionMode(serverID))
     composeProjectsByServerId.value[serverID] = projects ?? []
     return composeProjectsByServerId.value[serverID]
   }
 
   async function composeLoadServices(serverID: number, projectName: string) {
-    const response = await api.dockerComposeGetServices(serverID, projectName)
+    const response = await api.dockerComposeGetServices(serverID, projectName, requestExecutionMode(serverID))
     composeServicesByProject.value[composeKey(serverID, projectName)] = response
     return response
   }
 
   async function composeLoadServiceDetail(serverID: number, projectName: string, serviceName: string) {
-    const detail = await api.dockerComposeGetServiceDetail(serverID, projectName, serviceName)
+    const detail = await api.dockerComposeGetServiceDetail(serverID, projectName, serviceName, requestExecutionMode(serverID))
     composeServiceDetailByService.value[composeServiceKey(serverID, projectName, serviceName)] = detail
     return detail
   }
 
   async function composeLoadLogs(serverID: number, projectName: string, tailLines = 200, serviceName = '') {
-    const snapshot = await api.dockerComposeGetLogs(serverID, projectName, tailLines, serviceName)
+    const snapshot = await api.dockerComposeGetLogs(serverID, projectName, tailLines, serviceName, requestExecutionMode(serverID))
     composeLogsByProject.value[composeServiceKey(serverID, projectName, serviceName)] = snapshot
     return snapshot
   }
@@ -293,9 +314,12 @@ export const useDockerStore = defineStore('docker', () => {
     delete availability[serverID]
     delete containers[serverID]
     delete selected[serverID]
+    const modes = { ...executionModeByServerId.value }
+    delete modes[serverID]
     availabilityByServerId.value = availability
     containersByServerId.value = containers
     selectedIDsByServerId.value = selected
+    executionModeByServerId.value = modes
     clearComposeServer(serverID)
   }
 
@@ -453,6 +477,8 @@ export const useDockerStore = defineStore('docker', () => {
     selectedIDs,
     selectedCount,
     isSelected,
+    executionMode,
+    setExecutionMode,
     check,
     refresh,
     start,

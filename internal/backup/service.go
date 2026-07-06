@@ -422,7 +422,7 @@ func validatePayload(payload domain.BackupPayload) error {
 			Port:             connection.Port,
 			Username:         connection.Username,
 			AuthType:         connection.AuthType,
-			PrivateKeySource: connection.PrivateKeySource,
+			PrivateKeySource: backupConnectionPrivateKeySource(connection),
 			PrivateKeyPath:   connection.PrivateKeyPath,
 			KeyVaultID:       connection.KeyVaultID,
 			RefreshInterval:  connection.RefreshInterval,
@@ -445,6 +445,16 @@ func validatePayload(payload domain.BackupPayload) error {
 		}
 	}
 	return nil
+}
+
+func backupConnectionPrivateKeySource(connection domain.BackupConnection) domain.PrivateKeySource {
+	if connection.PrivateKeySource != "" {
+		return connection.PrivateKeySource
+	}
+	if connection.AuthType == domain.AuthPrivateKey && connection.KeyVaultID != nil && *connection.KeyVaultID > 0 {
+		return domain.PrivateKeySourceKeyVault
+	}
+	return connection.PrivateKeySource
 }
 
 func normalizeBackupMode(value string) (domain.BackupMode, error) {

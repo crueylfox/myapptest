@@ -192,6 +192,14 @@ describe('DockerManagerDialog', () => {
             lastRefreshAt: '',
             containers: [],
           })),
+          DockerCheckWithOptions: vi.fn(async () => ({
+            serverID: 7,
+            available: true,
+            version: '27.3.1',
+            error: '',
+            lastRefreshAt: '',
+            containers: [],
+          })),
           DockerListContainers: vi.fn(async () => [runningContainer, stoppedContainer]),
           DockerStartContainer: vi.fn(async () => undefined),
           DockerStopContainer: vi.fn(async () => undefined),
@@ -234,6 +242,14 @@ describe('DockerManagerDialog', () => {
           DockerStartStatsWatch: vi.fn(async () => 'watch-1'),
           DockerStopStatsWatch: vi.fn(async () => undefined),
           DockerComposeCheck: vi.fn(async () => ({
+            serverID: 7,
+            available: true,
+            command: 'docker compose',
+            version: 'v2.27.1',
+            error: '',
+            lastRefreshAt: '',
+          })),
+          DockerComposeCheckWithOptions: vi.fn(async () => ({
             serverID: 7,
             available: true,
             command: 'docker compose',
@@ -435,6 +451,17 @@ describe('DockerManagerDialog', () => {
     expect(wrapper.find('[data-testid="docker-log-view"]').exists()).toBe(false)
   })
 
+  it('keeps the Compose empty-project state visually quiet without the placeholder sentence', async () => {
+    app().DockerComposeListProjects = vi.fn(async () => [])
+    const wrapper = mountDialog()
+    await flush()
+    await wrapper.get('[data-testid="docker-compose-tab"]').trigger('click')
+    await flush()
+
+    expect(wrapper.find('[data-testid="docker-compose-panel"]').exists()).toBe(true)
+    expect(wrapper.text()).not.toContain('暂无 Compose 项目。')
+  })
+
   it('refreshes Docker Compose logs as a bounded snapshot', async () => {
     const wrapper = mountDialog()
     await flush()
@@ -609,6 +636,45 @@ describe('DockerManagerDialog', () => {
     expect(componentSource).not.toContain('wailsjs/go/main/App')
     expect(dockerStoreSource).toContain('composeCheck')
     expect(backendSource).toContain('DockerComposeCheck')
+  })
+
+  it('offers current-user and sudo retry execution modes for Docker permission failures', async () => {
+    app().DockerCheck = vi.fn(async () => ({
+      serverID: 7,
+      available: false,
+      version: '',
+      error: 'Docker Manager 使用独立 SSH 执行，不会继承终端中 su/root 状态。当前用户无权限访问 Docker，可使用 sudo 重试。',
+      lastRefreshAt: '',
+      containers: [],
+    }))
+    app().DockerCheckWithOptions = vi.fn(async () => ({
+      serverID: 7,
+      available: true,
+      version: '27.3.1',
+      error: '',
+      lastRefreshAt: '',
+      containers: [],
+    }))
+    const wrapper = mountDialog()
+    await flush()
+
+    expect(wrapper.get('[data-testid="docker-permission-help"]').text()).toContain('独立 SSH 执行')
+    expect(wrapper.get('[data-testid="docker-execution-current"]').classes()).toContain('active')
+    await wrapper.get('[data-testid="docker-execution-sudo"]').trigger('click')
+    await flush()
+
+    expect(wrapper.get('[data-testid="docker-execution-sudo"]').classes()).toContain('active')
+    expect(app().DockerCheckWithOptions).toHaveBeenLastCalledWith({ serverID: 7, executionMode: 'sudo' })
+    expect(app().DockerListContainers).toHaveBeenLastCalledWith({ serverID: 7, executionMode: 'sudo' })
+  })
+
+  it('uses theme tokens for Docker dialog and Compose surfaces in light mode', () => {
+    for (const forbidden of ['#0f172a', '#111827', '#020617', 'rgba(15, 23, 42', 'rgba(2, 6, 23']) {
+      expect(componentSource).not.toContain(forbidden)
+    }
+    expect(componentSource).toContain('var(--docker-dialog-backdrop)')
+    expect(componentSource).toContain('var(--docker-panel-bg)')
+    expect(componentSource).toContain('var(--docker-console-bg)')
   })
 
   it('searches and filters containers', async () => {

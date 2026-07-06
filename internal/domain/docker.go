@@ -1,6 +1,7 @@
 package domain
 
 type DockerContainerState string
+type DockerExecutionMode string
 
 const (
 	DockerContainerRunning    DockerContainerState = "running"
@@ -9,6 +10,9 @@ const (
 	DockerContainerRestarting DockerContainerState = "restarting"
 	DockerContainerDead       DockerContainerState = "dead"
 	DockerContainerUnknown    DockerContainerState = "unknown"
+
+	DockerExecutionCurrentUser DockerExecutionMode = "current_user"
+	DockerExecutionSudo        DockerExecutionMode = "sudo"
 )
 
 type DockerAvailability struct {
@@ -65,17 +69,25 @@ type DockerInspectSummary struct {
 }
 
 type DockerListContainersRequest struct {
-	ServerID int64 `json:"serverID"`
+	ServerID      int64               `json:"serverID"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
+}
+
+type DockerServerRequest struct {
+	ServerID      int64               `json:"serverID"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerContainerRequest struct {
-	ServerID    int64  `json:"serverID"`
-	ContainerID string `json:"containerID"`
+	ServerID      int64               `json:"serverID"`
+	ContainerID   string              `json:"containerID"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerBatchContainerRequest struct {
-	ServerID     int64    `json:"serverID"`
-	ContainerIDs []string `json:"containerIDs"`
+	ServerID      int64               `json:"serverID"`
+	ContainerIDs  []string            `json:"containerIDs"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerBatchContainerResult struct {
@@ -97,16 +109,18 @@ type DockerBatchContainerResponse struct {
 }
 
 type DockerLogsRequest struct {
-	ServerID    int64  `json:"serverID"`
-	ContainerID string `json:"containerID"`
-	TailLines   int    `json:"tailLines"`
+	ServerID      int64               `json:"serverID"`
+	ContainerID   string              `json:"containerID"`
+	TailLines     int                 `json:"tailLines"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerLogStreamRequest struct {
-	ServerID    int64  `json:"serverID"`
-	ContainerID string `json:"containerID"`
-	TailLines   int    `json:"tailLines"`
-	StreamID    string `json:"streamID"`
+	ServerID      int64               `json:"serverID"`
+	ContainerID   string              `json:"containerID"`
+	TailLines     int                 `json:"tailLines"`
+	StreamID      string              `json:"streamID"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerStopLogStreamRequest struct {
@@ -115,10 +129,11 @@ type DockerStopLogStreamRequest struct {
 }
 
 type DockerStatsWatchRequest struct {
-	ServerID    int64  `json:"serverID"`
-	ContainerID string `json:"containerID"`
-	WatchID     string `json:"watchID"`
-	IntervalMs  int    `json:"intervalMs"`
+	ServerID      int64               `json:"serverID"`
+	ContainerID   string              `json:"containerID"`
+	WatchID       string              `json:"watchID"`
+	IntervalMs    int                 `json:"intervalMs"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerStopStatsWatchRequest struct {
@@ -144,18 +159,21 @@ type DockerComposeProject struct {
 }
 
 type DockerComposeProjectsRequest struct {
-	ServerID int64 `json:"serverID"`
+	ServerID      int64               `json:"serverID"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerComposeProjectRequest struct {
-	ServerID    int64  `json:"serverID"`
-	ProjectName string `json:"projectName"`
+	ServerID      int64               `json:"serverID"`
+	ProjectName   string              `json:"projectName"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerComposeServiceDetailRequest struct {
-	ServerID    int64  `json:"serverID"`
-	ProjectName string `json:"projectName"`
-	ServiceName string `json:"serviceName"`
+	ServerID      int64               `json:"serverID"`
+	ProjectName   string              `json:"projectName"`
+	ServiceName   string              `json:"serviceName"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerComposeService struct {
@@ -181,10 +199,11 @@ type DockerComposeServicesResponse struct {
 }
 
 type DockerComposeLogsRequest struct {
-	ServerID    int64  `json:"serverID"`
-	ProjectName string `json:"projectName"`
-	ServiceName string `json:"serviceName"`
-	TailLines   int    `json:"tailLines"`
+	ServerID      int64               `json:"serverID"`
+	ProjectName   string              `json:"projectName"`
+	ServiceName   string              `json:"serviceName"`
+	TailLines     int                 `json:"tailLines"`
+	ExecutionMode DockerExecutionMode `json:"executionMode,omitempty"`
 }
 
 type DockerComposeLogsSnapshot struct {

@@ -55,11 +55,18 @@ jobs:
       - name: Create artifact archive
         run: |
           mkdir -p artifacts
-          ditto -c -k --keepParent build/bin/ServerPilot.app artifacts/ServerPilot-macos-unsigned.zip
+          ditto -c -k --sequesterRsrc --keepParent build/bin/ServerPilot.app artifacts/ServerPilot-macos-universal-unsigned.zip
+          hdiutil create -volname ServerPilot -srcfolder build/bin/ServerPilot.app -ov -format UDZO artifacts/ServerPilot-macos-universal-unsigned.dmg
+          shasum -a 256 artifacts/ServerPilot-macos-universal-unsigned.zip | tee artifacts/ServerPilot-macos-universal-unsigned.zip.sha256
+          shasum -a 256 artifacts/ServerPilot-macos-universal-unsigned.dmg | tee artifacts/ServerPilot-macos-universal-unsigned.dmg.sha256
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: ServerPilot-macos-unsigned
-          path: artifacts/ServerPilot-macos-unsigned.zip
+          path: |
+            artifacts/ServerPilot-macos-universal-unsigned.zip
+            artifacts/ServerPilot-macos-universal-unsigned.dmg
+            artifacts/ServerPilot-macos-universal-unsigned.zip.sha256
+            artifacts/ServerPilot-macos-universal-unsigned.dmg.sha256
           if-no-files-found: error

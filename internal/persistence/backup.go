@@ -326,8 +326,9 @@ func (s *Store) importBackupPayloadTx(
 				}
 			}
 			var mappedKey *int64
+			privateKeySource := backupConnectionPrivateKeySource(connection)
 			if connection.AuthType == domain.AuthPrivateKey &&
-				connection.PrivateKeySource == domain.PrivateKeySourceKeyVault &&
+				privateKeySource == domain.PrivateKeySourceKeyVault &&
 				connection.KeyVaultID != nil {
 				if id, ok := keyMap[*connection.KeyVaultID]; ok {
 					mappedKey = &id
@@ -1071,10 +1072,7 @@ func upsertConnectionTx(
 	terminalProfileID *string,
 	hostKeyFingerprint string,
 ) (int64, bool, bool, error) {
-	privateKeySource := connection.PrivateKeySource
-	if privateKeySource == "" {
-		privateKeySource = domain.PrivateKeySourceLocalFile
-	}
+	privateKeySource := backupConnectionPrivateKeySource(connection)
 	privateKeyPath := connection.PrivateKeyPath
 	if connection.AuthType != domain.AuthPrivateKey || privateKeySource == domain.PrivateKeySourceKeyVault {
 		privateKeyPath = ""
@@ -1162,6 +1160,16 @@ sort_order, connection_mode, jump_server_id, created_at, updated_at
 		return 0, false, false, err
 	}
 	return id, true, hostKeyFingerprint != "", nil
+}
+
+func backupConnectionPrivateKeySource(connection domain.BackupConnection) domain.PrivateKeySource {
+	if connection.PrivateKeySource != "" {
+		return connection.PrivateKeySource
+	}
+	if connection.AuthType == domain.AuthPrivateKey && connection.KeyVaultID != nil && *connection.KeyVaultID > 0 {
+		return domain.PrivateKeySourceKeyVault
+	}
+	return domain.PrivateKeySourceLocalFile
 }
 
 func restoreBackupJumpRoutesTx(

@@ -3,7 +3,7 @@ import type {
   BackupImportResult, BackupInspectRequest, BackupPreview, CommandFavorite, CommandHistoryEntry, CommandSuggestion, Connection, ConnectionRuntimeState, Group,
   AssignServerTerminalProfileRequest, DeleteKeyVaultEntryRequest, DeleteKeyVaultEntryResponse, DeleteTerminalProfileRequest, DeleteTerminalProfileResponse,
   BatchCommandTask, CancelBatchCommandServerRequest, CancelBatchCommandTaskRequest, StartBatchCommandRequest,
-  DockerAvailability, DockerBatchContainerRequest, DockerBatchContainerResponse, DockerComposeCapability, DockerComposeLogsRequest, DockerComposeLogsSnapshot, DockerComposeProject, DockerComposeProjectRequest, DockerComposeProjectsRequest, DockerComposeService, DockerComposeServiceDetailRequest, DockerComposeServicesResponse, DockerContainer, DockerContainerRequest, DockerContainerStats, DockerInspectSummary, DockerListContainersRequest,
+  DockerAvailability, DockerBatchContainerRequest, DockerBatchContainerResponse, DockerComposeCapability, DockerComposeLogsRequest, DockerComposeLogsSnapshot, DockerComposeProject, DockerComposeProjectRequest, DockerComposeProjectsRequest, DockerComposeService, DockerComposeServiceDetailRequest, DockerComposeServicesResponse, DockerContainer, DockerContainerRequest, DockerContainerStats, DockerExecutionMode, DockerInspectSummary, DockerListContainersRequest, DockerServerRequest,
   DockerLogsRequest, DockerLogStreamRequest, DockerStatsWatchRequest, DockerStopLogStreamRequest, DockerStopStatsWatchRequest,
   ServiceManagerCapability, ServiceManagerServerRequest, StopSystemServiceJournalFollowRequest, SystemServiceActionRequest, SystemServiceActionResponse, SystemServiceDetail, SystemServiceJournalFollowResponse, SystemServiceJournalRequest, SystemServiceJournalResponse, SystemServiceListResponse,
   ConnectionReachabilityResult, HostKeyProbeResult, KeyVaultEntry, LocalDirectoryListing, LocalDirectoryRequest, LocalDrive, LocalExplorerHome, LocalPathRequest, LocalResourceSnapshot, LocalTerminalCapabilities, LocalTerminalElevatedRelaunchRequest,
@@ -127,6 +127,7 @@ type BackendApp = {
   EnableRemoteForwardAccess(request: RemoteForwardAccessRequest): Promise<RemoteForwardAccessEnableResult>
   EnableRemoteForwardAccessAndRestart(request: RemoteForwardAccessRestartRequest): Promise<RemoteForwardAccessRestartResult>
   DockerCheck(serverID: number): Promise<DockerAvailability>
+  DockerCheckWithOptions(request: DockerServerRequest): Promise<DockerAvailability>
   DockerListContainers(request: DockerListContainersRequest): Promise<DockerContainer[]>
   DockerStartContainer(request: DockerContainerRequest): Promise<void>
   DockerStopContainer(request: DockerContainerRequest): Promise<void>
@@ -144,6 +145,7 @@ type BackendApp = {
   DockerStartStatsWatch(request: DockerStatsWatchRequest): Promise<string>
   DockerStopStatsWatch(request: DockerStopStatsWatchRequest): Promise<void>
   DockerComposeCheck(serverID: number): Promise<DockerComposeCapability>
+  DockerComposeCheckWithOptions(request: DockerServerRequest): Promise<DockerComposeCapability>
   DockerComposeListProjects(request: DockerComposeProjectsRequest): Promise<DockerComposeProject[]>
   DockerComposeGetServices(request: DockerComposeProjectRequest): Promise<DockerComposeServicesResponse>
   DockerComposeGetServiceDetail(request: DockerComposeServiceDetailRequest): Promise<DockerComposeService>
@@ -246,6 +248,12 @@ function backend(): BackendApp {
   const app = window.go?.main?.App
   if (!app) throw new Error('Wails backend is unavailable. Run through wails dev.')
   return app
+}
+
+function dockerRequest<T extends object>(request: T, executionMode?: DockerExecutionMode): T & { executionMode?: DockerExecutionMode } {
+  return executionMode && executionMode !== 'current_user'
+    ? { ...request, executionMode }
+    : request
 }
 
 function logFrontendError(source: string): Promise<void> {
@@ -363,46 +371,54 @@ export const api = {
     backend().EnableRemoteForwardAccess(request),
   enableRemoteForwardAccessAndRestart: (request: RemoteForwardAccessRestartRequest) =>
     backend().EnableRemoteForwardAccessAndRestart(request),
-  dockerCheck: (serverID: number) => backend().DockerCheck(serverID),
-  dockerListContainers: (serverID: number) => backend().DockerListContainers({ serverID }),
-  dockerStartContainer: (serverID: number, containerID: string) =>
-    backend().DockerStartContainer({ serverID, containerID }),
-  dockerStopContainer: (serverID: number, containerID: string) =>
-    backend().DockerStopContainer({ serverID, containerID }),
-  dockerRestartContainer: (serverID: number, containerID: string) =>
-    backend().DockerRestartContainer({ serverID, containerID }),
-  dockerRemoveContainer: (serverID: number, containerID: string) =>
-    backend().DockerRemoveContainer({ serverID, containerID }),
-  dockerBatchStartContainers: (serverID: number, containerIDs: string[]) =>
-    backend().DockerBatchStartContainers({ serverID, containerIDs }),
-  dockerBatchStopContainers: (serverID: number, containerIDs: string[]) =>
-    backend().DockerBatchStopContainers({ serverID, containerIDs }),
-  dockerBatchRestartContainers: (serverID: number, containerIDs: string[]) =>
-    backend().DockerBatchRestartContainers({ serverID, containerIDs }),
-  dockerBatchRemoveContainers: (serverID: number, containerIDs: string[]) =>
-    backend().DockerBatchRemoveContainers({ serverID, containerIDs }),
-  dockerGetContainerLogs: (serverID: number, containerID: string, tailLines = 200) =>
-    backend().DockerGetContainerLogs({ serverID, containerID, tailLines }),
-  dockerStartLogStream: (serverID: number, containerID: string, tailLines = 200, streamID = '') =>
-    backend().DockerStartLogStream({ serverID, containerID, tailLines, streamID }),
+  dockerCheck: (serverID: number, executionMode?: DockerExecutionMode) =>
+    executionMode && executionMode !== 'current_user'
+      ? backend().DockerCheckWithOptions({ serverID, executionMode })
+      : backend().DockerCheck(serverID),
+  dockerListContainers: (serverID: number, executionMode?: DockerExecutionMode) =>
+    backend().DockerListContainers(dockerRequest({ serverID }, executionMode)),
+  dockerStartContainer: (serverID: number, containerID: string, executionMode?: DockerExecutionMode) =>
+    backend().DockerStartContainer(dockerRequest({ serverID, containerID }, executionMode)),
+  dockerStopContainer: (serverID: number, containerID: string, executionMode?: DockerExecutionMode) =>
+    backend().DockerStopContainer(dockerRequest({ serverID, containerID }, executionMode)),
+  dockerRestartContainer: (serverID: number, containerID: string, executionMode?: DockerExecutionMode) =>
+    backend().DockerRestartContainer(dockerRequest({ serverID, containerID }, executionMode)),
+  dockerRemoveContainer: (serverID: number, containerID: string, executionMode?: DockerExecutionMode) =>
+    backend().DockerRemoveContainer(dockerRequest({ serverID, containerID }, executionMode)),
+  dockerBatchStartContainers: (serverID: number, containerIDs: string[], executionMode?: DockerExecutionMode) =>
+    backend().DockerBatchStartContainers(dockerRequest({ serverID, containerIDs }, executionMode)),
+  dockerBatchStopContainers: (serverID: number, containerIDs: string[], executionMode?: DockerExecutionMode) =>
+    backend().DockerBatchStopContainers(dockerRequest({ serverID, containerIDs }, executionMode)),
+  dockerBatchRestartContainers: (serverID: number, containerIDs: string[], executionMode?: DockerExecutionMode) =>
+    backend().DockerBatchRestartContainers(dockerRequest({ serverID, containerIDs }, executionMode)),
+  dockerBatchRemoveContainers: (serverID: number, containerIDs: string[], executionMode?: DockerExecutionMode) =>
+    backend().DockerBatchRemoveContainers(dockerRequest({ serverID, containerIDs }, executionMode)),
+  dockerGetContainerLogs: (serverID: number, containerID: string, tailLines = 200, executionMode?: DockerExecutionMode) =>
+    backend().DockerGetContainerLogs(dockerRequest({ serverID, containerID, tailLines }, executionMode)),
+  dockerStartLogStream: (serverID: number, containerID: string, tailLines = 200, streamID = '', executionMode?: DockerExecutionMode) =>
+    backend().DockerStartLogStream(dockerRequest({ serverID, containerID, tailLines, streamID }, executionMode)),
   dockerStopLogStream: (serverID: number, streamID: string) =>
     backend().DockerStopLogStream({ serverID, streamID }),
-  dockerGetContainerInspectSummary: (serverID: number, containerID: string) =>
-    backend().DockerGetContainerInspectSummary({ serverID, containerID }),
-  dockerGetContainerStats: (serverID: number, containerID: string) =>
-    backend().DockerGetContainerStats({ serverID, containerID }),
-  dockerStartStatsWatch: (serverID: number, containerID: string, intervalMs = 1500, watchID = '') =>
-    backend().DockerStartStatsWatch({ serverID, containerID, intervalMs, watchID }),
+  dockerGetContainerInspectSummary: (serverID: number, containerID: string, executionMode?: DockerExecutionMode) =>
+    backend().DockerGetContainerInspectSummary(dockerRequest({ serverID, containerID }, executionMode)),
+  dockerGetContainerStats: (serverID: number, containerID: string, executionMode?: DockerExecutionMode) =>
+    backend().DockerGetContainerStats(dockerRequest({ serverID, containerID }, executionMode)),
+  dockerStartStatsWatch: (serverID: number, containerID: string, intervalMs = 1500, watchID = '', executionMode?: DockerExecutionMode) =>
+    backend().DockerStartStatsWatch(dockerRequest({ serverID, containerID, intervalMs, watchID }, executionMode)),
   dockerStopStatsWatch: (serverID: number, watchID: string) =>
     backend().DockerStopStatsWatch({ serverID, watchID }),
-  dockerComposeCheck: (serverID: number) => backend().DockerComposeCheck(serverID),
-  dockerComposeListProjects: (serverID: number) => backend().DockerComposeListProjects({ serverID }),
-  dockerComposeGetServices: (serverID: number, projectName: string) =>
-    backend().DockerComposeGetServices({ serverID, projectName }),
-  dockerComposeGetServiceDetail: (serverID: number, projectName: string, serviceName: string) =>
-    backend().DockerComposeGetServiceDetail({ serverID, projectName, serviceName }),
-  dockerComposeGetLogs: (serverID: number, projectName: string, tailLines = 200, serviceName = '') =>
-    backend().DockerComposeGetLogs({ serverID, projectName, tailLines, serviceName }),
+  dockerComposeCheck: (serverID: number, executionMode?: DockerExecutionMode) =>
+    executionMode && executionMode !== 'current_user'
+      ? backend().DockerComposeCheckWithOptions({ serverID, executionMode })
+      : backend().DockerComposeCheck(serverID),
+  dockerComposeListProjects: (serverID: number, executionMode?: DockerExecutionMode) =>
+    backend().DockerComposeListProjects(dockerRequest({ serverID }, executionMode)),
+  dockerComposeGetServices: (serverID: number, projectName: string, executionMode?: DockerExecutionMode) =>
+    backend().DockerComposeGetServices(dockerRequest({ serverID, projectName }, executionMode)),
+  dockerComposeGetServiceDetail: (serverID: number, projectName: string, serviceName: string, executionMode?: DockerExecutionMode) =>
+    backend().DockerComposeGetServiceDetail(dockerRequest({ serverID, projectName, serviceName }, executionMode)),
+  dockerComposeGetLogs: (serverID: number, projectName: string, tailLines = 200, serviceName = '', executionMode?: DockerExecutionMode) =>
+    backend().DockerComposeGetLogs(dockerRequest({ serverID, projectName, tailLines, serviceName }, executionMode)),
   checkServiceManager: (serverID: number) => backend().CheckServiceManager({ serverID }),
   listSystemServices: (serverID: number) => backend().ListSystemServices({ serverID }),
   getSystemServiceDetail: (serverID: number, unitName: string, serviceID = unitName) =>

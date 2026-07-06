@@ -383,6 +383,7 @@ export interface BackupImportResult {
 }
 
 export type DockerContainerState = 'running' | 'exited' | 'paused' | 'restarting' | 'dead' | 'unknown'
+export type DockerExecutionMode = 'current_user' | 'sudo'
 
 export interface DockerAvailability {
   serverID: number
@@ -439,16 +440,24 @@ export interface DockerInspectSummary {
 
 export interface DockerListContainersRequest {
   serverID: number
+  executionMode?: DockerExecutionMode
+}
+
+export interface DockerServerRequest {
+  serverID: number
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerContainerRequest {
   serverID: number
   containerID: string
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerBatchContainerRequest {
   serverID: number
   containerIDs: string[]
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerBatchContainerResult {
@@ -473,6 +482,7 @@ export interface DockerLogsRequest {
   serverID: number
   containerID: string
   tailLines: number
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerLogStreamRequest {
@@ -480,6 +490,7 @@ export interface DockerLogStreamRequest {
   containerID: string
   tailLines: number
   streamID: string
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerStopLogStreamRequest {
@@ -492,6 +503,7 @@ export interface DockerStatsWatchRequest {
   containerID: string
   watchID: string
   intervalMs: number
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerStopStatsWatchRequest {
@@ -518,17 +530,20 @@ export interface DockerComposeProject {
 
 export interface DockerComposeProjectsRequest {
   serverID: number
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerComposeProjectRequest {
   serverID: number
   projectName: string
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerComposeServiceDetailRequest {
   serverID: number
   projectName: string
   serviceName: string
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerComposeService {
@@ -558,6 +573,7 @@ export interface DockerComposeLogsRequest {
   projectName: string
   serviceName: string
   tailLines: number
+  executionMode?: DockerExecutionMode
 }
 
 export interface DockerComposeLogsSnapshot {

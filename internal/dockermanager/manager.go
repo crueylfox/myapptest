@@ -124,6 +124,7 @@ type statsWatchWorker struct {
 	generation  int64
 	cancel      context.CancelFunc
 	transport   Transport
+	mode        domain.DockerExecutionMode
 }
 
 type dockerVersionOutput struct {
@@ -285,6 +286,14 @@ func (m *Manager) keepalivePolicy() sshclient.KeepalivePolicy {
 }
 
 func (m *Manager) Check(connection domain.Connection, auth domain.AuthRequest) (domain.DockerAvailability, error) {
+	return m.CheckWithExecutionMode(connection, auth, domain.DockerExecutionCurrentUser)
+}
+
+func (m *Manager) CheckWithExecutionMode(
+	connection domain.Connection,
+	auth domain.AuthRequest,
+	mode domain.DockerExecutionMode,
+) (domain.DockerAvailability, error) {
 	ctx, cancel := context.WithTimeout(m.ctx, m.timeout())
 	defer cancel()
 	transport, err := m.open(ctx, connection, auth)
@@ -295,12 +304,20 @@ func (m *Manager) Check(connection domain.Connection, auth domain.AuthRequest) (
 		return state, errors.New(message)
 	}
 	defer transport.Close()
-	state, err := m.checkWithTransport(ctx, connection.ID, transport)
+	state, err := m.checkWithTransport(ctx, connection.ID, transport, mode)
 	m.emitState(state)
 	return state, err
 }
 
 func (m *Manager) List(connection domain.Connection, auth domain.AuthRequest) ([]domain.DockerContainer, error) {
+	return m.ListWithExecutionMode(connection, auth, domain.DockerExecutionCurrentUser)
+}
+
+func (m *Manager) ListWithExecutionMode(
+	connection domain.Connection,
+	auth domain.AuthRequest,
+	mode domain.DockerExecutionMode,
+) ([]domain.DockerContainer, error) {
 	ctx, cancel := context.WithTimeout(m.ctx, m.timeout())
 	defer cancel()
 	transport, err := m.open(ctx, connection, auth)
@@ -310,7 +327,7 @@ func (m *Manager) List(connection domain.Connection, auth domain.AuthRequest) ([
 		return nil, errors.New(message)
 	}
 	defer transport.Close()
-	containers, err := m.listWithTransport(ctx, connection.ID, transport)
+	containers, err := m.listWithTransport(ctx, connection.ID, transport, mode)
 	if err != nil {
 		message := classifyError(err)
 		m.emitError(connection.ID, "", "", "DOCKER_LIST_FAILED", message)
@@ -350,7 +367,8 @@ func (m *Manager) RemoveContainer(connection domain.Connection, auth domain.Auth
 		return errors.New(classifyError(err))
 	}
 	defer transport.Close()
-	summary, err := m.inspectWithTransport(ctx, connection.ID, transport, containerID)
+	mode := requestExecutionMode(request.ExecutionMode)
+	summary, err := m.inspectWithTransport(ctx, connection.ID, transport, containerID, mode)
 	if err != nil {
 		return err
 	}
@@ -359,7 +377,7 @@ func (m *Manager) RemoveContainer(connection domain.Connection, auth domain.Auth
 		summary.State == domain.DockerContainerRestarting {
 		return errors.New("该容器正在运行，请先停止后再删除。")
 	}
-	if _, err := transport.Run(ctx, "docker rm "+shellQuote(containerID)); err != nil {
+	if _, err := transport.Run(ctx, dockerCommand(mode, "rm "+shellQuote(containerID))); err != nil {
 		return errors.New("删除容器失败。")
 	}
 	m.log("info", "Docker 容器已删除", "docker.remove", connection.ID, containerID, nil)
@@ -407,7 +425,8 @@ func (m *Manager) BatchRemoveContainers(
 	}
 	defer transport.Close()
 	for _, containerID := range validIDs {
-		summary, err := m.inspectWithTransport(ctx, connection.ID, transport, containerID)
+		mode := requestExecutionMode(request.ExecutionMode)
+		summary, err := m.inspectWithTransport(ctx, connection.ID, transport, containerID, mode)
 		if err != nil {
 			setBatchResult(&response, containerID, "remove", "", batchStatusFailed, false, err.Error(), err.Error())
 			continue
@@ -419,7 +438,7 @@ func (m *Manager) BatchRemoveContainers(
 			setBatchResult(&response, containerID, "remove", name, batchStatusSkipped, false, "", "该容器正在运行，请先停止后再删除。")
 			continue
 		}
-		if _, err := transport.Run(ctx, "docker rm "+shellQuote(containerID)); err != nil {
+		if _, err := transport.Run(ctx, dockerCommand(mode, "rm "+shellQuote(containerID))); err != nil {
 			setBatchResult(&response, containerID, "remove", name, batchStatusFailed, false, "删除容器失败。", "删除容器失败。")
 			continue
 		}
@@ -441,11 +460,11 @@ func (m *Manager) Logs(connection domain.Connection, auth domain.AuthRequest, re
 		return "", errors.New(classifyError(err))
 	}
 	defer transport.Close()
-	output, err := transport.Run(ctx, fmt.Sprintf(
-		"docker logs --tail %d %s 2>&1",
+	output, err := transport.Run(ctx, dockerCommand(requestExecutionMode(request.ExecutionMode), fmt.Sprintf(
+		"logs --tail %d %s 2>&1",
 		normalizeTailLines(request.TailLines),
 		shellQuote(containerID),
-	))
+	)))
 	if err != nil {
 		return "", errors.New("读取容器日志失败。")
 	}
@@ -453,6 +472,14 @@ func (m *Manager) Logs(connection domain.Connection, auth domain.AuthRequest, re
 }
 
 func (m *Manager) ComposeCheck(connection domain.Connection, auth domain.AuthRequest) (domain.DockerComposeCapability, error) {
+	return m.ComposeCheckWithExecutionMode(connection, auth, domain.DockerExecutionCurrentUser)
+}
+
+func (m *Manager) ComposeCheckWithExecutionMode(
+	connection domain.Connection,
+	auth domain.AuthRequest,
+	mode domain.DockerExecutionMode,
+) (domain.DockerComposeCapability, error) {
 	ctx, cancel := context.WithTimeout(m.ctx, m.timeout())
 	defer cancel()
 	transport, err := m.open(ctx, connection, auth)
@@ -461,12 +488,20 @@ func (m *Manager) ComposeCheck(connection domain.Connection, auth domain.AuthReq
 		return composeUnavailable(connection.ID, message), errors.New(message)
 	}
 	defer transport.Close()
-	return m.composeCheckWithTransport(ctx, connection.ID, transport)
+	return m.composeCheckWithTransport(ctx, connection.ID, transport, mode)
 }
 
 func (m *Manager) ComposeListProjects(
 	connection domain.Connection,
 	auth domain.AuthRequest,
+) ([]domain.DockerComposeProject, error) {
+	return m.ComposeListProjectsWithExecutionMode(connection, auth, domain.DockerExecutionCurrentUser)
+}
+
+func (m *Manager) ComposeListProjectsWithExecutionMode(
+	connection domain.Connection,
+	auth domain.AuthRequest,
+	mode domain.DockerExecutionMode,
 ) ([]domain.DockerComposeProject, error) {
 	ctx, cancel := context.WithTimeout(m.ctx, m.timeout())
 	defer cancel()
@@ -475,7 +510,7 @@ func (m *Manager) ComposeListProjects(
 		return nil, errors.New(classifyError(err))
 	}
 	defer transport.Close()
-	_, command, err := m.composeCommandWithTransport(ctx, connection.ID, transport)
+	_, command, err := m.composeCommandWithTransport(ctx, connection.ID, transport, mode)
 	if err != nil {
 		return nil, err
 	}
@@ -506,7 +541,8 @@ func (m *Manager) ComposeServices(
 		return domain.DockerComposeServicesResponse{}, errors.New(classifyError(err))
 	}
 	defer transport.Close()
-	_, command, err := m.composeCommandWithTransport(ctx, connection.ID, transport)
+	mode := requestExecutionMode(request.ExecutionMode)
+	_, command, err := m.composeCommandWithTransport(ctx, connection.ID, transport, mode)
 	if err != nil {
 		return domain.DockerComposeServicesResponse{}, err
 	}
@@ -549,7 +585,8 @@ func (m *Manager) ComposeLogs(
 		return domain.DockerComposeLogsSnapshot{}, errors.New(classifyError(err))
 	}
 	defer transport.Close()
-	_, command, err := m.composeCommandWithTransport(ctx, connection.ID, transport)
+	mode := requestExecutionMode(request.ExecutionMode)
+	_, command, err := m.composeCommandWithTransport(ctx, connection.ID, transport, mode)
 	if err != nil {
 		return domain.DockerComposeLogsSnapshot{}, err
 	}
@@ -598,7 +635,8 @@ func (m *Manager) ComposeServiceDetail(
 		return domain.DockerComposeService{}, errors.New(classifyError(err))
 	}
 	defer transport.Close()
-	_, command, err := m.composeCommandWithTransport(ctx, connection.ID, transport)
+	mode := requestExecutionMode(request.ExecutionMode)
+	_, command, err := m.composeCommandWithTransport(ctx, connection.ID, transport, mode)
 	if err != nil {
 		return domain.DockerComposeService{}, err
 	}
@@ -635,11 +673,11 @@ func (m *Manager) StartLogStream(
 		cancel()
 		return "", errors.New(classifyError(err))
 	}
-	session, err := transport.StartCommand(ctx, fmt.Sprintf(
-		"docker logs -f --tail %d %s 2>&1",
+	session, err := transport.StartCommand(ctx, dockerCommand(requestExecutionMode(request.ExecutionMode), fmt.Sprintf(
+		"logs -f --tail %d %s 2>&1",
 		normalizeTailLines(request.TailLines),
 		shellQuote(containerID),
-	))
+	)))
 	if err != nil {
 		_ = transport.Close()
 		cancel()
@@ -690,7 +728,7 @@ func (m *Manager) InspectSummary(
 		return domain.DockerInspectSummary{}, errors.New(classifyError(err))
 	}
 	defer transport.Close()
-	return m.inspectWithTransport(ctx, connection.ID, transport, containerID)
+	return m.inspectWithTransport(ctx, connection.ID, transport, containerID, requestExecutionMode(request.ExecutionMode))
 }
 
 func (m *Manager) Stats(
@@ -709,7 +747,7 @@ func (m *Manager) Stats(
 		return domain.DockerContainerStats{}, errors.New(classifyError(err))
 	}
 	defer transport.Close()
-	return m.statsWithTransport(ctx, connection.ID, transport, containerID)
+	return m.statsWithTransport(ctx, connection.ID, transport, containerID, requestExecutionMode(request.ExecutionMode))
 }
 
 func (m *Manager) StartStatsWatch(
@@ -739,6 +777,7 @@ func (m *Manager) StartStatsWatch(
 		cancel:      cancel,
 		transport:   transport,
 	}
+	worker.mode = requestExecutionMode(request.ExecutionMode)
 	m.mu.Lock()
 	if existing := m.statsWatchers[watchID]; existing != nil {
 		m.stopStatsWatcherLocked(existing)
@@ -807,8 +846,9 @@ func (m *Manager) checkWithTransport(
 	ctx context.Context,
 	serverID int64,
 	transport Transport,
+	mode domain.DockerExecutionMode,
 ) (domain.DockerAvailability, error) {
-	output, err := transport.Run(ctx, dockerVersionCommand)
+	output, err := transport.Run(ctx, commandWithSudo(mode, dockerVersionCommand))
 	if err != nil {
 		message := classifyError(err)
 		return dockerUnavailable(serverID, message), errors.New(message)
@@ -827,8 +867,9 @@ func (m *Manager) listWithTransport(
 	ctx context.Context,
 	serverID int64,
 	transport Transport,
+	mode domain.DockerExecutionMode,
 ) ([]domain.DockerContainer, error) {
-	output, err := transport.Run(ctx, dockerListCommand)
+	output, err := transport.Run(ctx, commandWithSudo(mode, dockerListCommand))
 	if err != nil {
 		return nil, err
 	}
@@ -844,8 +885,9 @@ func (m *Manager) inspectWithTransport(
 	serverID int64,
 	transport Transport,
 	containerID string,
+	mode domain.DockerExecutionMode,
 ) (domain.DockerInspectSummary, error) {
-	output, err := transport.Run(ctx, "docker inspect "+shellQuote(containerID))
+	output, err := transport.Run(ctx, dockerCommand(mode, "inspect "+shellQuote(containerID)))
 	if err != nil {
 		return domain.DockerInspectSummary{}, errors.New(classifyError(err))
 	}
@@ -864,8 +906,9 @@ func (m *Manager) statsWithTransport(
 	serverID int64,
 	transport Transport,
 	containerID string,
+	mode domain.DockerExecutionMode,
 ) (domain.DockerContainerStats, error) {
-	output, err := transport.Run(ctx, fmt.Sprintf(dockerStatsFormat, shellQuote(containerID)))
+	output, err := transport.Run(ctx, commandWithSudo(mode, fmt.Sprintf(dockerStatsFormat, shellQuote(containerID))))
 	if err != nil {
 		return domain.DockerContainerStats{}, errors.New(classifyError(err))
 	}
@@ -880,20 +923,22 @@ func (m *Manager) composeCommandWithTransport(
 	ctx context.Context,
 	serverID int64,
 	transport Transport,
+	mode domain.DockerExecutionMode,
 ) (domain.DockerComposeCapability, string, error) {
-	capability, err := m.composeCheckWithTransport(ctx, serverID, transport)
+	capability, err := m.composeCheckWithTransport(ctx, serverID, transport, mode)
 	if err != nil {
 		return capability, "", err
 	}
-	return capability, capability.Command, nil
+	return capability, commandWithSudo(mode, capability.Command), nil
 }
 
 func (m *Manager) composeCheckWithTransport(
 	ctx context.Context,
 	serverID int64,
 	transport Transport,
+	mode domain.DockerExecutionMode,
 ) (domain.DockerComposeCapability, error) {
-	output, pluginErr := transport.Run(ctx, dockerComposePluginVersionCommand)
+	output, pluginErr := transport.Run(ctx, commandWithSudo(mode, dockerComposePluginVersionCommand))
 	if pluginErr == nil {
 		return domain.DockerComposeCapability{
 			ServerID:      serverID,
@@ -903,7 +948,7 @@ func (m *Manager) composeCheckWithTransport(
 			LastRefreshAt: timestamp(),
 		}, nil
 	}
-	output, standaloneErr := transport.Run(ctx, dockerComposeStandaloneVersionCommand)
+	output, standaloneErr := transport.Run(ctx, commandWithSudo(mode, dockerComposeStandaloneVersionCommand))
 	if standaloneErr == nil {
 		return domain.DockerComposeCapability{
 			ServerID:      serverID,
@@ -975,7 +1020,7 @@ func (m *Manager) runContainerCommand(
 		return errors.New(classifyError(err))
 	}
 	defer transport.Close()
-	if _, err := transport.Run(ctx, "docker "+command+" "+shellQuote(containerID)); err != nil {
+	if _, err := transport.Run(ctx, dockerCommand(requestExecutionMode(request.ExecutionMode), command+" "+shellQuote(containerID))); err != nil {
 		return errors.New(fallback)
 	}
 	m.log("info", "Docker 容器操作完成", "docker."+command, connection.ID, containerID, nil)
@@ -1002,8 +1047,9 @@ func (m *Manager) batchContainerCommand(
 		return finalizeBatchResponse(markBatchFailed(response, classifyError(err))), nil
 	}
 	defer transport.Close()
+	mode := requestExecutionMode(request.ExecutionMode)
 	for _, containerID := range validIDs {
-		summary, err := m.inspectWithTransport(ctx, connection.ID, transport, containerID)
+		summary, err := m.inspectWithTransport(ctx, connection.ID, transport, containerID, mode)
 		if err != nil {
 			setBatchResult(&response, containerID, command, "", batchStatusFailed, false, err.Error(), err.Error())
 			continue
@@ -1013,7 +1059,7 @@ func (m *Manager) batchContainerCommand(
 			setBatchResult(&response, containerID, command, name, batchStatusSkipped, false, "", skipReason)
 			continue
 		}
-		if _, err := transport.Run(ctx, "docker "+command+" "+shellQuote(containerID)); err != nil {
+		if _, err := transport.Run(ctx, dockerCommand(mode, command+" "+shellQuote(containerID))); err != nil {
 			setBatchResult(&response, containerID, command, name, batchStatusFailed, false, fallback, fallback)
 			continue
 		}
@@ -1165,7 +1211,7 @@ func (m *Manager) runStatsWatch(ctx context.Context, worker *statsWatchWorker, i
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
-		stats, err := m.statsWithTransport(ctx, worker.serverID, worker.transport, worker.containerID)
+		stats, err := m.statsWithTransport(ctx, worker.serverID, worker.transport, worker.containerID, worker.mode)
 		if err != nil {
 			if m.workerCurrent(worker.serverID, worker.generation, worker.watchID, false) {
 				m.emitError(worker.serverID, worker.containerID, worker.watchID, "DOCKER_STATS_FAILED", "读取容器资源占用失败。")
@@ -1575,6 +1621,24 @@ func shellQuote(value string) string {
 	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
 }
 
+func requestExecutionMode(value domain.DockerExecutionMode) domain.DockerExecutionMode {
+	if value == domain.DockerExecutionSudo {
+		return domain.DockerExecutionSudo
+	}
+	return domain.DockerExecutionCurrentUser
+}
+
+func commandWithSudo(mode domain.DockerExecutionMode, command string) string {
+	if requestExecutionMode(mode) == domain.DockerExecutionSudo {
+		return "sudo -n " + command
+	}
+	return command
+}
+
+func dockerCommand(mode domain.DockerExecutionMode, arguments string) string {
+	return commandWithSudo(mode, "docker "+arguments)
+}
+
 func dockerUnavailable(serverID int64, message string) domain.DockerAvailability {
 	return domain.DockerAvailability{
 		ServerID:      serverID,
@@ -1622,6 +1686,12 @@ func classifyError(err error) string {
 	}
 	message := strings.ToLower(err.Error())
 	switch {
+	case strings.Contains(message, "sudo") &&
+		(strings.Contains(message, "password is required") ||
+			strings.Contains(message, "a terminal is required") ||
+			strings.Contains(message, "no tty present") ||
+			strings.Contains(message, "a password is required")):
+		return "Docker Manager 使用独立 SSH 执行，不会继承终端中 su/root 状态。sudo -n docker 需要免密 sudo；请配置免密 sudo、将用户加入 docker 组，或使用 root 凭据连接。"
 	case strings.Contains(message, "executable file not found"),
 		strings.Contains(message, "docker: not found"),
 		strings.Contains(message, "docker: command not found"),
@@ -1631,7 +1701,7 @@ func classifyError(err error) string {
 	case strings.Contains(message, "permission denied"),
 		strings.Contains(message, "got permission denied"),
 		strings.Contains(message, "permission"):
-		return "当前用户无权限访问 Docker，请将用户加入 docker 组或使用 root。"
+		return "Docker Manager 使用独立 SSH 执行，不会继承终端中 su/root 状态。当前用户无权限访问 Docker，可使用 sudo 重试；若服务器需要 sudo 密码，请配置免密 sudo、加入 docker 组，或使用 root 凭据连接。"
 	case strings.Contains(message, "cannot connect to the docker daemon"),
 		strings.Contains(message, "is the docker daemon running"),
 		strings.Contains(message, "daemon"):

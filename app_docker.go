@@ -24,12 +24,24 @@ func (a *App) DockerCheck(serverID int64) (domain.DockerAvailability, error) {
 	return state, err
 }
 
+func (a *App) DockerCheckWithOptions(request domain.DockerServerRequest) (domain.DockerAvailability, error) {
+	connection, auth, manager, logger, err := a.dockerContext(request.ServerID, "docker.check")
+	if err != nil {
+		return domain.DockerAvailability{}, err
+	}
+	state, err := manager.CheckWithExecutionMode(connection, auth, request.ExecutionMode)
+	if logger != nil {
+		logger.WriteConnection(levelFor(err), "Docker 检测完成", "docker.check", connection, nil)
+	}
+	return state, err
+}
+
 func (a *App) DockerListContainers(request domain.DockerListContainersRequest) ([]domain.DockerContainer, error) {
 	connection, auth, manager, logger, err := a.dockerContext(request.ServerID, "docker.list")
 	if err != nil {
 		return nil, err
 	}
-	containers, err := manager.List(connection, auth)
+	containers, err := manager.ListWithExecutionMode(connection, auth, request.ExecutionMode)
 	if logger != nil {
 		logger.WriteConnection(levelFor(err), "Docker 容器列表刷新完成", "docker.list", connection, nil)
 	}
@@ -244,6 +256,18 @@ func (a *App) DockerComposeCheck(serverID int64) (domain.DockerComposeCapability
 	return capability, err
 }
 
+func (a *App) DockerComposeCheckWithOptions(request domain.DockerServerRequest) (domain.DockerComposeCapability, error) {
+	connection, auth, manager, logger, err := a.dockerContext(request.ServerID, "docker.compose.check")
+	if err != nil {
+		return domain.DockerComposeCapability{}, err
+	}
+	capability, err := manager.ComposeCheckWithExecutionMode(connection, auth, request.ExecutionMode)
+	if logger != nil {
+		logger.WriteConnection(levelFor(err), "Docker Compose 检测完成", "docker.compose.check", connection, nil)
+	}
+	return capability, err
+}
+
 func (a *App) DockerComposeListProjects(
 	request domain.DockerComposeProjectsRequest,
 ) ([]domain.DockerComposeProject, error) {
@@ -251,7 +275,7 @@ func (a *App) DockerComposeListProjects(
 	if err != nil {
 		return nil, err
 	}
-	projects, err := manager.ComposeListProjects(connection, auth)
+	projects, err := manager.ComposeListProjectsWithExecutionMode(connection, auth, request.ExecutionMode)
 	if logger != nil {
 		logger.WriteConnection(levelFor(err), "Docker Compose 项目列表刷新完成", "docker.compose.projects", connection, nil)
 	}
