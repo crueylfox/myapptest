@@ -8,13 +8,14 @@ Updated: 2026-07-06
 - Previous delivery version: `0.5.0-beta.28` PASS.
 - Current VERSION: `0.5.0-beta.31`.
 - Recommended delivery version: `0.5.0-beta.31` user-smoke-required.
-- Current round: beta31 same-version macOS overlay blocker hotfix after beta31 cross-platform Key Vault backup.
+- Current round: beta31 same-version macOS UI polish hotfix after beta31 cross-platform Key Vault backup.
 - Version bump this hotfix: no; baseline already `0.5.0-beta.31`.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
 - Beta31 handoff commit: `09fa695` (`chore: finalize beta31 handoff and generated bindings`).
 - Previous overlay hotfix commit: `68d0c04` (`fix: complete beta31 macos overlay blocker`).
-- Current overlay blocker commit: `a16ac96` (`fix: replace macos gray modal scrim with app blur overlay`).
+- Previous overlay blocker commit: `a16ac96` (`fix: replace macos gray modal scrim with app blur overlay`).
+- Current UI polish commit: `65a19b9` (`fix: polish beta31 macos dialogs and settings ui`).
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -33,6 +34,13 @@ Updated: 2026-07-06
 - Windows backup imported key vault keys are covered for SSH publickey auth resolution.
 - Settings, add server, edit server, key import, and confirm dialogs now use shared glass backdrop/surface classes with low-tint blur instead of full-screen gray wash.
 - The beta31 same-version overlay blocker fix replaces the macOS-gray-scrim approach with app content blur: `.app-visual-root` is blurred/brightened while modal surfaces render outside that root, and full-screen click-catcher backdrops stay at alpha `<= 0.18`.
+- The beta31 same-version UI polish extends the app blur overlay contract to Docker, Tunnel, Process, Service, Network Diagnostics, Monitor Dashboard, and Alert Center management dialogs.
+- Settings duplicate child-dialog close buttons were removed where footer cancel/abandon exists; main Settings still keeps the header close action.
+- Settings header action order is reset, save, close, save-and-close; save-and-close remains primary.
+- General appearance options are horizontal, contain no Windows/macOS mixed hint text, and the UI font size control is a 12-18px stepper.
+- Native notification copy is platform-neutral `系统原生通知`.
+- Docker/Compose logs now fill available detail space without overflowing the dialog, and Docker toolbar refresh remains on the first row.
+- Settings category active state now uses a visible light blue/gray active background plus highlighted icon/text.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.
@@ -57,15 +65,17 @@ Updated: 2026-07-06
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1643 tests, 87 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1643 tests, 88 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build -platform darwin/universal`: not run for this hotfix; Windows local builds do not produce the macOS app.
-- GitHub Actions `Build macOS` run `28798882475`: success for commit `a16ac965976754e624212817f6fb6227bbb68f1c`.
+- GitHub Actions `Build macOS` run `28804374735`: success for commit `65a19b9233d9933e6a9168ddbd862f3dfdb9d62f`.
 - Artifact: `ServerPilot-macos-unsigned`.
 - Artifact contains `ServerPilot-macos-universal-unsigned.zip` and `ServerPilot-macos-universal-unsigned.dmg`.
-- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `7693b70bd6e4c39dcaa47c222d703f47eab025a377c66361eb3b9120342bf7e9`.
-- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `dbb0fc4d56824fddbc9d1678e1fbbd814e08b1dfbb5118e9b3575aafa3a06697`.
+- Artifact archive `ServerPilot-macos-unsigned.zip` SHA-256: `660d7a7b031a8c37ba36ce12f94bb6913aa0f6a30e8a269a0b44190f362dabba`.
+- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `5a12114fe73e80019821255c9769f8a10136f859001826eb7dd46590dcec54d2`.
+- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `ddd85b62f7aa35ff8e0fc48b290ad625c87368c9bd31ec4ef4d757e55582232c`.
 - macOS artifact came from the GitHub Actions macOS runner.
+- Windows local `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 
 ## 5. Next
 - Download or smoke-test the GitHub Actions `ServerPilot-macos-unsigned` artifact.
