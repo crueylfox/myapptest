@@ -498,7 +498,7 @@ const toolbarActions = computed<ToolbarAction[]>(() => {
 })
 const contentStyle = computed(() => ({
   gridTemplateColumns: detailsCollapsed.value
-    ? 'minmax(0, 1fr) 0'
+    ? 'minmax(0, 1fr) 28px'
     : `minmax(0, 1fr) ${detailsWidth.value}px`,
 }))
 const currentSortKey = computed(() => store.sortKey(serverId.value, sftpContextId.value))

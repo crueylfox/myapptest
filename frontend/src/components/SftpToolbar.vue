@@ -215,21 +215,27 @@ function updateMoreMenuPosition() {
   const button = moreButtonRef.value
   if (!button || !moreOpen.value) return
   const rect = button.getBoundingClientRect()
-  const position = getViewportPopoverPosition({
-    anchorRect: rect,
-    popoverSize: { width: TOOLBAR_MORE_MENU_WIDTH, height: TOOLBAR_MORE_MENU_HEIGHT },
-    viewport: viewportSize(),
-    placement: 'bottom-end',
-    margin: TOOLBAR_POPOVER_MARGIN,
-    gap: TOOLBAR_POPOVER_GAP,
-  })
+  const viewport = viewportSize()
+  const width = Math.min(TOOLBAR_MORE_MENU_WIDTH, Math.max(96, viewport.width - TOOLBAR_POPOVER_MARGIN * 2))
+  const spaceBelow = viewport.height - rect.bottom - TOOLBAR_POPOVER_MARGIN - TOOLBAR_POPOVER_GAP
+  const spaceAbove = rect.top - TOOLBAR_POPOVER_MARGIN - TOOLBAR_POPOVER_GAP
+  const placeAbove = spaceBelow < Math.min(TOOLBAR_MORE_MENU_HEIGHT, 180) && spaceAbove > spaceBelow
+  const availableHeight = Math.max(80, placeAbove ? spaceAbove : spaceBelow)
+  const maxHeight = Math.min(TOOLBAR_MORE_MENU_HEIGHT, availableHeight)
+  const left = Math.min(
+    viewport.width - TOOLBAR_POPOVER_MARGIN - width,
+    Math.max(TOOLBAR_POPOVER_MARGIN, rect.right - width),
+  )
+  const top = placeAbove
+    ? Math.max(TOOLBAR_POPOVER_MARGIN, rect.top - TOOLBAR_POPOVER_GAP - maxHeight)
+    : Math.min(viewport.height - TOOLBAR_POPOVER_MARGIN - maxHeight, rect.bottom + TOOLBAR_POPOVER_GAP)
   moreMenuStyle.value = {
     position: 'fixed',
-    top: `${Math.round(position.top)}px`,
-    left: `${Math.round(position.left)}px`,
-    width: `${Math.round(position.width)}px`,
-    maxHeight: `${Math.round(position.maxHeight)}px`,
-    transformOrigin: position.transformOrigin,
+    top: `${Math.round(top)}px`,
+    left: `${Math.round(left)}px`,
+    width: `${Math.round(width)}px`,
+    maxHeight: `${Math.round(maxHeight)}px`,
+    transformOrigin: placeAbove ? 'bottom right' : 'top right',
   }
 }
 

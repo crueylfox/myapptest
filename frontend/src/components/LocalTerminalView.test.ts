@@ -7,6 +7,7 @@ import { useLocalTerminalStore } from '../stores/localTerminal'
 import { applyTerminalProfileToRegisteredInstances, observeTerminalInstanceInput } from '../utils/terminalInstanceRegistry'
 import type { ShortcutSettings } from '../types'
 import { defaultShortcutSettings } from '../utils/shortcutSettings'
+import { ClipboardGetText } from '../../wailsjs/runtime/runtime'
 import LocalTerminalView from './LocalTerminalView.vue'
 
 const terminalState = vi.hoisted(() => ({
@@ -80,6 +81,7 @@ vi.mock('../../wailsjs/runtime/runtime', () => ({
     terminalState.eventCallbacks.set(name, callback)
   }),
   EventsOff: vi.fn(),
+  ClipboardGetText: vi.fn(async () => ''),
 }))
 
 function mountLocalTerminal(props: Partial<{ copyOnSelectEnabled: boolean; rightClickPasteEnabled: boolean; shortcutSettings: ShortcutSettings }> = {}) {
@@ -427,6 +429,24 @@ describe('LocalTerminalView', () => {
     vi.useRealTimers()
   })
 
+  it('falls back to Wails clipboard text when browser clipboard read fails on local right click paste', async () => {
+    const { wrapper } = mountLocalTerminal()
+    vi.mocked(navigator.clipboard.readText).mockRejectedValueOnce(new Error('not allowed'))
+    vi.mocked(ClipboardGetText).mockResolvedValueOnce('fallback-local')
+
+    await wrapper.get('.local-terminal-view').trigger('contextmenu')
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(ClipboardGetText).toHaveBeenCalledTimes(1)
+    const payload = (window.go?.main?.App?.WriteLocalTerminal as ReturnType<typeof vi.fn>).mock.calls.at(-1)?.[0]
+    expect(payload.sessionId).toBe('local-1')
+    expect(new TextDecoder().decode(Uint8Array.from(atob(payload.dataBase64), (char) => char.charCodeAt(0)))).toBe('fallback-local')
+    expect(wrapper.emitted('notify')).toBeUndefined()
+    wrapper.unmount()
+    vi.useRealTimers()
+  })
+
   it('uses the same configured paste shortcut as SSH terminals and blocks old Ctrl+Shift+V paste', async () => {
     const shortcutSettings = { ...defaultShortcutSettings(), terminalPaste: 'ctrl+alt+v' } as ShortcutSettings
     const { wrapper } = mountLocalTerminal({ shortcutSettings })
@@ -500,6 +520,30 @@ describe('LocalTerminalView', () => {
     expect(terminalState.focusCalls).toBeGreaterThanOrEqual(1)
     expect(new TextDecoder().decode(Uint8Array.from(atob(payload.dataBase64), (char) => char.charCodeAt(0)))).toBe('paste-中文')
     wrapper.unmount()
+    vi.useRealTimers()
+  })
+
+  it('drops only the first isolated macOS zsh percent line for local terminals', async () => {
+    const { wrapper, store } = mountLocalTerminal()
+    store.sessions[0].shellKind = 'local'
+    store.subscribe()
+
+    terminalState.eventCallbacks.get('localterminal:output')?.({
+      sessionId: 'local-1',
+      dataBase64: btoa('%\r\nuser@mac ~ % '),
+      timestamp: '',
+    })
+    terminalState.eventCallbacks.get('localterminal:output')?.({
+      sessionId: 'local-1',
+      dataBase64: btoa('% normal prompt remains'),
+      timestamp: '',
+    })
+
+    expect(terminalState.writes).toHaveLength(2)
+    expect(new TextDecoder().decode(terminalState.writes[0])).toBe('user@mac ~ % ')
+    expect(new TextDecoder().decode(terminalState.writes[1])).toBe('% normal prompt remains')
+    wrapper.unmount()
+    store.unsubscribe()
     vi.useRealTimers()
   })
 

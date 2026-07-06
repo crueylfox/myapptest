@@ -79,6 +79,7 @@ let lastColumns = 0
 let lastRows = 0
 let imeComposing = false
 let suppressNativePasteUntil = 0
+let stripInitialLocalPercentPrompt = true
 const terminalClipboard = useTerminalClipboard((message) => emit('notify', message, 'error'))
 const terminalHostStyle = computed(() => terminalProfileHostStyle(props.profile))
 const effectiveShortcuts = computed(() =>
@@ -240,6 +241,16 @@ function observeLocalTerminalInput(data: string) {
   }
 }
 
+function decodeLocalTerminalOutput(dataBase64: string) {
+  const bytes = decodeTerminalBase64ToBytes(dataBase64)
+  if (!stripInitialLocalPercentPrompt) return bytes
+  stripInitialLocalPercentPrompt = false
+  const text = new TextDecoder().decode(bytes)
+  if (text.startsWith('%\r\n')) return new TextEncoder().encode(text.slice(3))
+  if (text.startsWith('%\n')) return new TextEncoder().encode(text.slice(2))
+  return bytes
+}
+
 function stripLocalCommandControlSequences(data: string) {
   const input = localCommandControlBuffer + data
   localCommandControlBuffer = ''
@@ -356,7 +367,7 @@ onMounted(async () => {
   })
   store.registerOutput(props.sessionId, (dataBase64) => {
     if (!terminal || destroyed) return
-    terminal.write(decodeTerminalBase64ToBytes(dataBase64))
+    terminal.write(decodeLocalTerminalOutput(dataBase64))
   })
   observer = new ResizeObserver(() => {
     if (props.visible) scheduleFit()

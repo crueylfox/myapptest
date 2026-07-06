@@ -58,12 +58,13 @@ describe('useWorkspaceTransferOverlayFlow', () => {
     expect(flow.transferPopover.value).toBe(false)
   })
 
-  it('clamps popover position to the viewport and keeps it inside the expanded SFTP panel when present', async () => {
+  it('anchors the open popover to the workspace bottom-right even when SFTP is expanded', async () => {
     setViewportSize(1200, 1200)
     const root = document.createElement('div')
     const panel = document.createElement('div')
     panel.className = 'sftp-panel expanded'
     panel.getBoundingClientRect = () => rect({ left: 0, top: 840, right: 1200, bottom: 1170, width: 1200, height: 330 })
+    root.getBoundingClientRect = () => rect({ left: 24, top: 40, right: 1180, bottom: 1160, width: 1156, height: 1120 })
     root.appendChild(panel)
     const button = document.createElement('button')
     button.getBoundingClientRect = () => rect({ left: 860, top: 1164, right: 1088, bottom: 1188, width: 228, height: 24 })
@@ -77,11 +78,45 @@ describe('useWorkspaceTransferOverlayFlow', () => {
     flow.openTransferPopover()
     await nextTick()
 
+    const left = Number.parseInt(flow.transferPopoverStyle.value.left ?? '', 10)
     const top = Number.parseInt(flow.transferPopoverStyle.value.top ?? '', 10)
     const maxHeight = Number.parseInt(flow.transferPopoverStyle.value.maxHeight ?? '', 10)
-    expect(top).toBeGreaterThanOrEqual(840)
-    expect(top + maxHeight).toBeLessThanOrEqual(1156)
+    const width = Number.parseInt(flow.transferPopoverStyle.value.width ?? '', 10)
+    expect(1180 - (left + width)).toBeLessThanOrEqual(24)
+    expect(1160 - (top + maxHeight)).toBeLessThanOrEqual(24)
+    expect(top).toBeGreaterThan(760)
     expect(flow.transferPopoverStyle.value.width).toBe('620px')
+  })
+
+  it('keeps the popover bottom-right anchored after resize and SFTP height changes', async () => {
+    setViewportSize(1000, 720)
+    const root = document.createElement('div')
+    root.getBoundingClientRect = () => rect({ left: 0, top: 0, right: 1000, bottom: 700, width: 1000, height: 700 })
+    const panel = document.createElement('div')
+    panel.className = 'sftp-panel expanded'
+    panel.getBoundingClientRect = () => rect({ left: 0, top: 520, right: 1000, bottom: 700, width: 1000, height: 180 })
+    root.appendChild(panel)
+    const button = document.createElement('button')
+    button.getBoundingClientRect = () => rect({ left: 800, top: 680, right: 980, bottom: 704, width: 180, height: 24 })
+    const flow = useWorkspaceTransferOverlayFlow({
+      rootRef: ref(root),
+      sftpExpanded: ref(true),
+      scheduleAfterOpen: (callback) => nextTick(callback),
+    })
+    flow.transferButton.value = button
+
+    flow.openTransferPopover()
+    await nextTick()
+    root.getBoundingClientRect = () => rect({ left: 0, top: 0, right: 900, bottom: 640, width: 900, height: 640 })
+    panel.getBoundingClientRect = () => rect({ left: 0, top: 500, right: 900, bottom: 640, width: 900, height: 140 })
+    flow.updateTransferPopoverPosition()
+
+    const left = Number.parseInt(flow.transferPopoverStyle.value.left ?? '', 10)
+    const top = Number.parseInt(flow.transferPopoverStyle.value.top ?? '', 10)
+    const width = Number.parseInt(flow.transferPopoverStyle.value.width ?? '', 10)
+    const maxHeight = Number.parseInt(flow.transferPopoverStyle.value.maxHeight ?? '', 10)
+    expect(900 - (left + width)).toBeLessThanOrEqual(24)
+    expect(640 - (top + maxHeight)).toBeLessThanOrEqual(24)
   })
 
   it('preserves outside click and Escape close behavior without owning other workspace Escape handling', () => {

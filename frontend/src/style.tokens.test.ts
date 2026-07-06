@@ -59,6 +59,7 @@ function variables(selector: string) {
 describe('theme and overlay tokens', () => {
   const dark = variables(':root')
   const light = variables(':root[data-theme="light"]')
+  const macosGrayDark = variables(':root[data-theme="macos-gray-dark"]')
 
   it('keeps toast above modal, danger modal, busy state, context menu, and popovers', () => {
     expect(Number(dark['z-app-dialog'])).toBeGreaterThan(Number(dark['z-busy']))
@@ -127,6 +128,15 @@ describe('theme and overlay tokens', () => {
       expect(styles).not.toContain('background: var(--panel)')
       expect(styles).not.toContain('background: var(--sidebar)')
     }
+  })
+
+  it('defines a macOS gray dark preview theme without replacing the production dark root', () => {
+    expect(macosGrayDark.bg).toBe('#1f2023')
+    expect(macosGrayDark.sidebar).toBe('#242529')
+    expect(macosGrayDark.panel).toBe('#2b2d31')
+    expect(macosGrayDark['panel-2']).toBe('#303238')
+    expect(macosGrayDark.border).toBe('rgba(255, 255, 255, .10)')
+    expect(dark.bg).not.toBe(macosGrayDark.bg)
   })
 
   it('keeps checked radio controls visible in dark and light settings groups', () => {
@@ -1231,6 +1241,8 @@ describe('theme and overlay tokens', () => {
     expect(hover).toContain('background:')
     expect(active).toContain('font-weight: 700')
     expect(active).toContain('box-shadow:')
+    expect(active).not.toContain('inset 3px 0 0')
+    expect(active).not.toContain('border-left')
     expect(block('.settings-category-nav button.active .app-icon')).toContain('color:')
   })
 

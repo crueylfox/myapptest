@@ -313,11 +313,30 @@ function mockSftpPanelRect(
   } as DOMRect)
 }
 
+function mockWorkspaceShellRect(
+  wrapper: ReturnType<typeof mountWorkspace>['wrapper'],
+  rect: Partial<DOMRect>,
+) {
+  const shell = wrapper.get('.workspace-shell').element as HTMLElement
+  vi.spyOn(shell, 'getBoundingClientRect').mockReturnValue({
+    x: rect.x ?? rect.left ?? 0,
+    y: rect.y ?? rect.top ?? 0,
+    width: rect.width ?? 1200,
+    height: rect.height ?? 800,
+    top: rect.top ?? rect.y ?? 0,
+    right: rect.right ?? (rect.left ?? rect.x ?? 0) + (rect.width ?? 1200),
+    bottom: rect.bottom ?? (rect.top ?? rect.y ?? 0) + (rect.height ?? 800),
+    left: rect.left ?? rect.x ?? 0,
+    toJSON: () => undefined,
+  } as DOMRect)
+}
+
 async function openTransferPopoverWithTransfer(
   wrapper: ReturnType<typeof mountWorkspace>['wrapper'],
   options: {
     viewport?: { width: number; height: number }
     rect?: Partial<DOMRect>
+    workspaceRect?: Partial<DOMRect>
   } = {},
 ) {
   const sftpStore = useSftpStore()
@@ -340,6 +359,14 @@ async function openTransferPopoverWithTransfer(
     finishedAt: '',
   }
   setViewportSize(options.viewport?.width ?? 360, options.viewport?.height ?? 240)
+  mockWorkspaceShellRect(wrapper, options.workspaceRect ?? {
+    left: 0,
+    top: 0,
+    right: options.viewport?.width ?? 360,
+    bottom: options.viewport?.height ?? 240,
+    width: options.viewport?.width ?? 360,
+    height: options.viewport?.height ?? 240,
+  })
   mockTransferButtonRect(wrapper, options.rect ?? {
     left: 318,
     top: 214,
@@ -2682,7 +2709,7 @@ describe('TerminalWorkspace server states', () => {
     expect(document.body.querySelector('.transfer-popover')).toBeNull()
   })
 
-  it('keeps the transfer queue popover inside the expanded SFTP panel instead of covering the SSH terminal', async () => {
+  it('keeps the transfer queue popover anchored to the workspace bottom-right when SFTP is expanded', async () => {
     localStorage.setItem('serverpilot.sftpExpanded', 'true')
     const { wrapper } = mountWorkspace(state({
       status: 'online',
@@ -2702,13 +2729,18 @@ describe('TerminalWorkspace server states', () => {
     const popover = await openTransferPopoverWithTransfer(wrapper, {
       viewport: { width: 1200, height: 1200 },
       rect: { left: 860, top: 1164, right: 1088, bottom: 1188, width: 228, height: 24 },
+      workspaceRect: { left: 0, top: 0, right: 1200, bottom: 1200, width: 1200, height: 1200 },
     })
 
     expect(popover).not.toBeNull()
+    const left = Number.parseInt(popover?.style.left ?? '', 10)
     const top = Number.parseInt(popover?.style.top ?? '', 10)
+    const width = Number.parseInt(popover?.style.width ?? '', 10)
     const maxHeight = Number.parseInt(popover?.style.maxHeight ?? '', 10)
-    expect(top).toBeGreaterThanOrEqual(840)
-    expect(top + maxHeight).toBeLessThanOrEqual(1156)
+    expect(left + width).toBeLessThanOrEqual(1188)
+    expect(top + maxHeight).toBeLessThanOrEqual(1188)
+    expect(1188 - (left + width)).toBeLessThanOrEqual(24)
+    expect(1188 - (top + maxHeight)).toBeLessThanOrEqual(24)
     document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
     await wrapper.vm.$nextTick()
   })

@@ -17,6 +17,7 @@ import type {
 import type { AuthDialogMode } from './useAuthDialogController'
 import type { PaneTargetAssignment, PendingPaneOpenTarget } from './usePaneTargetRequests'
 import type { DashboardServerSummary } from '../utils/multiServerDashboard'
+import type { ThemePreviewMode } from '../utils/theme'
 import type { AppPanelView } from '../utils/appPanelModel'
 import { buildServerContextMenuItems } from '../utils/serverActionModel'
 import type {
@@ -184,7 +185,7 @@ export interface AppShellBindingActions {
   closeSettingsOverlay: () => unknown
   saveSettings: (settings: AppSettings) => unknown
   saveSettingsAndClose: (settings: AppSettings) => unknown
-  applyTheme: (mode: AppSettings['themeMode']) => unknown
+  applyTheme: (mode: ThemePreviewMode) => unknown
   applyUIFontSize: (size: AppSettings['uiFontSize']) => unknown
   reloadAfterBackupImport: () => unknown
   keyVaultDeleted: () => unknown

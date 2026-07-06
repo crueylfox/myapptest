@@ -1,5 +1,4 @@
 import { nextTick, ref, type Ref } from 'vue'
-import { getViewportPopoverPosition, type ViewportPopoverRect } from '../utils/viewportPopover'
 
 type TransferScope = 'current' | 'all'
 
@@ -10,7 +9,6 @@ type WorkspaceTransferOverlayFlowOptions = {
 }
 
 const TRANSFER_POPOVER_MARGIN = 12
-const TRANSFER_POPOVER_GAP = 8
 const TRANSFER_POPOVER_MAX_WIDTH = 620
 const TRANSFER_POPOVER_MAX_HEIGHT = 360
 const TRANSFER_POPOVER_HEIGHT_OFFSET = 96
@@ -28,50 +26,37 @@ export function useWorkspaceTransferOverlayFlow(options: WorkspaceTransferOverla
     }
   }
 
-  function transferPopoverBounds(triggerRect: DOMRect, viewportHeight: number): ViewportPopoverRect | null {
-    const viewportTop = TRANSFER_POPOVER_MARGIN
-    const viewportBottom = viewportHeight - TRANSFER_POPOVER_MARGIN
-    if (!options.sftpExpanded.value || !options.rootRef.value) return null
-    const sftpPanel = options.rootRef.value.querySelector<HTMLElement>('.sftp-panel.expanded')
-    if (!sftpPanel) return null
-    const rect = sftpPanel.getBoundingClientRect()
-    if (rect.height <= 0 || rect.top >= viewportBottom) return null
-    const top = Math.max(rect.top, viewportTop)
-    const bottom = Math.min(rect.bottom, triggerRect.top - TRANSFER_POPOVER_GAP, viewportBottom)
-    if (bottom <= top) return null
-    return {
-      left: rect.left,
-      top,
-      right: rect.right,
-      bottom,
-      width: Math.max(0, rect.right - rect.left),
-      height: bottom - top,
-    }
-  }
-
   function updateTransferPopoverPosition() {
     if (!transferPopover.value || !transferButton.value) return
-    const rect = transferButton.value.getBoundingClientRect()
     const { width: viewportWidth, height: viewportHeight } = viewportSize()
-    const preferredHeight = Math.min(TRANSFER_POPOVER_MAX_HEIGHT, Math.max(0, viewportHeight - TRANSFER_POPOVER_HEIGHT_OFFSET))
-    const boundsRect = transferPopoverBounds(rect, viewportHeight)
-    const position = getViewportPopoverPosition({
-      anchorRect: rect,
-      boundsRect,
-      popoverSize: { width: TRANSFER_POPOVER_MAX_WIDTH, height: preferredHeight },
-      viewport: { width: viewportWidth, height: viewportHeight },
-      placement: boundsRect ? 'panel-bound' : 'top-end',
-      margin: TRANSFER_POPOVER_MARGIN,
-      gap: TRANSFER_POPOVER_GAP,
-      maxHeight: preferredHeight,
-    })
+    const rootRect = options.rootRef.value?.getBoundingClientRect()
+    const workspaceLeft = Math.max(TRANSFER_POPOVER_MARGIN, rootRect?.left ?? TRANSFER_POPOVER_MARGIN)
+    const workspaceTop = Math.max(TRANSFER_POPOVER_MARGIN, rootRect?.top ?? TRANSFER_POPOVER_MARGIN)
+    const workspaceRight = Math.min(
+      viewportWidth - TRANSFER_POPOVER_MARGIN,
+      rootRect?.right && rootRect.right > rootRect.left ? rootRect.right : viewportWidth - TRANSFER_POPOVER_MARGIN,
+    )
+    const workspaceBottom = Math.min(
+      viewportHeight - TRANSFER_POPOVER_MARGIN,
+      rootRect?.bottom && rootRect.bottom > rootRect.top ? rootRect.bottom : viewportHeight - TRANSFER_POPOVER_MARGIN,
+    )
+    const availableWidth = Math.max(0, workspaceRight - workspaceLeft)
+    const availableHeight = Math.max(0, workspaceBottom - workspaceTop)
+    const width = Math.min(TRANSFER_POPOVER_MAX_WIDTH, availableWidth)
+    const maxHeight = Math.min(
+      TRANSFER_POPOVER_MAX_HEIGHT,
+      Math.max(0, viewportHeight - TRANSFER_POPOVER_HEIGHT_OFFSET),
+      availableHeight,
+    )
+    const left = workspaceRight - width
+    const top = workspaceBottom - maxHeight
     transferPopoverStyle.value = {
       position: 'fixed',
-      left: `${Math.round(position.left)}px`,
-      top: `${Math.round(position.top)}px`,
-      width: `${Math.round(position.width)}px`,
-      maxHeight: `${Math.round(position.maxHeight)}px`,
-      transformOrigin: position.transformOrigin,
+      left: `${Math.round(left)}px`,
+      top: `${Math.round(top)}px`,
+      width: `${Math.round(width)}px`,
+      maxHeight: `${Math.round(maxHeight)}px`,
+      transformOrigin: 'bottom right',
     }
   }
 

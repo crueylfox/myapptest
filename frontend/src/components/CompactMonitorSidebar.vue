@@ -38,7 +38,7 @@ const emit = defineEmits<{
 }>()
 const root = ref<HTMLElement>()
 const processSort = ref<ProcessSort>('memory')
-const showAllMounts = ref(false)
+const showAllMounts = ref(true)
 const expandedSystemByServer = ref<Record<number, boolean>>({})
 const MIN_MONITOR_HEIGHT = 180
 const MIN_MOUNT_HEIGHT = 120

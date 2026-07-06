@@ -107,6 +107,7 @@ const gpuMemorySummary = computed(() => {
 })
 const showGpuCard = computed(() => snapshot.value?.platform !== 'darwin')
 const disks = computed(() => snapshot.value?.disks ?? [])
+const showAllDisks = ref(true)
 const rawProcesses = computed(() => snapshot.value?.processes ?? [])
 const processCpuAvailable = computed(() =>
   rawProcesses.value.some((process) =>
@@ -365,7 +366,10 @@ onBeforeUnmount(() => {
       </section>
 
       <section class="local-monitor-extra-card mount-panel local-disk-card" data-testid="local-disk-card">
-        <header><strong>磁盘与挂载点</strong></header>
+        <header>
+          <strong>磁盘与挂载点</strong>
+          <label><input v-model="showAllDisks" type="checkbox" data-testid="local-disk-show-all" />显示全部</label>
+        </header>
         <div v-if="disks.length" class="mount-list local-disk-list">
           <article v-for="disk in disks" :key="disk.mountPath || disk.name">
             <strong :title="disk.mountPath || disk.name">{{ disk.name || disk.mountPath }}</strong>

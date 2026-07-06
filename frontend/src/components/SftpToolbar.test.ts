@@ -343,6 +343,33 @@ describe('SftpToolbar', () => {
     expect(menu?.querySelector<HTMLSelectElement>('[data-testid="sftp-more-conflict-policy"]')).not.toBeNull()
   })
 
+  it('keeps the More menu anchored within 12px of the More button when bottom space is tight', async () => {
+    setViewportSize(900, 640)
+    const wrapper = mountToolbar()
+
+    await relayoutToolbar(wrapper, 420)
+    const moreButton = wrapper.get('[data-testid="sftp-toolbar-more"]').element
+    mockElementRect(moreButton, {
+      left: 742,
+      top: 592,
+      right: 824,
+      bottom: 620,
+      width: 82,
+      height: 28,
+    })
+    await wrapper.get('[data-testid="sftp-toolbar-more"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    const menu = moreMenu()
+    expect(menu).not.toBeNull()
+    const top = Number.parseInt(menu?.style.top ?? '', 10)
+    const left = Number.parseInt(menu?.style.left ?? '', 10)
+    const width = Number.parseInt(menu?.style.width ?? '', 10)
+    const maxHeight = Number.parseInt(menu?.style.maxHeight ?? '', 10)
+    expect(Math.abs(left + width - 824)).toBeLessThanOrEqual(12)
+    expect(Math.abs(592 - (top + maxHeight))).toBeLessThanOrEqual(12)
+  })
+
   it('keeps the overflow conflict policy select from forcing a wide More menu', async () => {
     const wrapper = mountToolbar()
 

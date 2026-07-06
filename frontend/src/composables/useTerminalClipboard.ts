@@ -1,4 +1,5 @@
 import type { Terminal } from '@xterm/xterm'
+import { ClipboardGetText } from '../../wailsjs/runtime/runtime'
 
 type Notify = (message: string) => void
 
@@ -46,7 +47,12 @@ export function useTerminalClipboard(notify: Notify) {
   ) {
     suppressCopyOnSelect()
     try {
-      const text = await navigator.clipboard.readText()
+      let text = ''
+      try {
+        text = await navigator.clipboard.readText()
+      } catch {
+        text = await ClipboardGetText()
+      }
       clearSelectionAndFocus(terminal)
       if (text) await writeText(text)
       await nextFrame()

@@ -26,6 +26,7 @@ import {
 } from '../utils/terminalProfile'
 import { cloneAlertSettings, normalizeAlertSettings } from '../utils/alertSettings'
 import { uiFontPixels, uiFontSizeSteps } from '../utils/appearance'
+import type { ThemePreviewMode } from '../utils/theme'
 import {
   findShortcutConflicts,
   normalizeShortcutSettings,
@@ -52,7 +53,7 @@ const emit = defineEmits<{
   save: [settings: AppSettings]
   saveAndClose: [settings: AppSettings]
   closeRequest: []
-  previewTheme: [theme: ThemeMode]
+  previewTheme: [theme: ThemePreviewMode]
   previewFontSize: [size: UIFontSize]
   backupImported: []
   keyVaultDeleted: []
@@ -155,6 +156,7 @@ const terminalCursorOptions: Array<{ value: TerminalCursorStyle; label: string }
 ]
 const terminalFontOptions = terminalFontPresets
 const activeCategory = ref('appearance')
+const previewThemeSelection = ref<ThemePreviewMode>(props.settings.themeMode)
 const categories = [
   { id: 'appearance', label: '常规', icon: 'gear' },
   { id: 'terminal', label: '终端', icon: 'terminal' },
@@ -227,6 +229,7 @@ function applySettingsToForm(value: AppSettings) {
     alerts: cloneAlertSettings(value.alerts),
     backupImportOptions: cloneBackupImportOptions(value.backupImportOptions),
   })
+  previewThemeSelection.value = value.themeMode
   backupFlow.applyImportOptions(value.backupImportOptions)
 }
 
@@ -275,17 +278,13 @@ const policies: Array<{ value: HostKeyPolicy; title: string; detail: string }> =
     detail: '未知主机或指纹变化会暂停连接，用户确认信任并更新后再继续。',
   },
 ]
-const themes: Array<{ value: ThemeMode; title: string; detail: string }> = [
-  { value: 'dark', title: '深色', detail: '使用完整深色界面。' },
-  { value: 'light', title: '浅色', detail: '使用基础浅色界面。' },
-  { value: 'system', title: '跟随系统', detail: '随系统外观自动切换。' },
-]
+const themes: Array<{ value: ThemePreviewMode; title: string; detail: string; previewOnly?: boolean; testId?: string }> = [{ value: 'dark', title: '深色', detail: '使用完整深色界面。' }, { value: 'light', title: '浅色', detail: '使用基础浅色界面。' }, { value: 'system', title: '跟随系统', detail: '随系统外观自动切换。' }, { value: 'macos_gray_dark', title: 'macOS 灰色深色（预览）', detail: '只预览 macOS 灰色深色，不改变正式深色设置。', previewOnly: true, testId: 'theme-preview-macos-gray-dark' }]
 const currentUIFontSizeIndex = computed(() => uiFontSizeSteps.includes(form.uiFontSize) ? uiFontSizeSteps.indexOf(form.uiFontSize) : uiFontSizeSteps.indexOf('large'))
 const currentUIFontSizePixels = computed(() => uiFontPixels(uiFontSizeSteps[currentUIFontSizeIndex.value]))
-const canDecreaseUIFontSize = computed(() => currentUIFontSizeIndex.value > 0)
-const canIncreaseUIFontSize = computed(() => currentUIFontSizeIndex.value < uiFontSizeSteps.length - 1)
+const uiFontSizeByPixels = new Map(uiFontSizeSteps.map((size) => [uiFontPixels(size), size]))
 
-function adjustUIFontSize(delta: number) { const nextIndex = Math.min(uiFontSizeSteps.length - 1, Math.max(0, currentUIFontSizeIndex.value + delta)); if (nextIndex !== currentUIFontSizeIndex.value) { form.uiFontSize = uiFontSizeSteps[nextIndex]; emit('previewFontSize', form.uiFontSize) } }
+function selectTheme(theme: { value: ThemePreviewMode; previewOnly?: boolean }) { previewThemeSelection.value = theme.value; if (!theme.previewOnly) form.themeMode = theme.value as ThemeMode; emit('previewTheme', theme.value) }
+function updateUIFontSizeFromSlider(event: Event) { const pixels = Math.min(18, Math.max(12, Number((event.target as HTMLInputElement).value) || 15)); const size = uiFontSizeByPixels.get(pixels) ?? 'large'; form.uiFontSize = size; emit('previewFontSize', size) }
 
 async function submit() {
   if (!validateSettingsForm()) return
@@ -1016,15 +1015,14 @@ function errorMessage(reason: unknown, fallback: string) {
       <h2>外观</h2>
       <div class="settings-horizontal-options" data-testid="settings-appearance-options">
         <label v-for="theme in themes" :key="theme.value" class="policy-option">
-          <input v-model="form.themeMode" type="radio" :value="theme.value" @change="emit('previewTheme', form.themeMode)" />
+          <input type="radio" :value="theme.value" :checked="previewThemeSelection === theme.value" :data-testid="theme.testId" @change="selectTheme(theme)" />
           <span><strong>{{ theme.title }}</strong><small>{{ theme.detail }}</small></span>
         </label>
       </div>
       <h3 class="settings-subheading">界面字体大小</h3>
-      <div class="settings-font-stepper" data-testid="ui-font-size-stepper">
-        <button type="button" class="secondary" data-testid="ui-font-size-decrease" :disabled="!canDecreaseUIFontSize" aria-label="减小界面字体" @click="adjustUIFontSize(-1)">−</button>
+      <div class="settings-font-slider" data-testid="ui-font-size-stepper">
+        <input type="range" min="12" max="18" step="1" :value="currentUIFontSizePixels" data-testid="ui-font-size-slider" aria-label="界面字体大小" @input="updateUIFontSizeFromSlider" />
         <span class="settings-font-size-value" data-testid="ui-font-size-value">{{ currentUIFontSizePixels }}px</span>
-        <button type="button" class="secondary" data-testid="ui-font-size-increase" :disabled="!canIncreaseUIFontSize" aria-label="增大界面字体" @click="adjustUIFontSize(1)">+</button>
       </div>
       <p class="settings-note">SSH 终端字体保持独立，不受此设置影响。</p>
     </article>

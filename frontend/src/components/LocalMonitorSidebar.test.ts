@@ -127,6 +127,7 @@ describe('LocalMonitorSidebar', () => {
 
     const diskCard = wrapper.get('[data-testid="local-disk-card"]')
     expect(diskCard.classes()).toContain('mount-panel')
+    expect(diskCard.get<HTMLInputElement>('[data-testid="local-disk-show-all"]').element.checked).toBe(true)
     expect(diskCard.find('.mount-list').exists()).toBe(true)
     const rows = diskCard.findAll('.mount-list article')
     expect(rows).toHaveLength(2)

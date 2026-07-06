@@ -479,6 +479,23 @@ func TestDarwinLocalTerminalCommandUsesLoginShellAndColorEnv(t *testing.T) {
 	}
 }
 
+func TestOpenLocalTerminalDoesNotWriteInitialPercentPrompt(t *testing.T) {
+	emitter := &captureEmitter{}
+	factory := newFakeFactory()
+	manager := NewWithFactory(context.Background(), nil, emitter, factory)
+
+	opened, err := manager.Open(domain.LocalTerminalOpenRequest{Shell: os.Args[0], Rows: 24, Cols: 80})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	time.Sleep(40 * time.Millisecond)
+	if input := factory.pty.inputString(); input != "" {
+		t.Fatalf("open wrote unexpected initial PTY input %q for session %s", input, opened.SessionID)
+	}
+	manager.CloseAll()
+}
+
 func TestResolveShellPreferences(t *testing.T) {
 	lookPath := func(existing map[string]string) lookPathFunc {
 		return func(name string) (string, error) {

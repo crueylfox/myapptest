@@ -14,6 +14,7 @@ import SettingsView from './SettingsView.vue'
 import ToastHost from './ToastHost.vue'
 import TunnelManagerDialog from './TunnelManagerDialog.vue'
 import type { DashboardServerSummary } from '../utils/multiServerDashboard'
+import type { ThemePreviewMode } from '../utils/theme'
 import type { AuthDialogMode } from '../composables/useAuthDialogController'
 import type {
   AlertEvent,
@@ -156,7 +157,7 @@ const emit = defineEmits<{
   settingsClose: []
   settingsSave: [settings: AppSettings]
   settingsSaveAndClose: [settings: AppSettings]
-  settingsPreviewTheme: [mode: AppSettings['themeMode']]
+  settingsPreviewTheme: [mode: ThemePreviewMode]
   settingsPreviewFontSize: [size: AppSettings['uiFontSize']]
   settingsBackupImported: []
   settingsKeyVaultDeleted: []

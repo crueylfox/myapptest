@@ -1033,7 +1033,7 @@ onBeforeUnmount(() => {
             <div v-if="transferPopover" class="viewport-popover transfer-popover" :style="transferPopoverStyle" @click.stop>
               <header>
                 <strong>传输队列</strong>
-                <div class="segmented">
+                <div class="transfer-popover-actions transfer-popover-tabs">
                   <button :class="{ active: transferScope === 'current' }" @click="transferScope = 'current'">当前服务器</button>
                   <button :class="{ active: transferScope === 'all' }" @click="transferScope = 'all'">全部服务器</button>
                 </div>
@@ -1058,7 +1058,7 @@ onBeforeUnmount(() => {
                   <small v-if="row.errorMessage" :title="row.errorMessage">{{ row.errorMessage }}</small>
                 </article>
               </div>
-              <footer>
+              <footer class="transfer-popover-actions">
                 <button class="text-button" @click="clearFinishedTransfers">清除已完成</button>
                 <button class="text-button" @click="closeTransferPopover">关闭</button>
               </footer>

@@ -7,6 +7,7 @@ import { useTerminalStore } from '../stores/terminal'
 import type { Connection, ShortcutSettings } from '../types'
 import { defaultShortcutSettings } from '../utils/shortcutSettings'
 import { observeTerminalInstanceInput } from '../utils/terminalInstanceRegistry'
+import { ClipboardGetText } from '../../wailsjs/runtime/runtime'
 import TerminalView from './TerminalView.vue'
 
 const terminalState = vi.hoisted(() => ({
@@ -73,6 +74,7 @@ vi.mock('../../wailsjs/runtime/runtime', () => ({
     terminalState.eventCallbacks.set(name, callback)
   }),
   EventsOff: vi.fn(),
+  ClipboardGetText: vi.fn(async () => ''),
 }))
 
 function b64(value: string) {
@@ -599,6 +601,23 @@ describe('TerminalView command history attachment', () => {
     expect(terminalState.clearSelectionCalls).toBeGreaterThanOrEqual(1)
     expect(terminalState.focusCalls).toBeGreaterThanOrEqual(1)
     expect(wrapper.findComponent({ name: 'ContextMenu' }).exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('falls back to Wails clipboard text when browser clipboard read fails on right click paste', async () => {
+    const { wrapper } = mountTerminal()
+    vi.mocked(navigator.clipboard.readText).mockRejectedValueOnce(new Error('not allowed'))
+    vi.mocked(ClipboardGetText).mockResolvedValueOnce('echo fallback\n')
+
+    await wrapper.get('.terminal-view').trigger('contextmenu')
+    await flush()
+
+    expect(ClipboardGetText).toHaveBeenCalledTimes(1)
+    expect(window.go?.main?.App?.WriteTerminal).toHaveBeenCalledWith({
+      sessionId: 'session-1',
+      dataBase64: b64('echo fallback\r'),
+    })
+    expect(wrapper.emitted('commandSkip')).toBeUndefined()
     wrapper.unmount()
   })
 

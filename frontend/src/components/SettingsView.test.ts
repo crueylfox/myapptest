@@ -1938,8 +1938,8 @@ describe('connection settings', () => {
   it('previews and saves dark, light, and system theme modes', async () => {
     const wrapper = mount(SettingsView, { props: { settings } })
     const appearanceOptions = wrapper.get('[data-testid="settings-appearance-options"]')
-    expect(appearanceOptions.findAll('.policy-option')).toHaveLength(3)
-    expect(cssBlock('.settings-horizontal-options')).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
+    expect(appearanceOptions.findAll('.policy-option')).toHaveLength(4)
+    expect(cssBlock('.settings-horizontal-options')).toContain('grid-template-columns: repeat(4, minmax(0, 1fr))')
     expect(appearanceOptions.text()).not.toContain('Windows')
     const system = wrapper.get<HTMLInputElement>('input[value="system"]')
     await system.setValue()
@@ -1952,23 +1952,31 @@ describe('connection settings', () => {
     expect(wrapper.text()).toContain('跟随系统')
   })
 
-  it('previews and saves UI font sizes with the 12-18px stepper bounds', async () => {
+  it('previews macOS gray dark without saving it as the production theme mode', async () => {
+    const wrapper = mount(SettingsView, { props: { settings } })
+    const preview = wrapper.get('[data-testid="theme-preview-macos-gray-dark"]')
+
+    await preview.setValue()
+
+    expect(wrapper.emitted('previewTheme')?.at(-1)).toEqual(['macos_gray_dark'])
+    await wrapper.get('button.settings-save-button').trigger('click')
+    const saved = wrapper.emitted('save')?.at(-1)?.[0] as AppSettings
+    expect(saved.themeMode).toBe(settings.themeMode)
+  })
+
+  it('previews and saves UI font sizes with the 12-18px slider bounds', async () => {
     const wrapper = mount(SettingsView, { props: { settings } })
     const value = wrapper.get('[data-testid="ui-font-size-value"]')
-    const decrease = wrapper.get<HTMLButtonElement>('[data-testid="ui-font-size-decrease"]')
-    const increase = wrapper.get<HTMLButtonElement>('[data-testid="ui-font-size-increase"]')
+    const slider = wrapper.get<HTMLInputElement>('[data-testid="ui-font-size-slider"]')
 
     expect(value.text()).toBe('15px')
-    await decrease.trigger('click')
-    await decrease.trigger('click')
-    await decrease.trigger('click')
+    expect(slider.attributes('min')).toBe('12')
+    expect(slider.attributes('max')).toBe('18')
+    expect(slider.attributes('step')).toBe('1')
+    await slider.setValue('12')
     expect(value.text()).toBe('12px')
-    expect(decrease.element.disabled).toBe(true)
-    await decrease.trigger('click')
-    expect(value.text()).toBe('12px')
-    for (let index = 0; index < 6; index += 1) await increase.trigger('click')
+    await slider.setValue('18')
     expect(value.text()).toBe('18px')
-    expect(increase.element.disabled).toBe(true)
     expect(wrapper.emitted('previewFontSize')?.at(-1)).toEqual(['max'])
     await wrapper.get('button.settings-save-button').trigger('click')
     const saved = wrapper.emitted('save')?.at(-1)?.[0] as AppSettings

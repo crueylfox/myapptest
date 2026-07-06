@@ -104,7 +104,8 @@ describe('CompactMonitorSidebar', () => {
     const wrapper = render()
     expect(wrapper.find('.compact-monitor').exists()).toBe(true)
     expect(wrapper.find('.mount-panel').exists()).toBe(true)
-    expect(wrapper.findAll('.mount-list article')).toHaveLength(2)
+    expect(wrapper.find<HTMLInputElement>('.mount-panel input').element.checked).toBe(true)
+    expect(wrapper.findAll('.mount-list article')).toHaveLength(3)
     expect(wrapper.attributes('style')).toContain('430px')
     expect(wrapper.findAll('.mini-sparkline-stub')).toHaveLength(1)
     expect(wrapper.find('.system-info-summary').exists()).toBe(true)
@@ -129,13 +130,14 @@ describe('CompactMonitorSidebar', () => {
     expect(wrapper.attributes('style')).not.toContain('grid-template-rows: 0px')
   })
 
-  it('reveals Docker overlay mounts with the show-all control', async () => {
+  it('hides Docker overlay mounts only after the show-all control is turned off', async () => {
     const wrapper = render()
-    await wrapper.find('.mount-panel input').setValue(true)
     expect(wrapper.findAll('.mount-list article')).toHaveLength(3)
+    await wrapper.find('.mount-panel input').setValue(false)
+    expect(wrapper.findAll('.mount-list article')).toHaveLength(2)
   })
 
-  it('hides pseudo filesystem mounts until show all is enabled', async () => {
+  it('shows pseudo filesystem mounts by default and hides them when show all is disabled', async () => {
     const wrapper = renderWith({
       ...snapshot,
       mounts: [
@@ -143,9 +145,9 @@ describe('CompactMonitorSidebar', () => {
         { filesystem: 'tmpfs', mountPath: '/run', total: 10, used: 1, available: 9, usedPercent: 10 },
       ],
     })
-    expect(wrapper.text()).not.toContain('/run')
-    await wrapper.find('.mount-panel input').setValue(true)
     expect(wrapper.text()).toContain('/run')
+    await wrapper.find('.mount-panel input').setValue(false)
+    expect(wrapper.text()).not.toContain('/run')
   })
 
   it('maps a connected workspace to the online monitor state', () => {

@@ -2482,6 +2482,23 @@ describe('SftpPanel', () => {
     expect(restored.find('.sftp-details-expand').exists()).toBe(true)
   })
 
+  it('keeps a visible details restore entry that expands without covering the file table', async () => {
+    setBrowsableSftpState()
+    const wrapper = mountPanel(true)
+
+    await wrapper.get('.sftp-details header .text-button').trigger('click')
+    const content = wrapper.get<HTMLElement>('.sftp-content')
+    const restore = wrapper.get<HTMLButtonElement>('.sftp-details-expand')
+
+    expect(content.element.style.gridTemplateColumns).toContain('28px')
+    expect(restore.attributes('disabled')).toBeUndefined()
+    expect(wrapper.find('.sftp-details').exists()).toBe(false)
+
+    await restore.trigger('click')
+    expect(wrapper.find('.sftp-details').exists()).toBe(true)
+    expect(wrapper.find('.sftp-details-expand').exists()).toBe(false)
+  })
+
   it('persists details panel width after dragging the details resizer', async () => {
     setBrowsableSftpState()
     const wrapper = mountPanel(true)

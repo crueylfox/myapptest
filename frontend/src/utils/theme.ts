@@ -1,5 +1,7 @@
 import type { ThemeMode } from '../types'
 
+export type ThemePreviewMode = ThemeMode | 'macos_gray_dark'
+
 let mediaQuery: MediaQueryList | null = null
 let mediaListener: ((event: MediaQueryListEvent) => void) | null = null
 
@@ -14,8 +16,14 @@ export function stopThemeSync() {
   mediaListener = null
 }
 
-export function applyTheme(mode: ThemeMode): 'dark' | 'light' {
+export function applyTheme(mode: ThemePreviewMode): 'dark' | 'light' | 'macos-gray-dark' {
   stopThemeSync()
+  if (mode === 'macos_gray_dark') {
+    document.documentElement.dataset.theme = 'macos-gray-dark'
+    document.documentElement.style.colorScheme = 'dark'
+    window.dispatchEvent(new Event('serverpilot:appearance'))
+    return 'macos-gray-dark'
+  }
   const query = window.matchMedia('(prefers-color-scheme: dark)')
   const apply = (systemDark: boolean) => {
     const theme = resolvedTheme(mode, systemDark)
