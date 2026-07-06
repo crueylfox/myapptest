@@ -8,12 +8,13 @@ Updated: 2026-07-06
 - Previous delivery version: `0.5.0-beta.28` PASS.
 - Current VERSION: `0.5.0-beta.31`.
 - Recommended delivery version: `0.5.0-beta.31` user-smoke-required.
-- Current round: beta31 same-version macOS overlay hotfix after beta31 cross-platform Key Vault backup.
+- Current round: beta31 same-version macOS overlay blocker hotfix after beta31 cross-platform Key Vault backup.
 - Version bump this hotfix: no; baseline already `0.5.0-beta.31`.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
 - Beta31 handoff commit: `09fa695` (`chore: finalize beta31 handoff and generated bindings`).
-- Current overlay hotfix commit: `68d0c04` (`fix: complete beta31 macos overlay blocker`).
+- Previous overlay hotfix commit: `68d0c04` (`fix: complete beta31 macos overlay blocker`).
+- Current overlay blocker commit: `a16ac96` (`fix: replace macos gray modal scrim with app blur overlay`).
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -31,6 +32,8 @@ Updated: 2026-07-06
 - Dark/light radio checked states and AppDialogHost/Docker/modal blur surfaces are covered by computed-style smoke tests.
 - Windows backup imported key vault keys are covered for SSH publickey auth resolution.
 - Settings, add server, edit server, key import, and confirm dialogs now use shared glass backdrop/surface classes with low-tint blur instead of full-screen gray wash.
+- The beta31 same-version overlay blocker fix replaces the macOS-gray-scrim approach with app content blur: `.app-visual-root` is blurred/brightened while modal surfaces render outside that root, and full-screen click-catcher backdrops stay at alpha `<= 0.18`.
+- Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.
 - Docker Manager permission failures now explain that manager commands run through independent SSH exec and do not inherit terminal `su/root` state; the UI exposes current-user and non-interactive `sudo -n` retry modes.
@@ -57,11 +60,11 @@ Updated: 2026-07-06
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1643 tests, 87 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build -platform darwin/universal`: not run for this hotfix; Windows local builds do not produce the macOS app.
-- GitHub Actions `Build macOS` run `28794975242`: success for commit `c8461c5e3f6840bffb86125d45582e126dded3e6`.
+- GitHub Actions `Build macOS` run `28798882475`: success for commit `a16ac965976754e624212817f6fb6227bbb68f1c`.
 - Artifact: `ServerPilot-macos-unsigned`.
 - Artifact contains `ServerPilot-macos-universal-unsigned.zip` and `ServerPilot-macos-universal-unsigned.dmg`.
-- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `f0c5116465ecc3ed1a891f9bde6a074c8993e366a373ff2ea21b8503a4b0b6de`.
-- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `ce09fa332476ed6f325ff0f89e1c0ac6a057801f8851afeff47049843bf865a0`.
+- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `7693b70bd6e4c39dcaa47c222d703f47eab025a377c66361eb3b9120342bf7e9`.
+- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `dbb0fc4d56824fddbc9d1678e1fbbd814e08b1dfbb5118e9b3575aafa3a06697`.
 - macOS artifact came from the GitHub Actions macOS runner.
 
 ## 5. Next
