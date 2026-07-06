@@ -560,8 +560,8 @@ func TestFullBackupImportsUnrestorableWindowsKeyVaultMetadataWithWarning(t *test
 		if importResult.KeyVaultAdded != 1 || !hasBackupWarning(importResult.Warnings, "WINDOWS_PROTECTED_CREDENTIAL_REENTER_REQUIRED") {
 			t.Fatalf("darwin import result=%+v", importResult)
 		}
-		if len(keys) != 1 || len(keys[0].ProtectedKeyBlob) != 0 || keys[0].PassphraseSaved {
-			t.Fatalf("darwin should import metadata without DPAPI material: %+v", keys)
+		if len(keys) != 1 || string(keys[0].ProtectedKeyBlob) != string(protectedBlob) || keys[0].PassphraseSaved {
+			t.Fatalf("darwin should retain DPAPI material only for explicit re-entry warnings: %+v", keys)
 		}
 	} else {
 		if importResult.KeyVaultAdded != 1 || len(keys) != 1 || string(keys[0].ProtectedKeyBlob) != string(protectedBlob) {

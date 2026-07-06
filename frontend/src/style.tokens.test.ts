@@ -19,6 +19,12 @@ function declaration(cssBlock: string, property: string) {
   return match[1].trim()
 }
 
+function rgbaAlpha(value: string) {
+  const match = value.match(/^rgba\([^,]+,[^,]+,[^,]+,\s*([.\d]+)\)$/)
+  if (!match) throw new Error(`Expected rgba() value, got ${value}`)
+  return Number(match[1])
+}
+
 function pxDeclaration(cssBlock: string, property: string) {
   const value = declaration(cssBlock, property)
   const match = value.match(/^(-?\d+(?:\.\d+)?)px$/)
@@ -132,12 +138,34 @@ describe('theme and overlay tokens', () => {
     expect(radio).toContain('appearance: none')
     expect(radio).toContain('border: 1px solid var(--border)')
     expect(radio).toContain('background: var(--input)')
-    expect(checked).not.toContain('background-image')
-    expect(checked).toContain('background: var(--input)')
-    expect(checked).toContain('box-shadow: inset 0 0 0 4px var(--input), inset 0 0 0 8px var(--primary)')
+    expect(checked).toContain('background-image: radial-gradient')
+    expect(checked).toContain('background-color: var(--primary)')
     expect(checked).toContain('border-color: var(--primary)')
     expect(darkChecked).toContain('border-color: #93c5fd')
-    expect(darkChecked).toContain('box-shadow: inset 0 0 0 4px var(--input), inset 0 0 0 8px #93c5fd')
+    expect(darkChecked).toContain('background-color: #2563eb')
+    expect(darkChecked).toContain('background-image: radial-gradient')
+  })
+
+  it('keeps checked checkboxes visible in dark and light settings groups', () => {
+    const checkbox = block('input[type="checkbox"]')
+    const checked = block('input[type="checkbox"]:checked')
+    const darkChecked = block(':root:not([data-theme="light"]) input[type="checkbox"]:checked')
+
+    expect(checkbox).toContain('appearance: none')
+    expect(checkbox).toContain('border: 1px solid var(--border)')
+    expect(checkbox).toContain('background-color: var(--input)')
+    expect(checked).toContain('background-color: var(--primary)')
+    expect(checked).toContain('background-image: url("data:image/svg+xml')
+    expect(darkChecked).toContain('border-color: #93c5fd')
+    expect(darkChecked).toContain('background-color: #2563eb')
+    expect(darkChecked).toContain('background-image: url("data:image/svg+xml')
+  })
+
+  it('keeps macOS overlay backdrops translucent enough for blur to be visible', () => {
+    expect(rgbaAlpha(declaration(block('.modal-backdrop'), 'background'))).toBeLessThanOrEqual(0.34)
+    expect(rgbaAlpha(declaration(block('.settings-overlay-backdrop'), 'background'))).toBeLessThanOrEqual(0.26)
+    expect(declaration(block('.modal-backdrop'), 'backdrop-filter')).toContain('blur(')
+    expect(declaration(block('.settings-overlay-backdrop'), 'backdrop-filter')).toContain('blur(')
   })
 
   it('keeps workspace tab close control right-aligned without layout hacks', () => {

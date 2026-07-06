@@ -22,6 +22,19 @@ function block(selector: string) {
   return match[1]
 }
 
+function declaration(cssBlock: string, property: string) {
+  const escaped = property.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const match = cssBlock.match(new RegExp(`${escaped}:\\s*([^;]+);`))
+  if (!match) throw new Error(`Missing CSS declaration: ${property}`)
+  return match[1].trim()
+}
+
+function rgbaAlpha(value: string) {
+  const match = value.match(/^rgba\([^,]+,[^,]+,[^,]+,\s*([.\d]+)\)$/)
+  if (!match) throw new Error(`Expected rgba() value, got ${value}`)
+  return Number(match[1])
+}
+
 describe('first-batch UI regression contracts', () => {
   it('keeps catalog and fixture surfaces aligned for the current fallback test layer', () => {
     const catalogIds = uiRegressionCatalog.map((surface) => surface.id)
@@ -183,12 +196,18 @@ describe('first-batch UI regression contracts', () => {
 
     const radioChecked = block('input[type="radio"]:checked')
     const radioDarkChecked = block(':root:not([data-theme="light"]) input[type="radio"]:checked')
-    expect(radioChecked).toContain('box-shadow: inset')
-    expect(radioChecked).toContain('background: var(--input)')
-    expect(radioChecked).not.toContain('background-image')
+    const checkboxChecked = block('input[type="checkbox"]:checked')
+    const checkboxDarkChecked = block(':root:not([data-theme="light"]) input[type="checkbox"]:checked')
+    expect(rgbaAlpha(declaration(block('.modal-backdrop'), 'background'))).toBeLessThanOrEqual(0.34)
+    expect(rgbaAlpha(declaration(block('.settings-overlay-backdrop'), 'background'))).toBeLessThanOrEqual(0.26)
+    expect(radioChecked).toContain('background-image: radial-gradient')
+    expect(radioChecked).toContain('background-color: var(--primary)')
     expect(radioDarkChecked).toContain('border-color: #93c5fd')
-    expect(radioDarkChecked).toContain('box-shadow: inset')
-    expect(radioDarkChecked).toContain('#93c5fd')
+    expect(radioDarkChecked).toContain('background-color: #2563eb')
+    expect(checkboxChecked).toContain('background-image: url("data:image/svg+xml')
+    expect(checkboxChecked).toContain('background-color: var(--primary)')
+    expect(checkboxDarkChecked).toContain('border-color: #93c5fd')
+    expect(checkboxDarkChecked).toContain('background-color: #2563eb')
   })
 
   it('keeps workspace tab titles ellipsized and close clicks isolated', () => {

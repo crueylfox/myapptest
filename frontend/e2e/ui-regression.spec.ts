@@ -840,9 +840,22 @@ test('macOS dark settings radios and overlay menus use visible checked state and
     }
   })
   expect(radioStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
-  expect(radioStyle.backgroundImage).toBe('none')
-  expect(radioStyle.boxShadow).toContain('inset')
+  expect(radioStyle.backgroundImage).toContain('radial-gradient')
   expect(radioStyle.boxShadow).toContain('147, 197, 253')
+
+  const checkedCheckbox = page.locator('[data-testid="macos-dark-checkbox-checked"]')
+  await expect(checkedCheckbox).toBeChecked()
+  const checkboxStyle = await checkedCheckbox.evaluate((element) => {
+    const style = window.getComputedStyle(element)
+    return {
+      backgroundColor: style.backgroundColor,
+      backgroundImage: style.backgroundImage,
+      boxShadow: style.boxShadow,
+    }
+  })
+  expect(checkboxStyle.backgroundColor).toBe('rgb(37, 99, 235)')
+  expect(checkboxStyle.backgroundImage).toContain('data:image/svg+xml')
+  expect(checkboxStyle.boxShadow).toContain('147, 197, 253')
 
   for (const selector of [
     '.topbar-menu',

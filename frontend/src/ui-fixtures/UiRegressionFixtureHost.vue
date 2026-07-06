@@ -2146,6 +2146,7 @@ function shouldRender(name: FixtureName | string) {
               <fieldset class="backup-option-list">
                 <label><input data-testid="macos-dark-radio-checked" type="radio" name="macos-theme" checked />深色</label>
                 <label><input type="radio" name="macos-theme" />浅色</label>
+                <label><input data-testid="macos-dark-checkbox-checked" type="checkbox" checked />导入密钥库</label>
               </fieldset>
             </article>
           </div>

@@ -14,6 +14,8 @@ import (
 	"serverpilot/internal/keyvault"
 )
 
+var backupImportPlatform = runtime.GOOS
+
 func (s *Store) ExportBackupPayload(ctx context.Context) (domain.BackupPayload, error) {
 	settings, err := s.GetSettings(ctx)
 	if err != nil {
@@ -274,8 +276,8 @@ func (s *Store) importBackupPayloadTx(
 			if payload.Mode == domain.BackupModeFull &&
 				domain.KeyVaultStorageMode(key.StorageMode) == domain.KeyVaultStorageEncryptedDatabase &&
 				len(protectedKeyBlobs[key.ID]) > 0 {
-				if !protectedKeyBlobRestorableForPlatform(runtime.GOOS, protectedKeyBlobs[key.ID]) {
-					insertedID, err := insertKeyVaultTx(ctx, tx, key, backupName(key.Name), nil)
+				if !protectedKeyBlobRestorableForPlatform(backupImportPlatform, protectedKeyBlobs[key.ID]) {
+					insertedID, err := insertKeyVaultTx(ctx, tx, key, backupName(key.Name), protectedKeyBlobs[key.ID])
 					if err != nil {
 						return result, err
 					}
