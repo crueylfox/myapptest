@@ -6,10 +6,10 @@ Updated: 2026-07-07
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.37`.
-- Recommended delivery version: `0.5.0-beta.37` user-smoke-required.
-- Current round: beta37 macOS terminal tab left-alignment hotfix after beta31 cross-platform Key Vault backup and beta36 macOS native font/titlebar chrome.
-- Version bump this hotfix: yes; `0.5.0-beta.36` -> `0.5.0-beta.37` before repackaging.
+- Current VERSION: `0.5.0-beta.38`.
+- Recommended delivery version: `0.5.0-beta.38` user-smoke-required.
+- Current round: beta38 macOS monitor sidebar titlebar safe-zone hotfix after beta31 cross-platform Key Vault backup and beta36/beta37 macOS native chrome/tab alignment fixes.
+- Version bump this hotfix: yes; `0.5.0-beta.37` -> `0.5.0-beta.38` before repackaging.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
 - Beta31 handoff commit: `09fa695` (`chore: finalize beta31 handoff and generated bindings`).
@@ -80,6 +80,9 @@ Updated: 2026-07-07
 - Beta37 macOS terminal tab alignment hotfix:
   - macOS traffic-light safe-zone padding is scoped to the non-terminal app topbar.
   - Terminal workspace tabs inside the SSH area keep `padding-left: 0`, so the first SSH tab starts at the left edge of the SSH workspace.
+- Beta38 macOS monitor sidebar titlebar safe-zone hotfix:
+  - macOS terminal-layout left monitor sidebars reserve the native titlebar height at the container level.
+  - Remote/local monitor scroll content no longer scrolls underneath the native red/yellow/green window buttons.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.
