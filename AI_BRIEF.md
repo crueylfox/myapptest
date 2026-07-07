@@ -114,9 +114,9 @@ Updated: 2026-07-08
 - Beta41 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.41.exe`.
 - Beta41 Windows EXE SHA-256: `D0C6DB9B2F6EE372FB469ABB6ECC96FAF4790711F31582E0880A445730C5D769`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions `Build macOS` run `28856250391`: success for commit `24f6ad52a951f7c5f3b0d806bbd81af3c5c009bb`.
+- GitHub Actions `Build macOS` run `28881318752`: success for commit `d5f72df7abb749769e9ca9b96c76f2b9dfb61d17`.
 - Artifact: `ServerPilot-macos-unsigned`.
-- Artifact API digest: `sha256:4e38a6f3dd1a207efef623d672baee1f776904cb2ab81e057e847c3e07a3e16e`.
+- Artifact API digest: `sha256:672feadd6568d2f013793877d5f9e13362a87125347e9e94cc4b941c2060c667`.
 - Artifact contains `ServerPilot-macos-universal-unsigned.zip`, `ServerPilot-macos-universal-unsigned.dmg`, and their `.sha256` files.
 - macOS artifact came from the GitHub Actions macOS runner.
 
