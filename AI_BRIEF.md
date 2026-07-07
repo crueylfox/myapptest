@@ -20,6 +20,7 @@ Updated: 2026-07-07
 - Current SFTP/local-terminal/macOS theme hotfix commit: `a7ba5c2` (`fix: polish beta31 sftp local terminal and macos theme ui`).
 - Current macOS gray dark theme completion commit: `a0fde0e` (`fix: polish beta31 macos theme sftp and local terminal ui`).
 - Current SFTP/terminal theme/queue UI hotfix commit: `a1fd256` (`fix: polish beta31 macos terminal theme and queue ui`).
+- Current beta32 terminal layout/density/color hotfix commit: `77516e6` (`fix: polish beta32 terminal layout density and macos colors`).
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -70,6 +71,14 @@ Updated: 2026-07-07
   - Settings radio policy options use full-surface checked styling, not a left-marker-only active state.
   - macOS local terminal initial `%` stripping handles split output chunks without changing SSH terminal behavior.
 - Beta31 same-version terminal/theme/queue follow-up keeps the transfer queue above the status bar, strengthens the Codex-like blue accent on graphite surfaces, fixes command-completion keyboard auto-scroll, aligns font-size slider ticks with the track, and handles ANSI-prefixed stray macOS `%` prompts.
+- Beta32 terminal layout/density/color hotfix:
+  - Version bumped from `0.5.0-beta.31` to `0.5.0-beta.32` before repackaging.
+  - Floating Command button reclamps after terminal/SFTP layout changes.
+  - Default SFTP bottom pane height is reduced to improve SSH terminal density.
+  - Settings UI font-size slider ticks align with the track.
+  - macOS local terminal strips the initial isolated `%` repaint without changing SSH or Windows shells.
+  - Default dark terminal profile uses graphite/Codex-like background with brighter blue ANSI/accent handling.
+  - Compact monitor defaults to a lighter summary mode with explicit expand/collapse for details.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.
@@ -94,13 +103,17 @@ Updated: 2026-07-07
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local focused frontend regression tests for transfer overlay, local terminal, command completion, theme tokens, and terminal profile: passed, 7 files / 163 tests.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1664 tests, 88 Playwright tests, and frontend build.
+- Local focused frontend regression tests for layout, settings slider, local terminal, monitor density, and terminal profile: passed, 6 files / 201 tests.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1669 tests, 88 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build -platform darwin/universal`: not run for this hotfix; Windows local builds do not produce the macOS app.
 - GitHub Actions `Build macOS` run `28839378200`: success for commit `a1fd256928a924a05390b62e1208ca2bc377666a`.
+- GitHub Actions `Build macOS` run `28842976967`: success for commit `77516e620d64cbac9497c873edc47277ec9cc480`.
 - Artifact: `ServerPilot-macos-unsigned`.
 - Artifact contains `ServerPilot-macos-universal-unsigned.zip` and `ServerPilot-macos-universal-unsigned.dmg`.
+- Desktop artifact archive `ServerPilot-macos-unsigned.zip` SHA-256: `d3db96d35b59f4e5085838239853abbd7ef6c5e62a31975a8e12ad79327525ec`.
+- Inner app zip `ServerPilot-macos-universal-unsigned.zip` SHA-256: `dc5016899f089843b7d95f4641dc6b5c467eba8e34a14a3782c901171dbd3f16`.
+- DMG `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `b245be7d9a330e00bdbb519535d3b21e95fc555aea9fd500708a608b4376a0d2`.
 - macOS artifact came from the GitHub Actions macOS runner.
 - Windows local `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 
