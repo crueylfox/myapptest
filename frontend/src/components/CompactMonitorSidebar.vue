@@ -56,6 +56,7 @@ const splitMode = ref<SplitMode>(
     ? storedSplitMode
     : 'split',
 )
+const monitorDetailsExpanded = ref(localStorage.getItem('serverpilot.monitorDetailsExpanded') === 'true')
 let dragging = false
 
 const status = computed(() => {
@@ -99,6 +100,13 @@ const swapPercent = computed(() =>
   props.snapshot?.swapTotal
     ? swapUsed.value / props.snapshot.swapTotal * 100
     : null)
+const diskPercent = computed(() => props.snapshot?.diskUsedPercent ?? null)
+const diskSummary = computed(() => {
+  const used = props.snapshot?.diskUsed ?? -1
+  const total = props.snapshot?.diskTotal ?? -1
+  if (used < 0 || total <= 0) return '--'
+  return `${formatBytes(used)} / ${formatBytes(total)}`
+})
 const lastUpdated = computed(() => {
   if (!props.snapshot?.timestamp) return ''
   return new Date(props.snapshot.timestamp).toLocaleTimeString()
@@ -172,7 +180,9 @@ const networkInterfaceLabel = computed(() => {
 const networkDataUnavailable = computed(() =>
   !props.networkInterfacesLoading && interfaceRows.value.length === 0 && live.value)
 const paneStyle = computed(() => ({
-  gridTemplateRows: splitMode.value === 'monitorCollapsed'
+  gridTemplateRows: !monitorDetailsExpanded.value
+    ? 'minmax(0, 1fr) 0 0'
+    : splitMode.value === 'monitorCollapsed'
     ? '10px minmax(0, 1fr)'
     : splitMode.value === 'mountsCollapsed'
       ? 'minmax(0, 1fr) 10px'
@@ -225,6 +235,12 @@ function toggleSystemInfo() {
     ...expandedSystemByServer.value,
     [serverId]: !systemExpanded.value,
   }
+}
+
+function toggleMonitorDetails() {
+  monitorDetailsExpanded.value = !monitorDetailsExpanded.value
+  localStorage.setItem('serverpilot.monitorDetailsExpanded', String(monitorDetailsExpanded.value))
+  void nextTick(() => emit('layout'))
 }
 
 function processTitle(process: MonitorSnapshot['processes'][number]) {
@@ -358,8 +374,27 @@ onBeforeUnmount(() => {
         </div>
         <div class="metric-progress swap"><i :style="{ width: `${clampPercent(swapPercent)}%` }"></i></div>
       </section>
+      <section class="compact-resource compact-resource-disk">
+        <div class="resource-line">
+          <strong>纾佺洏</strong>
+          <span>{{ formatPercent(diskPercent) }}</span>
+          <small>{{ diskSummary }}</small>
+        </div>
+        <div class="metric-progress disk"><i :style="{ width: `${clampPercent(diskPercent)}%` }"></i></div>
+      </section>
+      <section class="compact-resource compact-resource-network">
+        <div class="resource-line">
+          <strong>缃戠粶</strong>
+          <span>{{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
+          <small>{{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</small>
+        </div>
+      </section>
 
-      <section class="process-panel">
+      <button type="button" class="monitor-details-toggle" @click="toggleMonitorDetails">
+        {{ monitorDetailsExpanded ? '收起详细监控' : '展开详细监控' }}
+      </button>
+
+      <section v-show="monitorDetailsExpanded" class="process-panel">
         <header>
           <strong>TOP</strong>
           <div class="process-sort-options">
@@ -383,7 +418,7 @@ onBeforeUnmount(() => {
         <p v-else class="compact-empty" :data-process-status="processStatus">{{ processEmptyText }}</p>
       </section>
 
-      <section class="network-compact">
+      <section v-show="monitorDetailsExpanded" class="network-compact">
         <header>
           <div class="network-title-cluster">
             <strong>网络</strong>
@@ -457,6 +492,7 @@ onBeforeUnmount(() => {
     </section>
 
     <div
+      v-show="monitorDetailsExpanded"
       v-if="splitMode === 'split' || splitMode === 'monitorCollapsed' || splitMode === 'mountsCollapsed'"
       class="horizontal-splitter monitor-pane-splitter"
       :class="{ 'restore-splitter': splitMode !== 'split' }"
@@ -494,7 +530,7 @@ onBeforeUnmount(() => {
         <ChevronIcon :direction="splitMode === 'monitorCollapsed' ? 'down' : 'up'" />
       </button>
     </div>
-    <section v-if="splitMode !== 'mountsCollapsed'" class="mount-panel">
+    <section v-if="splitMode !== 'mountsCollapsed'" v-show="monitorDetailsExpanded" class="mount-panel">
       <header>
         <strong>磁盘与挂载点</strong>
         <label><input v-model="showAllMounts" type="checkbox" />显示全部</label>

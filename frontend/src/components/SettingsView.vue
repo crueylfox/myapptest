@@ -280,8 +280,8 @@ const policies: Array<{ value: HostKeyPolicy; title: string; detail: string }> =
 ]
 const themes: Array<{ value: ThemeMode; title: string; detail: string }> = [{ value: 'dark', title: '深色', detail: '灰黑深色界面，适合 macOS 和低亮度环境。' }, { value: 'light', title: '浅色', detail: '使用基础浅色界面。' }, { value: 'system', title: '跟随系统', detail: '随系统外观自动切换。' }]
 const currentUIFontSizeIndex = computed(() => uiFontSizeSteps.includes(form.uiFontSize) ? uiFontSizeSteps.indexOf(form.uiFontSize) : uiFontSizeSteps.indexOf('large'))
-const currentUIFontSizePixels = computed(() => uiFontPixels(uiFontSizeSteps[currentUIFontSizeIndex.value]))
-const uiFontSizeByPixels = new Map(uiFontSizeSteps.map((size) => [uiFontPixels(size), size]))
+const currentUIFontSizePixels = computed(() => uiFontPixels(uiFontSizeSteps[currentUIFontSizeIndex.value])); const uiFontSizeByPixels = new Map(uiFontSizeSteps.map((size) => [uiFontPixels(size), size]))
+const uiFontTickItems = computed(() => uiFontSizeSteps.map((size, index) => ({ size, label: uiFontTickLabels[index], percent: (uiFontPixels(size) - 12) / (18 - 12) * 100 })))
 const uiFontTickLabels = ['小', '13', '正常', '15', '较大', '大', '最大']
 
 function selectTheme(theme: { value: ThemeMode }) { previewThemeSelection.value = theme.value; form.themeMode = theme.value; emit('previewTheme', theme.value) }
@@ -1024,7 +1024,7 @@ function errorMessage(reason: unknown, fallback: string) {
       <div class="settings-font-slider" data-testid="ui-font-size-stepper">
         <input type="range" min="12" max="18" step="1" :value="currentUIFontSizePixels" data-testid="ui-font-size-slider" aria-label="界面字体大小" @input="updateUIFontSizeFromSlider" />
         <span class="settings-font-size-value" data-testid="ui-font-size-value">{{ currentUIFontSizePixels }}px</span>
-        <div class="settings-font-ticks" data-testid="ui-font-size-ticks" aria-hidden="true"><span v-for="label in uiFontTickLabels" :key="label" class="settings-font-tick"><span class="settings-font-tick-label">{{ label }}</span></span></div>
+        <div class="settings-font-ticks" data-testid="ui-font-size-ticks" aria-hidden="true"><span v-for="item in uiFontTickItems" :key="item.size" class="settings-font-tick" :style="{ '--tick-percent': `${item.percent}%` }"><span class="settings-font-tick-label">{{ item.label }}</span></span></div>
       </div>
       <p class="settings-note">SSH 终端字体保持独立，不受此设置影响。</p>
     </article>

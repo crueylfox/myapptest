@@ -76,7 +76,8 @@ const interfaces: NetworkInterface[] = [
 describe('CompactMonitorSidebar', () => {
   beforeEach(() => localStorage.clear())
 
-  function render() {
+  function render(options: { details?: boolean } = { details: true }) {
+    if (options.details !== false) localStorage.setItem('serverpilot.monitorDetailsExpanded', 'true')
     return mount(CompactMonitorSidebar, {
       props: {
         connection,
@@ -88,7 +89,8 @@ describe('CompactMonitorSidebar', () => {
     })
   }
 
-  function renderWith(nextSnapshot: MonitorSnapshot) {
+  function renderWith(nextSnapshot: MonitorSnapshot, options: { details?: boolean } = { details: true }) {
+    if (options.details !== false) localStorage.setItem('serverpilot.monitorDetailsExpanded', 'true')
     return mount(CompactMonitorSidebar, {
       props: {
         connection,
@@ -109,6 +111,23 @@ describe('CompactMonitorSidebar', () => {
     expect(wrapper.attributes('style')).toContain('430px')
     expect(wrapper.findAll('.mini-sparkline-stub')).toHaveLength(1)
     expect(wrapper.find('.system-info-summary').exists()).toBe(true)
+  })
+
+  it('defaults to a lightweight summary and expands detailed monitor sections on demand', async () => {
+    const wrapper = render({ details: false })
+
+    expect(wrapper.find('.compact-resource-disk').exists()).toBe(true)
+    expect(wrapper.find('.compact-resource-network').exists()).toBe(true)
+    expect(wrapper.get('.monitor-details-toggle').text()).toContain('详细监控')
+    expect(wrapper.get('.process-panel').attributes('style')).toContain('display: none')
+    expect(wrapper.get('.network-compact').attributes('style')).toContain('display: none')
+    expect(wrapper.get('.mount-panel').attributes('style')).toContain('display: none')
+
+    await wrapper.get('.monitor-details-toggle').trigger('click')
+
+    expect(wrapper.get('.process-panel').attributes('style') ?? '').not.toContain('display: none')
+    expect(wrapper.get('.network-compact').attributes('style') ?? '').not.toContain('display: none')
+    expect(wrapper.get('.mount-panel').attributes('style') ?? '').not.toContain('display: none')
   })
 
   it('keeps the system info summary text separate from a right-aligned chevron', () => {
@@ -202,7 +221,7 @@ describe('CompactMonitorSidebar', () => {
       swapFree: 25,
     })
     const resources = wrapper.findAll('.compact-resource')
-    expect(resources).toHaveLength(3)
+    expect(resources.length).toBeGreaterThanOrEqual(5)
     expect(resources[0].get('.metric-progress i').attributes('style')).toContain('100%')
     expect(resources[1].get('.metric-progress i').attributes('style')).toContain('0%')
     expect(resources[2].get('.metric-progress i').attributes('style')).toContain('75%')

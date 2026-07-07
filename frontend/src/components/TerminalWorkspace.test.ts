@@ -550,7 +550,7 @@ describe('TerminalWorkspace server states', () => {
     await wrapper.find('.horizontal-splitter .bottom-panel-toggle-handle').trigger('click')
     expect(wrapper.find('.sftp-panel').classes()).toContain('expanded')
     expect(wrapper.get('.bottom-panel-toggle-handle svg.splitter-chevron').classes()).toContain('chevron-down')
-    expect(wrapper.find('.right-workspace').attributes('style')).toContain('10px 240px 28px')
+    expect(wrapper.find('.right-workspace').attributes('style')).toContain('10px 180px 28px')
     expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('true')
     expect(wrapper.text()).toContain('未连接')
   })

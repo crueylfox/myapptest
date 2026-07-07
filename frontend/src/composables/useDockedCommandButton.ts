@@ -111,7 +111,7 @@ export function snapCommandButtonDock(
   }
 }
 
-export function useDockedCommandButton(stageRef: Ref<HTMLElement | undefined>) {
+export function useDockedCommandButton(stageRef: Ref<HTMLElement | undefined>, layoutRevision?: Ref<unknown>) {
   const buttonRef = ref<HTMLButtonElement>()
   const dock = ref<CommandButtonDock>(readCommandButtonDock())
   const dragging = ref(false)
@@ -133,6 +133,7 @@ export function useDockedCommandButton(stageRef: Ref<HTMLElement | undefined>) {
   }
 
   const buttonStyle = computed<CSSProperties>(() => {
+    layoutRevision?.value
     if (!stageRef.value) return {}
     if (dragPosition.value) {
       return {

@@ -1568,6 +1568,10 @@ function shouldRender(name: FixtureName | string) {
   return fixtureName.value === name
 }
 
+if (shouldRender('compact-network-card-stats') || shouldRender('compact-network-card-stats-ens192')) {
+  localStorage.setItem('serverpilot.monitorDetailsExpanded', 'true')
+}
+
 const appBlurOverlayFixture = computed(() =>
   shouldRender('settings-macos-dark-overlays') ||
   fixtureName.value.startsWith('connection-dialog') ||

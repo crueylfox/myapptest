@@ -1963,7 +1963,17 @@ describe('connection settings', () => {
     expect(slider.attributes('min')).toBe('12')
     expect(slider.attributes('max')).toBe('18')
     expect(slider.attributes('step')).toBe('1')
-    expect(ticks.findAll('.settings-font-tick')).toHaveLength(7)
+    const tickItems = ticks.findAll('.settings-font-tick')
+    expect(tickItems).toHaveLength(7)
+    expect(tickItems.map((tick) => tick.attributes('style'))).toEqual([
+      '--tick-percent: 0%;',
+      '--tick-percent: 16.666666666666664%;',
+      '--tick-percent: 33.33333333333333%;',
+      '--tick-percent: 50%;',
+      '--tick-percent: 66.66666666666666%;',
+      '--tick-percent: 83.33333333333334%;',
+      '--tick-percent: 100%;',
+    ])
     expect(ticks.text()).toContain('小')
     expect(ticks.text()).toContain('正常')
     expect(ticks.text()).toContain('最大')

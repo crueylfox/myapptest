@@ -408,8 +408,10 @@ test('compact network card keeps max avg min values in a left gutter without vis
   }
 
   const resourceRows = shell.locator('.compact-resource .resource-line')
-  await expect(resourceRows).toHaveCount(3)
-  for (let index = 0; index < 3; index += 1) {
+  const resourceProgresses = shell.locator('.compact-resource .metric-progress')
+  await expect(resourceRows).toHaveCount(5)
+  await expect(resourceProgresses).toHaveCount(4)
+  for (let index = 0; index < 5; index += 1) {
     const row = resourceRows.nth(index)
     const label = row.locator('strong')
     const percent = row.locator('span')
@@ -420,7 +422,9 @@ test('compact network card keeps max avg min values in a left gutter without vis
       expect(await capacity.evaluate((element) => parseFloat(window.getComputedStyle(element).fontSize))).toBeLessThanOrEqual(13)
       expect((await box(capacity)).x + (await box(capacity)).width).toBeLessThanOrEqual((await box(row)).x + (await box(row)).width + 1)
     }
-    await expect(shell.locator('.compact-resource .metric-progress').nth(index)).toBeVisible()
+  }
+  for (let index = 0; index < 4; index += 1) {
+    await expect(resourceProgresses.nth(index)).toBeVisible()
   }
 })
 

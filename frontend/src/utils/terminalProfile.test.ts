@@ -66,11 +66,16 @@ describe('terminal profile ANSI colors', () => {
     for (const key of ansiKeys) {
       expect(options.theme?.[key]).toBe(normalizeTerminalProfileTheme(profile)[key])
     }
-    expect(options.theme?.foreground).toBe('#eceff4')
-    expect(options.theme?.background).toBe('#1f2023')
-    expect(options.theme?.selectionBackground).toBe('#5b8cff66')
+    expect(options.theme?.foreground).toBe('#d7dde5')
+    expect(options.theme?.background).toBe('#15171a')
+    expect(options.theme?.selectionBackground).toBe('#5b8cff47')
     expect(options.theme?.blue).toBe('#6aa2ff')
-    expect(options.theme?.cursor).toBe('#f5f7fa')
+    expect(options.theme?.red).toBe('#ff5f6d')
+    expect(options.theme?.green).toBe('#70d787')
+    expect(options.theme?.cyan).toBe('#5eead4')
+    expect(options.theme?.brightWhite).toBe('#f0f3f6')
+    expect(options.minimumContrastRatio).toBeLessThanOrEqual(1.2)
+    expect(options.theme?.cursor).toBe('#dce6f2')
     expect(options.theme?.background).not.toBe('#07111f')
   })
 

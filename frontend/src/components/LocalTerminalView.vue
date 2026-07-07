@@ -270,7 +270,7 @@ function stripInitialIsolatedPercentLine(text: string) {
     if (char === '\r') {
       if (index + 1 >= body.length) return null
       if (body[index + 1] === '\n') return prefix + lineControls + body.slice(index + 2)
-      return text
+      return prefix + lineControls + body.slice(index + 1)
     }
     if (char === '\x1b') {
       const controlEnd = terminalControlSequenceEnd(body, index)

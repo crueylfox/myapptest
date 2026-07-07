@@ -139,7 +139,7 @@ const autoCollapsed = ref(false)
 const sftpExpanded = ref(localStorage.getItem('serverpilot.sftpExpanded') === 'true')
 const storedSFTPHeightValue = localStorage.getItem('serverpilot.sftpHeight')
 const storedSFTPHeight = storedSFTPHeightValue === null ? Number.NaN : Number(storedSFTPHeightValue)
-const sftpHeight = ref(Number.isFinite(storedSFTPHeight) ? storedSFTPHeight : 240)
+const sftpHeight = ref(Number.isFinite(storedSFTPHeight) ? storedSFTPHeight : 180)
 const internalRevision = ref(0)
 const autoCollapseDismissed = ref(false)
 const notifiedTransferStatuses = new Map<string, string>()
@@ -456,7 +456,7 @@ const {
   onPointerDown: startCommandButtonDrag,
   consumeClickAfterDrag: consumeCommandButtonClickAfterDrag,
   cleanup: cleanupCommandButtonDock,
-} = useDockedCommandButton(terminalStage)
+} = useDockedCommandButton(terminalStage, revision)
 
 function handleCommandButtonClick() {
   if (consumeCommandButtonClickAfterDrag()) return

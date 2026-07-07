@@ -1,12 +1,15 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it, vi } from 'vitest'
+import { defineComponent, nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
 import {
   COMMAND_BUTTON_DOCK_STORAGE_KEY,
   commandButtonMovedPastThreshold,
   dockedCommandButtonPosition,
   readCommandButtonDock,
   snapCommandButtonDock,
+  useDockedCommandButton,
   writeCommandButtonDock,
 } from './useDockedCommandButton'
 
@@ -65,5 +68,51 @@ describe('useDockedCommandButton', () => {
     } as unknown as Storage
 
     expect(() => writeCommandButtonDock(storage, { edge: 'left', offset: 12 })).not.toThrow()
+  })
+
+  it('recomputes the docked position when the terminal viewport layout revision changes', async () => {
+    const stageRect = { left: 0, top: 0, width: 640, height: 420 }
+    const TestHost = defineComponent({
+      setup() {
+        const stage = ref<HTMLElement>()
+        const revision = ref(0)
+        const dock = useDockedCommandButton(stage, revision)
+        return { ...dock, revision, stage }
+      },
+      template: '<div ref="stage"><button ref="buttonRef" :style="buttonStyle">命令</button></div>',
+    })
+    const wrapper = mount(TestHost)
+    const stage = wrapper.vm.stage as HTMLElement
+    vi.spyOn(stage, 'getBoundingClientRect').mockImplementation(() => ({
+      x: stageRect.left,
+      y: stageRect.top,
+      left: stageRect.left,
+      top: stageRect.top,
+      right: stageRect.left + stageRect.width,
+      bottom: stageRect.top + stageRect.height,
+      width: stageRect.width,
+      height: stageRect.height,
+      toJSON: () => undefined,
+    } as DOMRect))
+    vi.spyOn(wrapper.get('button').element, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      right: 64,
+      bottom: 32,
+      width: 64,
+      height: 32,
+      toJSON: () => undefined,
+    } as DOMRect)
+
+    await nextTick()
+    expect(wrapper.get('button').attributes('style')).toContain('top: 376px')
+
+    stageRect.height = 220
+    wrapper.vm.revision += 1
+    await nextTick()
+
+    expect(wrapper.get('button').attributes('style')).toContain('top: 176px')
   })
 })

@@ -588,6 +588,65 @@ describe('LocalTerminalView', () => {
     vi.useRealTimers()
   })
 
+  it('drops the first isolated macOS zsh percent line when prompt repaint uses carriage return only', async () => {
+    const { wrapper, store } = mountLocalTerminal()
+    store.sessions[0].shellKind = 'local'
+    store.subscribe()
+
+    terminalState.eventCallbacks.get('localterminal:output')?.({
+      sessionId: 'local-1',
+      dataBase64: btoa('%\ruser@mac ~ % '),
+      timestamp: '',
+    })
+
+    expect(terminalState.writes).toHaveLength(1)
+    expect(new TextDecoder().decode(terminalState.writes[0])).toBe('user@mac ~ % ')
+    wrapper.unmount()
+    store.unsubscribe()
+    vi.useRealTimers()
+  })
+
+  it('drops the first isolated macOS zsh percent line when control-prefixed output is split across chunks', async () => {
+    const { wrapper, store } = mountLocalTerminal()
+    store.sessions[0].shellKind = 'local'
+    store.subscribe()
+
+    terminalState.eventCallbacks.get('localterminal:output')?.({
+      sessionId: 'local-1',
+      dataBase64: btoa('\x1b[?2004h%'),
+      timestamp: '',
+    })
+    terminalState.eventCallbacks.get('localterminal:output')?.({
+      sessionId: 'local-1',
+      dataBase64: btoa('\ruser@mac ~ % '),
+      timestamp: '',
+    })
+
+    expect(terminalState.writes).toHaveLength(1)
+    expect(new TextDecoder().decode(terminalState.writes[0])).toBe('\x1b[?2004huser@mac ~ % ')
+    wrapper.unmount()
+    store.unsubscribe()
+    vi.useRealTimers()
+  })
+
+  it('keeps a normal first macOS zsh prompt that contains a trailing percent prompt marker', async () => {
+    const { wrapper, store } = mountLocalTerminal()
+    store.sessions[0].shellKind = 'local'
+    store.subscribe()
+
+    terminalState.eventCallbacks.get('localterminal:output')?.({
+      sessionId: 'local-1',
+      dataBase64: btoa('user@mac ~ % '),
+      timestamp: '',
+    })
+
+    expect(terminalState.writes).toHaveLength(1)
+    expect(new TextDecoder().decode(terminalState.writes[0])).toBe('user@mac ~ % ')
+    wrapper.unmount()
+    store.unsubscribe()
+    vi.useRealTimers()
+  })
+
   it('shows the local terminal menu when right-click paste is disabled', async () => {
     const { wrapper } = mountLocalTerminal({ rightClickPasteEnabled: false })
 
