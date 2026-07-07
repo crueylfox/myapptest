@@ -2150,7 +2150,7 @@ const appBlurOverlayFixture = computed(() =>
 
       <section
         v-if="shouldRender('settings-macos-dark-overlays')"
-        class="settings-overlay-backdrop app-glass-backdrop"
+        class="settings-overlay-backdrop app-material-backdrop"
         data-testid="settings-macos-dark-overlays"
       >
         <div class="topbar-menu">
@@ -2160,8 +2160,8 @@ const appBlurOverlayFixture = computed(() =>
             <span class="topbar-menu-trailing"></span>
           </button>
         </div>
-        <div class="modal-backdrop app-dialog-backdrop app-glass-backdrop ui-fixture-modal-backdrop">
-          <form class="modal app-dialog app-glass-surface" @submit.prevent>
+        <div class="modal-backdrop app-dialog-backdrop app-material-backdrop ui-fixture-modal-backdrop">
+          <form class="modal app-dialog app-material-surface" @submit.prevent>
             <header>
               <h2>Delete server</h2>
             </header>
@@ -2496,8 +2496,8 @@ const appBlurOverlayFixture = computed(() =>
         class="ui-fixture-security-shell"
         :data-testid="fixtureName"
       >
-        <div class="modal-backdrop app-glass-backdrop ui-fixture-modal-backdrop">
-          <form class="modal connection-modal app-glass-surface" @submit.prevent>
+        <div class="modal-backdrop app-material-backdrop ui-fixture-modal-backdrop">
+          <form class="modal connection-modal app-material-surface" @submit.prevent>
             <div class="connection-dialog-rail">
               <header class="connection-dialog-header">
                 <h2>{{ shouldRender('connection-dialog-advanced') ? '编辑服务器' : '添加服务器' }}</h2>

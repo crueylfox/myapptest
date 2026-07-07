@@ -37,8 +37,8 @@ function rgbaAlpha(value: string) {
 
 function backdropAlpha(cssBlock: string) {
   const background = declaration(cssBlock, 'background')
-  return background === 'var(--glass-backdrop-bg)'
-    ? rgbaAlpha(declaration(block(':root'), '--glass-backdrop-bg'))
+  return background === 'var(--material-backdrop-bg)'
+    ? rgbaAlpha(declaration(block(':root'), '--material-backdrop-bg'))
     : rgbaAlpha(background)
 }
 
@@ -219,11 +219,11 @@ describe('first-batch UI regression contracts', () => {
     expect(radioChecked).toContain('background-image: radial-gradient')
     expect(radioChecked).toContain('background-color: var(--primary)')
     expect(radioDarkChecked).toContain('border-color: #9fc3ff')
-    expect(radioDarkChecked).toContain('background-color: #5b8cff')
+    expect(radioDarkChecked).toContain('background-color: #3f7dff')
     expect(checkboxChecked).toContain('background-image: url("data:image/svg+xml')
     expect(checkboxChecked).toContain('background-color: var(--primary)')
     expect(checkboxDarkChecked).toContain('border-color: #9fc3ff')
-    expect(checkboxDarkChecked).toContain('background-color: #5b8cff')
+    expect(checkboxDarkChecked).toContain('background-color: #3f7dff')
   })
 
   it('keeps workspace tab titles ellipsized and close clicks isolated', () => {

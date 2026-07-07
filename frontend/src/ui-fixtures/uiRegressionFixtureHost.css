@@ -1479,7 +1479,7 @@ body,
 }
 
 .ui-fixture-manager-shell .table-column-resizer:hover::before {
-  background: #60a5fa;
+  background: #3f7dff;
 }
 
 .ui-fixture-manager-shell .process-table-row {

@@ -471,7 +471,7 @@ function isOnline(serverID: number) {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: var(--glass-backdrop-bg);
+  background: var(--material-backdrop-bg);
   transform: translateZ(0);
 }
 
@@ -482,13 +482,13 @@ function isOnline(serverID: number) {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
   overflow: hidden;
-  border: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.22)));
+  border: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.22)));
   border-radius: 14px;
-  background: var(--glass-surface-bg);
+  background: var(--material-surface-bg);
   color: var(--text, #e5edf8);
-  box-shadow: var(--glass-shadow);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--material-shadow);
+  backdrop-filter: var(--material-blur);
+  -webkit-backdrop-filter: var(--material-blur);
 }
 
 .service-dialog-header {
@@ -497,8 +497,8 @@ function isOnline(serverID: number) {
   justify-content: space-between;
   gap: 10px;
   padding: 14px 18px 12px;
-  border-bottom: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.18)));
-  background: var(--glass-header-bg);
+  border-bottom: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.18)));
+  background: var(--material-toolbar-bg);
 }
 
 .service-dialog-header h2,
@@ -525,8 +525,8 @@ function isOnline(serverID: number) {
   overflow: hidden;
   box-sizing: border-box;
   padding: 9px 14px;
-  border-bottom: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.14)));
-  background: var(--glass-header-bg);
+  border-bottom: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.14)));
+  background: var(--material-toolbar-bg);
 }
 
 .service-filter-inline {
@@ -603,16 +603,16 @@ function isOnline(serverID: number) {
   gap: 12px;
   overflow: hidden;
   padding: 12px 14px 14px;
-  background: var(--glass-panel-bg);
+  background: var(--material-panel-bg);
 }
 
 .service-empty {
   margin: 0;
   padding: 18px;
   color: var(--muted, #9aa8ba);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--material-border);
   border-radius: 12px;
-  background: var(--glass-card-bg);
+  background: var(--material-card-bg);
   font-size: 13px;
 }
 

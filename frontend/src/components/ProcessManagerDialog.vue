@@ -632,7 +632,7 @@ function safeStringList(value: unknown): string[] {
   align-items: center;
   justify-content: center;
   padding: 28px;
-  background: var(--glass-backdrop-bg);
+  background: var(--material-backdrop-bg);
   transform: translateZ(0);
 }
 
@@ -641,12 +641,12 @@ function safeStringList(value: unknown): string[] {
   height: min(760px, calc(100vh - 56px));
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--material-border);
   border-radius: 22px;
-  background: var(--glass-surface-bg);
-  box-shadow: var(--glass-shadow);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  background: var(--material-surface-bg);
+  box-shadow: var(--material-shadow);
+  backdrop-filter: var(--material-blur);
+  -webkit-backdrop-filter: var(--material-blur);
   overflow: hidden;
 }
 
@@ -655,8 +655,8 @@ function safeStringList(value: unknown): string[] {
   display: flex;
   gap: 12px;
   padding: 16px 18px;
-  border-bottom: 1px solid var(--glass-border);
-  background: var(--glass-header-bg);
+  border-bottom: 1px solid var(--material-border);
+  background: var(--material-toolbar-bg);
 }
 
 .process-dialog-header {
@@ -735,7 +735,7 @@ function safeStringList(value: unknown): string[] {
   display: grid;
   grid-template-columns: minmax(460px, 1.2fr) minmax(320px, 0.8fr);
   min-height: 0;
-  background: var(--glass-panel-bg);
+  background: var(--material-panel-bg);
 }
 
 .process-list-panel,
@@ -746,7 +746,7 @@ function safeStringList(value: unknown): string[] {
 }
 
 .process-detail-panel {
-  border-left: 1px solid var(--glass-border);
+  border-left: 1px solid var(--material-border);
   padding: 12px;
 }
 
@@ -794,7 +794,7 @@ function safeStringList(value: unknown): string[] {
   box-sizing: border-box;
   border-radius: 10px;
   overflow: hidden;
-  background: var(--glass-card-bg);
+  background: var(--material-card-bg);
 }
 
 .process-table-head {
@@ -877,17 +877,17 @@ function safeStringList(value: unknown): string[] {
 }
 
 .table-column-resizer:hover::before {
-  background: #60a5fa;
+  background: var(--primary, #3f7dff);
 }
 
 .process-table-row {
   width: 100%;
   min-height: 36px;
   padding: 8px 12px;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--material-border);
   border-radius: 12px;
   color: inherit;
-  background: var(--glass-card-bg);
+  background: var(--material-card-bg);
   text-align: left;
 }
 

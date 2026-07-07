@@ -324,15 +324,15 @@ async function flush() {
 
 describe('ServiceManagerDialog', () => {
   it('uses shared glass tokens for the dialog shell and service surfaces', () => {
-    expect(componentSourceText).toContain('background: var(--glass-backdrop-bg)')
-    expect(componentSourceText).toContain('background: var(--glass-surface-bg)')
-    expect(componentSourceText).toContain('border: 1px solid var(--glass-border')
-    expect(componentSourceText).toContain('box-shadow: var(--glass-shadow)')
-    expect(componentSourceText).toContain('backdrop-filter: var(--glass-blur)')
-    expect(componentSourceText).toContain('-webkit-backdrop-filter: var(--glass-blur)')
-    expect(componentSourceText).toContain('background: var(--glass-header-bg)')
-    expect(componentSourceText).toContain('background: var(--glass-panel-bg)')
-    expect(componentSourceText).toContain('background: var(--glass-card-bg)')
+    expect(componentSourceText).toContain('background: var(--material-backdrop-bg)')
+    expect(componentSourceText).toContain('background: var(--material-surface-bg)')
+    expect(componentSourceText).toContain('border: 1px solid var(--material-border')
+    expect(componentSourceText).toContain('box-shadow: var(--material-shadow)')
+    expect(componentSourceText).toContain('backdrop-filter: var(--material-blur)')
+    expect(componentSourceText).toContain('-webkit-backdrop-filter: var(--material-blur)')
+    expect(componentSourceText).toContain('background: var(--material-toolbar-bg)')
+    expect(componentSourceText).toContain('background: var(--material-panel-bg)')
+    expect(componentSourceText).toContain('background: var(--material-card-bg)')
     expect(componentSourceText).not.toContain('background: var(--panel, #101827)')
   })
 

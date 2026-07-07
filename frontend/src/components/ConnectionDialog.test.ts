@@ -425,7 +425,7 @@ describe('ConnectionDialog', () => {
           themeName: 'serverpilot-dark',
           foreground: '#eceff4',
           background: '#1f2023',
-          selectionBackground: '#5b8cff66',
+          selectionBackground: '#3f7dff66',
           cursorColor: '#f5f7fa',
           createdAt: '',
           updatedAt: '',

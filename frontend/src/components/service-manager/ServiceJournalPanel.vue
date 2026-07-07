@@ -296,7 +296,7 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
 .service-detail-tabs button.active {
   background: rgba(37, 99, 235, 0.18);
   color: #bfdbfe;
-  box-shadow: inset 0 -2px 0 var(--primary, #60a5fa);
+  box-shadow: inset 0 -2px 0 var(--primary, #3f7dff);
 }
 
 .service-detail-tab-content {

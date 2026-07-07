@@ -240,7 +240,7 @@ const emit = defineEmits<{
 
   <div
     v-if="settings.open"
-    class="settings-overlay-backdrop app-glass-backdrop"
+    class="settings-overlay-backdrop app-material-backdrop"
     data-testid="settings-overlay"
   >
     <SettingsView

@@ -17,7 +17,7 @@ export const defaultTerminalProfile: TerminalProfile = {
   themeName: 'serverpilot-dark',
   foreground: '#d7dde5',
   background: '#15171a',
-  selectionBackground: '#5b8cff47',
+  selectionBackground: '#3f7dff47',
   cursorColor: '#dce6f2',
   createdAt: '',
   updatedAt: '',

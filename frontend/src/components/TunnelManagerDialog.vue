@@ -813,7 +813,7 @@ function errorMessage(reason: unknown, fallback: string) {
   display: grid;
   place-items: center;
   padding: 28px;
-  background: var(--glass-backdrop-bg);
+  background: var(--material-backdrop-bg);
   transform: translateZ(0);
 }
 
@@ -823,13 +823,13 @@ function errorMessage(reason: unknown, fallback: string) {
   overflow: hidden;
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  border: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.22)));
+  border: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.22)));
   border-radius: 18px;
-  background: var(--glass-surface-bg);
+  background: var(--material-surface-bg);
   color: var(--text, #e5edf8);
-  box-shadow: var(--glass-shadow);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--material-shadow);
+  backdrop-filter: var(--material-blur);
+  -webkit-backdrop-filter: var(--material-blur);
 }
 
 .tunnel-dialog-header,
@@ -844,8 +844,8 @@ function errorMessage(reason: unknown, fallback: string) {
 .tunnel-dialog-header {
   justify-content: space-between;
   padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.18)));
-  background: var(--glass-header-bg);
+  border-bottom: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.18)));
+  background: var(--material-toolbar-bg);
 }
 
 .tunnel-dialog-header h2 {
@@ -861,8 +861,8 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .tunnel-dialog-toolbar {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.16)));
-  background: var(--glass-header-bg);
+  border-bottom: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.16)));
+  background: var(--material-toolbar-bg);
   flex-wrap: wrap;
   align-items: end;
 }
@@ -883,7 +883,7 @@ function errorMessage(reason: unknown, fallback: string) {
   gap: 16px;
   padding: 16px 20px 20px;
   overflow: auto;
-  background: var(--glass-panel-bg);
+  background: var(--material-panel-bg);
 }
 
 .tunnel-profile-form {
@@ -911,9 +911,9 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .tunnel-profile-card,
 .tunnel-profile-form {
-  border: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.16)));
+  border: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.16)));
   border-radius: 14px;
-  background: var(--glass-card-bg);
+  background: var(--material-card-bg);
   padding: 12px;
 }
 
