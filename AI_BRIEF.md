@@ -6,10 +6,10 @@ Updated: 2026-07-07
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.32`.
-- Recommended delivery version: `0.5.0-beta.32` user-smoke-required.
-- Current round: beta32 macOS terminal layout density and color hotfix after beta31 cross-platform Key Vault backup.
-- Version bump this hotfix: yes; `0.5.0-beta.31` -> `0.5.0-beta.32` before repackaging.
+- Current VERSION: `0.5.0-beta.33`.
+- Recommended delivery version: `0.5.0-beta.33` user-smoke-required.
+- Current round: beta33 macOS font slider alignment and local terminal prompt hotfix after beta31 cross-platform Key Vault backup and beta32 terminal layout package.
+- Version bump this hotfix: yes; `0.5.0-beta.32` -> `0.5.0-beta.33` before repackaging.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
 - Beta31 handoff commit: `09fa695` (`chore: finalize beta31 handoff and generated bindings`).

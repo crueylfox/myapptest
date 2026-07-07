@@ -1957,28 +1957,37 @@ describe('connection settings', () => {
     const wrapper = mount(SettingsView, { props: { settings } })
     const value = wrapper.get('[data-testid="ui-font-size-value"]')
     const slider = wrapper.get<HTMLInputElement>('[data-testid="ui-font-size-slider"]')
+    const control = wrapper.get('[data-testid="ui-font-size-slider-control"]')
+    const track = wrapper.get('[data-testid="ui-font-size-track"]')
+    const thumb = wrapper.get('[data-testid="ui-font-size-thumb"]')
     const ticks = wrapper.get('[data-testid="ui-font-size-ticks"]')
 
     expect(value.text()).toBe('15px')
     expect(slider.attributes('min')).toBe('12')
     expect(slider.attributes('max')).toBe('18')
     expect(slider.attributes('step')).toBe('1')
+    expect(control.attributes('style')).toContain('--font-slider-percent: 50%;')
+    expect(track.element).toBeTruthy()
+    expect(thumb.attributes('style')).toContain('--font-slider-percent: 50%;')
     const tickItems = ticks.findAll('.settings-font-tick')
     expect(tickItems).toHaveLength(7)
     expect(tickItems.map((tick) => tick.attributes('style'))).toEqual([
-      '--tick-percent: 0%;',
-      '--tick-percent: 16.666666666666664%;',
-      '--tick-percent: 33.33333333333333%;',
-      '--tick-percent: 50%;',
-      '--tick-percent: 66.66666666666666%;',
-      '--tick-percent: 83.33333333333334%;',
-      '--tick-percent: 100%;',
+      '--font-slider-percent: 0%;',
+      '--font-slider-percent: 16.666666666666664%;',
+      '--font-slider-percent: 33.33333333333333%;',
+      '--font-slider-percent: 50%;',
+      '--font-slider-percent: 66.66666666666666%;',
+      '--font-slider-percent: 83.33333333333334%;',
+      '--font-slider-percent: 100%;',
     ])
+    expect(tickItems.every((tick) => tick.find('.settings-font-tick-marker').exists())).toBe(true)
     expect(ticks.text()).toContain('小')
     expect(ticks.text()).toContain('正常')
     expect(ticks.text()).toContain('最大')
     await slider.setValue('12')
     expect(value.text()).toBe('12px')
+    expect(control.attributes('style')).toContain('--font-slider-percent: 0%;')
+    expect(thumb.attributes('style')).toContain('--font-slider-percent: 0%;')
     await slider.setValue('18')
     expect(value.text()).toBe('18px')
     expect(wrapper.emitted('previewFontSize')?.at(-1)).toEqual(['max'])

@@ -266,6 +266,10 @@ function stripInitialIsolatedPercentLine(text: string) {
   let lineControls = ''
   while (index < body.length) {
     const char = body[index]
+    if (char === ' ' || char === '\t') {
+      index += 1
+      continue
+    }
     if (char === '\n') return prefix + lineControls + body.slice(index + 1)
     if (char === '\r') {
       if (index + 1 >= body.length) return null

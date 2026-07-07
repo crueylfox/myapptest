@@ -60,6 +60,7 @@ type FixtureName =
   | 'settings-native-notification'
   | 'settings-nav-final'
   | 'settings-content-scroll'
+  | 'settings-font-slider-alignment'
   | 'settings-terminal-profile-spacing'
   | 'settings-header-actions'
   | 'compact-network-card-stats'
@@ -2191,6 +2192,39 @@ const appBlurOverlayFixture = computed(() =>
             </article>
           </div>
         </section>
+      </section>
+
+      <section
+        v-if="shouldRender('settings-font-slider-alignment')"
+        class="settings-card ui-fixture-settings-font-slider"
+        data-testid="settings-font-slider-alignment"
+      >
+        <h3 class="settings-subheading">界面字体大小</h3>
+        <div class="settings-font-slider" data-testid="ui-font-size-stepper">
+          <div
+            class="settings-font-slider-control"
+            data-testid="ui-font-size-slider-control"
+            style="--font-slider-percent: 50%;"
+          >
+            <input type="range" min="12" max="18" step="1" value="15" data-testid="ui-font-size-slider" aria-label="界面字体大小" />
+            <div class="settings-font-track" data-testid="ui-font-size-track" aria-hidden="true">
+              <div class="settings-font-track-scale" data-testid="ui-font-size-track-scale">
+                <span class="settings-font-track-line" data-testid="ui-font-size-track-line"></span>
+                <span class="settings-font-thumb" data-testid="ui-font-size-thumb" style="--font-slider-percent: 50%;"></span>
+                <div class="settings-font-ticks" data-testid="ui-font-size-ticks">
+                  <span class="settings-font-tick" style="--font-slider-percent: 0%;"><span class="settings-font-tick-marker"></span><span class="settings-font-tick-label">小</span></span>
+                  <span class="settings-font-tick" style="--font-slider-percent: 16.666666666666664%;"><span class="settings-font-tick-marker"></span><span class="settings-font-tick-label">13</span></span>
+                  <span class="settings-font-tick" style="--font-slider-percent: 33.33333333333333%;"><span class="settings-font-tick-marker"></span><span class="settings-font-tick-label">正常</span></span>
+                  <span class="settings-font-tick" data-testid="ui-font-size-current-tick" style="--font-slider-percent: 50%;"><span class="settings-font-tick-marker"></span><span class="settings-font-tick-label">15</span></span>
+                  <span class="settings-font-tick" style="--font-slider-percent: 66.66666666666666%;"><span class="settings-font-tick-marker"></span><span class="settings-font-tick-label">较大</span></span>
+                  <span class="settings-font-tick" style="--font-slider-percent: 83.33333333333334%;"><span class="settings-font-tick-marker"></span><span class="settings-font-tick-label">大</span></span>
+                  <span class="settings-font-tick" style="--font-slider-percent: 100%;"><span class="settings-font-tick-marker"></span><span class="settings-font-tick-label">最大</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <span class="settings-font-size-value" data-testid="ui-font-size-value">15px</span>
+        </div>
       </section>
 
       <section

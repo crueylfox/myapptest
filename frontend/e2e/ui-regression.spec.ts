@@ -1330,6 +1330,40 @@ test('Settings general page exposes the app logs entry after topbar menu removal
   await expect(button).toBeVisible()
 })
 
+test('Settings font-size slider aligns tick markers with the track and current thumb center', async ({ page }) => {
+  await openFixture(page, 'settings-font-slider-alignment', { width: 520, height: 220 })
+
+  const line = page.locator('[data-testid="ui-font-size-track-line"]')
+  const thumb = page.locator('[data-testid="ui-font-size-thumb"]')
+  const currentTick = page.locator('[data-testid="ui-font-size-current-tick"]')
+  const currentMarker = currentTick.locator('.settings-font-tick-marker')
+  const allMarkers = page.locator('.settings-font-tick-marker')
+  const labels = page.locator('.settings-font-tick-label')
+
+  const lineBox = await box(line)
+  const thumbBox = await box(thumb)
+  const tickBox = await box(currentTick)
+  const markerBox = await box(currentMarker)
+  const thumbCenterX = thumbBox.x + thumbBox.width / 2
+  const tickCenterX = tickBox.x + tickBox.width / 2
+  const markerCenterX = markerBox.x + markerBox.width / 2
+  const lineTop = lineBox.y
+
+  expect(Math.abs(thumbCenterX - tickCenterX)).toBeLessThanOrEqual(1)
+  expect(Math.abs(thumbCenterX - markerCenterX)).toBeLessThanOrEqual(1)
+  expect(markerBox.y).toBeLessThan(lineTop)
+  expect(Math.abs((markerBox.y + markerBox.height) - lineTop)).toBeLessThanOrEqual(1)
+
+  for (let index = 0; index < await allMarkers.count(); index += 1) {
+    const itemBox = await box(allMarkers.nth(index))
+    expect(itemBox.y).toBeLessThan(lineTop)
+    expect(Math.abs((itemBox.y + itemBox.height) - lineTop)).toBeLessThanOrEqual(1)
+  }
+  for (let index = 0; index < await labels.count(); index += 1) {
+    expect((await box(labels.nth(index))).y).toBeGreaterThan(lineTop)
+  }
+})
+
 test('Settings terminal profile section has normal spacing without stacked horizontal rules', async ({ page }) => {
   await openFixture(page, 'settings-terminal-profile-spacing', { width: 900, height: 640 })
 

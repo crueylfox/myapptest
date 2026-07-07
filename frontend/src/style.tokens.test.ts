@@ -1288,13 +1288,27 @@ describe('theme and overlay tokens', () => {
 
   it('aligns settings font-size slider ticks with the range track instead of floating below it', () => {
     const slider = block('.settings-font-slider input[type="range"]')
+    const scale = block('.settings-font-track-scale')
+    const line = block('.settings-font-track-line')
+    const thumb = block('.settings-font-thumb')
     const ticks = block('.settings-font-ticks')
-    const tick = block('.settings-font-tick::before')
+    const tick = block('.settings-font-tick')
+    const marker = block('.settings-font-tick-marker')
+    const label = block('.settings-font-tick-label')
 
     expect(slider).toContain('height: 24px')
-    expect(ticks).toContain('margin-top: -10px')
-    expect(ticks).toContain('padding: 0 8px')
-    expect(tick).toContain('height: 10px')
+    expect(slider).toContain('opacity: 0')
+    expect(scale).toContain('left: var(--font-slider-track-inset)')
+    expect(scale).toContain('right: var(--font-slider-track-inset)')
+    expect(line).toContain('top: 10px')
+    expect(line).toContain('height: 4px')
+    expect(thumb).toContain('left: var(--font-slider-percent)')
+    expect(thumb).toContain('top: 12px')
+    expect(ticks).toContain('inset: 0')
+    expect(tick).toContain('left: var(--font-slider-percent)')
+    expect(marker).toContain('top: 2px')
+    expect(marker).toContain('height: 8px')
+    expect(label).toContain('top: 22px')
   })
 
   it('removes terminal profile divider chrome without negative margin hacks', () => {
