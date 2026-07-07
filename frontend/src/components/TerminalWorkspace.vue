@@ -342,7 +342,7 @@ const paneShellBindings = useWorkspacePaneShellBindings({
     rightClickPasteEnabled: computed(() => props.terminalRightClickPasteEnabled !== false),
     shortcutSettings: computed(() => props.shortcutSettings),
     profileRevision: computed(() => props.terminalProfileApplyRevision ?? 0),
-    defaultLocalProfile: effectiveDefaultProfile,
+    defaultLocalProfile: effectiveDefaultProfile, platform: computed(() => props.localTerminalCapabilities?.platform ?? 'windows'),
     resolveConnection: connectionForTab,
     resolveProfile: profileForConnection,
   },

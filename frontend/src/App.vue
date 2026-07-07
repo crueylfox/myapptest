@@ -61,6 +61,7 @@ const terminalProfileStore = useTerminalProfileStore()
 const alertStore = useAlertStore()
 const search = ref('')
 const activeView = ref<AppPanelView>('terminals')
+const shellPlatform = computed(() => localTerminalStore.capabilities?.platform ?? 'windows')
 const settingsOverlayOpen = ref(false)
 const monitorPanelController = useMonitorPanelController()
 const globalShortcutBridge = useGlobalShortcutBridge()
@@ -99,7 +100,7 @@ const nativeAlertNotifications = useNativeAlertNotifications({
   settings: computed(() => settings.value.alerts),
   runtime: createWailsNativeNotificationRuntime(),
   notify: showToast,
-  platform: computed(() => localTerminalStore.capabilities?.platform ?? 'windows'),
+  platform: shellPlatform,
 })
 let authFlow: ReturnType<typeof useAuthDialogFlow>
 let hostKeyTrustFlow: ReturnType<typeof useHostKeyTrustFlow>
@@ -647,7 +648,7 @@ const {
 </script>
 
 <template>
-  <AppShell :terminal-layout="activeView === 'terminals'">
+  <AppShell :terminal-layout="activeView === 'terminals'" :platform="shellPlatform">
     <template #topbar>
       <AppTopBar
         v-if="activeView !== 'terminals'"

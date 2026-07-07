@@ -6,21 +6,13 @@ Updated: 2026-07-07
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.35`.
-- Recommended delivery version: `0.5.0-beta.35` user-smoke-required.
-- Current round: beta35 Windows/macOS default terminal theme sync, compact monitor network-summary removal, and Windows EXE comparison package after beta31 cross-platform Key Vault backup, beta32 terminal layout, beta33 slider/prompt, and beta34 monitor/color packages.
-- Version bump this hotfix: yes; `0.5.0-beta.34` -> `0.5.0-beta.35` before repackaging.
+- Current VERSION: `0.5.0-beta.36`.
+- Recommended delivery version: `0.5.0-beta.36` user-smoke-required.
+- Current round: beta36 macOS native font stack and native hidden/inset titlebar chrome hotfix after beta31 cross-platform Key Vault backup, beta35 Windows/macOS default terminal theme sync, compact monitor network-summary removal, and Windows EXE comparison package.
+- Version bump this hotfix: yes; `0.5.0-beta.35` -> `0.5.0-beta.36` before repackaging.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
 - Beta31 handoff commit: `09fa695` (`chore: finalize beta31 handoff and generated bindings`).
-- Previous overlay hotfix commit: `68d0c04` (`fix: complete beta31 macos overlay blocker`).
-- Previous overlay blocker commit: `a16ac96` (`fix: replace macos gray modal scrim with app blur overlay`).
-- Current UI polish commit: `65a19b9` (`fix: polish beta31 macos dialogs and settings ui`).
-- Current settings/dialog/local-terminal hotfix commit: `7dce440` (`fix: polish beta31 macos settings dialogs and local terminal`).
-- Current SFTP/local-terminal/macOS theme hotfix commit: `a7ba5c2` (`fix: polish beta31 sftp local terminal and macos theme ui`).
-- Current macOS gray dark theme completion commit: `a0fde0e` (`fix: polish beta31 macos theme sftp and local terminal ui`).
-- Current SFTP/terminal theme/queue UI hotfix commit: `a1fd256` (`fix: polish beta31 macos terminal theme and queue ui`).
-- Current beta32 terminal layout/density/color hotfix commit: `77516e6` (`fix: polish beta32 terminal layout density and macos colors`).
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -79,6 +71,12 @@ Updated: 2026-07-07
   - macOS local terminal strips the initial isolated `%` repaint without changing SSH or Windows shells.
   - Default dark terminal profile uses graphite/Codex-like background with brighter blue ANSI/accent handling.
   - Compact monitor defaults to a lighter summary mode with explicit expand/collapse for details.
+- Beta36 macOS native font/titlebar hotfix:
+  - macOS UI font stack uses Apple system/SF/PingFang/Helvetica fallbacks through platform-specific CSS variables.
+  - macOS terminal default font stack uses the native monospace CSS token while custom terminal fonts remain unchanged.
+  - Wails macOS window config uses native hidden/inset titlebar chrome so traffic-light buttons remain native.
+  - App shell exposes platform class/data attributes and reserves a macOS traffic-light safe zone for top toolbar content.
+  - Wails drag regions are limited to the macOS top background/toolbar; interactive controls, terminals, SFTP, and splitters are no-drag.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.

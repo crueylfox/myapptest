@@ -105,6 +105,12 @@ export const terminalFontPresets: TerminalFontPreset[] = [
   { value: 'custom', label: '自定义...', family: '' },
 ]
 
+const nativeTerminalFontToken = 'var(--app-terminal-font-family)'
+const windowsDefaultTerminalStacks = new Set([
+  'consolas, cascadia mono, monospace',
+  'cascadia mono, consolas, monospace',
+])
+
 function safeColor(value: string, fallback: string) {
   const color = value.trim()
   return hexColorPattern.test(color) ? color : fallback
@@ -112,6 +118,14 @@ function safeColor(value: string, fallback: string) {
 
 export function sanitizeTerminalFontFamily(value: string) {
   return value.trim().replace(/\s+/g, ' ')
+}
+
+export function effectiveTerminalFontFamily(value: string, platform = 'windows') {
+  const family = sanitizeTerminalFontFamily(value)
+  if (platform === 'darwin' && windowsDefaultTerminalStacks.has(family.toLowerCase())) {
+    return nativeTerminalFontToken
+  }
+  return family
 }
 
 export function validateTerminalFontFamily(value: string) {
@@ -145,9 +159,9 @@ export function normalizeTerminalProfileTheme(profile: TerminalProfile): ThemePr
   }
 }
 
-export function terminalProfileToXtermOptions(profile: TerminalProfile): ITerminalOptions {
+export function terminalProfileToXtermOptions(profile: TerminalProfile, platform = 'windows'): ITerminalOptions {
   const colors = normalizeTerminalProfileTheme(profile)
-  const fontFamily = sanitizeTerminalFontFamily(profile.fontFamily)
+  const fontFamily = effectiveTerminalFontFamily(profile.fontFamily, platform)
   const { cursorColor, ...themeColors } = colors
   const theme: ITheme = {
     ...themeColors,
@@ -191,8 +205,9 @@ export function terminalProfilePreviewStyle(profile: TerminalProfile): CSSProper
 export function applyTerminalProfileOptions(
   terminal: { options?: ITerminalOptions },
   profile: TerminalProfile,
+  platform = 'windows',
 ) {
-  const next = terminalProfileToXtermOptions(profile)
+  const next = terminalProfileToXtermOptions(profile, platform)
   const target = terminal.options ?? {}
   target.cursorBlink = next.cursorBlink
   target.cursorStyle = next.cursorStyle

@@ -119,14 +119,28 @@ func TestGetAppVersionReturnsCurrentReleaseVersion(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := strings.TrimSpace(string(raw))
-	if want != "0.5.0-beta.35" {
-		t.Fatalf("VERSION=%q, want %q", want, "0.5.0-beta.35")
+	if want != "0.5.0-beta.36" {
+		t.Fatalf("VERSION=%q, want %q", want, "0.5.0-beta.36")
 	}
 
 	info := app.GetAppVersion()
 
 	if info.Version != want {
 		t.Fatalf("version=%q, want %q", info.Version, want)
+	}
+}
+
+func TestMainConfiguresMacOSHiddenInsetTitlebar(t *testing.T) {
+	source, err := os.ReadFile("main.go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(source)
+	if !strings.Contains(text, `"github.com/wailsapp/wails/v2/pkg/options/mac"`) {
+		t.Fatal("main.go must import Wails macOS options")
+	}
+	if !strings.Contains(text, `Mac: &mac.Options{`) || !strings.Contains(text, `TitleBar: mac.TitleBarHiddenInset()`) {
+		t.Fatal("main.go must configure the native macOS hidden inset titlebar")
 	}
 }
 

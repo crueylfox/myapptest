@@ -261,6 +261,16 @@ describe('App shell parts', () => {
     expect(wrapper.find('[data-testid="overlay-slot"]').exists()).toBe(true)
   })
 
+  it('marks the shell with the resolved platform for platform-specific chrome', () => {
+    const wrapper = mount(AppShell, {
+      props: { terminalLayout: false, platform: 'darwin' },
+    })
+
+    expect(wrapper.classes()).toContain('platform-macos')
+    expect(wrapper.attributes('data-platform')).toBe('darwin')
+    expect(wrapper.find('[data-testid="app-visual-root"]').attributes('data-platform')).toBe('darwin')
+  })
+
   it('AppTopBar forwards WorkspaceTabs events without owning business actions', async () => {
     const wrapper = mount(AppTopBar, { props: { alertUnreadCount: 3 } })
 

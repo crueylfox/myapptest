@@ -54,6 +54,7 @@ export type WorkspacePaneShellBindingOptions = {
     shortcutSettings: MaybeReadonlyRef<ShortcutSettings | undefined>
     profileRevision: MaybeReadonlyRef<number>
     defaultLocalProfile: MaybeReadonlyRef<TerminalProfile>
+    platform?: MaybeReadonlyRef<string>
     resolveConnection: (connectionId: number) => Connection | null
     resolveProfile: (connection: Connection | null) => TerminalProfile
   }
@@ -144,6 +145,7 @@ export function useWorkspacePaneShellBindings(options: WorkspacePaneShellBinding
       rightClickPasteEnabled: terminalView?.rightClickPasteEnabled.value ?? true,
       shortcutSettings: terminalView?.shortcutSettings.value,
       profileRevision: terminalView?.profileRevision.value ?? 0,
+      platform: terminalView?.platform?.value ?? 'windows',
     }
   }
 

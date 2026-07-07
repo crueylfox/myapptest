@@ -52,6 +52,16 @@ describe('terminal profile ANSI colors', () => {
     expect(terminalProfileToXtermOptions({ ...defaultTerminalProfile, fontSize: 18 }).fontSize).toBe(18)
   })
 
+  it('uses the native macOS monospace CSS font token for the default terminal stack only', () => {
+    expect(terminalProfileToXtermOptions(defaultTerminalProfile, 'darwin').fontFamily).toBe('var(--app-terminal-font-family)')
+    expect(terminalProfileToXtermOptions(defaultTerminalProfile, 'windows').fontFamily).toBe('Consolas, Cascadia Mono, monospace')
+    expect(terminalProfileToXtermOptions({
+      ...defaultTerminalProfile,
+      id: 'custom-font',
+      fontFamily: 'JetBrains Mono, monospace',
+    }, 'darwin').fontFamily).toBe('JetBrains Mono, monospace')
+  })
+
   it('keeps every built-in terminal theme backed by a full ANSI palette', () => {
     for (const [name, preset] of Object.entries(terminalThemePresets)) {
       for (const key of ansiKeys) {

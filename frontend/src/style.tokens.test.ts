@@ -148,6 +148,31 @@ describe('theme and overlay tokens', () => {
     })
   })
 
+  it('uses native platform font tokens and macOS titlebar safe-zone rules', () => {
+    const root = block(':root')
+    const shell = block('.app-shell.platform-macos')
+    const visualRoot = block('.app-shell.platform-macos .app-visual-root')
+    const topbar = block('.app-shell.platform-macos .workspace-topbar')
+    const tabs = block('.app-shell.platform-macos .workspace-tabs')
+    const topbarControls = block('.app-shell.platform-macos .workspace-topbar :where(button, input, select, textarea, a, [role="tab"], .terminal-tab, .topbar-menu)')
+    const terminalSurfaces = block('.app-shell.platform-macos :where(.terminal-view, .xterm, .sftp-panel, .horizontal-splitter, .vertical-splitter)')
+
+    expect(root).toContain('--app-ui-font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif')
+    expect(root).toContain('--app-terminal-font-family: "Cascadia Mono", Consolas, monospace')
+    expect(root).toContain('font-family: var(--app-ui-font-family)')
+    expect(shell).toContain('--app-ui-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", Arial, sans-serif')
+    expect(shell).toContain('--app-terminal-font-family: ui-monospace, "SF Mono", Menlo, Monaco, monospace')
+    expect(shell).toContain('--macos-traffic-light-safe-left: 86px')
+    expect(shell).toContain('--macos-titlebar-height: 38px')
+    expect(visualRoot).toContain('--wails-draggable: drag')
+    expect(topbar).toContain('min-height: var(--macos-titlebar-height)')
+    expect(topbar).toContain('padding-left: var(--macos-traffic-light-safe-left)')
+    expect(topbar).toContain('--wails-draggable: drag')
+    expect(tabs).toContain('padding-left: 0')
+    expect(topbarControls).toContain('--wails-draggable: no-drag')
+    expect(terminalSurfaces).toContain('--wails-draggable: no-drag')
+  })
+
   it('keeps checked radio controls visible in dark and light settings groups', () => {
     const radio = block('input[type="radio"]')
     const checked = block('input[type="radio"]:checked')

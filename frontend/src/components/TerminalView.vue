@@ -84,6 +84,7 @@ const props = withDefaults(defineProps<{
   profile?: TerminalProfile
   profileRevision?: number
   shortcutSettings?: ShortcutSettings
+  platform?: string
 }>(), {
   visible: true,
   connection: null,
@@ -91,6 +92,7 @@ const props = withDefaults(defineProps<{
   rightClickPasteEnabled: true,
   profile: () => defaultTerminalProfile,
   profileRevision: 0,
+  platform: 'windows',
 })
 const emit = defineEmits<{
   size: [value: { columns: number; rows: number }]
@@ -207,7 +209,7 @@ function scheduleFit(delay = 36) {
 
 function applyCurrentProfile(profile = props.profile) {
   if (!terminal) return
-  applyTerminalProfileOptions(terminal, profile)
+  applyTerminalProfileOptions(terminal, profile, props.platform)
   applyZoomedFontSize(profile.fontSize)
   host.value?.style.setProperty('--terminal-bg', normalizeTerminalProfileTheme(profile).background)
   scheduleFit()
@@ -755,7 +757,7 @@ function handleKeydownCapture(event: KeyboardEvent) {
 onMounted(async () => {
   destroyed = false
   terminal = new Terminal({
-    ...terminalProfileToXtermOptions(props.profile),
+    ...terminalProfileToXtermOptions(props.profile, props.platform),
     allowProposedApi: true,
   })
   fitAddon = new FitAddon()
@@ -877,6 +879,11 @@ watch(() => [props.active, props.visible, props.layoutRevision] as const, async 
 })
 
 watch(() => props.profileRevision, () => {
+  applyCurrentProfile()
+  viewportHighlighter?.schedule()
+})
+
+watch(() => props.platform, () => {
   applyCurrentProfile()
   viewportHighlighter?.schedule()
 })
