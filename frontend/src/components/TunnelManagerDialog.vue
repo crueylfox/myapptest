@@ -861,7 +861,7 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .tunnel-dialog-toolbar {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.16)));
+  border-bottom: 1px solid var(--material-border, var(--border, var(--material-border)));
   background: var(--material-toolbar-bg);
   flex-wrap: wrap;
   align-items: end;
@@ -911,7 +911,7 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .tunnel-profile-card,
 .tunnel-profile-form {
-  border: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.16)));
+  border: 1px solid var(--material-border, var(--border, var(--material-border)));
   border-radius: 14px;
   background: var(--material-card-bg);
   padding: 12px;
@@ -947,8 +947,9 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .tunnel-profile-card.active {
-  border-color: rgba(96, 165, 250, 0.62);
-  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.18) inset;
+  border-color: var(--material-selected-border);
+  background: var(--material-selected-bg);
+  box-shadow: 0 0 0 1px var(--material-accent-focus) inset;
 }
 
 .tunnel-profile-card strong,
@@ -971,27 +972,27 @@ function errorMessage(reason: unknown, fallback: string) {
   display: inline-flex;
   border-radius: 999px;
   padding: 2px 7px;
-  background: rgba(148, 163, 184, 0.1);
+  background: var(--material-neutral-bg);
 }
 
 .tunnel-status.running {
-  color: #86efac;
+  color: var(--material-success-text);
 }
 
 .tunnel-status.warning {
-  color: #fde68a;
+  color: var(--material-warning-text);
 }
 
 .tunnel-status.failed {
-  color: #fca5a5;
+  color: var(--material-danger-text);
 }
 
 .remote-listen-diagnostics {
   display: grid;
   gap: 6px;
   border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  background: rgba(15, 23, 42, 0.48);
+  border: 1px solid var(--material-info-border);
+  background: var(--material-card-bg);
   padding: 10px;
 }
 
@@ -1035,13 +1036,13 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .remote-listen-diagnostics em {
   font-style: normal;
-  color: #fde68a;
+  color: var(--material-warning-text);
   font-size: 12px;
 }
 
 .remote-listen-warning {
   margin: 2px 0 0;
-  color: #fde68a;
+  color: var(--material-warning-text);
   font-size: 12px;
   line-height: 1.45;
 }
@@ -1058,7 +1059,7 @@ function errorMessage(reason: unknown, fallback: string) {
   margin: 0 3px;
   padding: 1px 5px;
   border-radius: 6px;
-  background: rgba(148, 163, 184, 0.12);
+  background: var(--material-neutral-bg);
   color: var(--text, #e5edf8);
 }
 
@@ -1067,7 +1068,7 @@ function errorMessage(reason: unknown, fallback: string) {
   min-height: 30px;
   border-color: rgba(251, 191, 36, 0.38);
   background: rgba(251, 191, 36, 0.12);
-  color: #fde68a;
+  color: var(--material-warning-text);
 }
 
 .remote-access-button:hover:not(:disabled) {
@@ -1089,7 +1090,7 @@ function errorMessage(reason: unknown, fallback: string) {
   text-align: left;
   border: 1px solid var(--border, rgba(148, 163, 184, 0.18));
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.38);
+  background: var(--material-card-bg);
   color: var(--text, #e5edf8);
 }
 
@@ -1105,8 +1106,8 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .tunnel-type-card.selected {
-  border-color: rgba(96, 165, 250, 0.68);
-  background: rgba(37, 99, 235, 0.14);
+  border-color: var(--material-selected-border);
+  background: var(--material-selected-soft-bg);
 }
 
 .form-hint {

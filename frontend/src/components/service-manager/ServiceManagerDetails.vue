@@ -183,9 +183,9 @@ const emit = defineEmits<{
   gap: 9px;
   overflow: hidden;
   padding: 12px;
-  border: 1px solid var(--border, rgba(148, 163, 184, 0.16));
+  border: 1px solid var(--material-border);
   border-radius: 10px;
-  background: var(--panel-2, rgba(15, 23, 42, 0.72));
+  background: var(--material-card-bg);
 }
 
 .service-detail-heading {
@@ -240,9 +240,9 @@ const emit = defineEmits<{
   gap: 9px;
   overflow: hidden;
   padding: 5px 10px;
-  border: 1px solid var(--border, rgba(148, 163, 184, 0.18));
+  border: 1px solid var(--material-border);
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.42);
+  background: var(--material-panel-bg);
   font-size: 12px;
   line-height: 1.35;
   white-space: nowrap;
@@ -257,16 +257,16 @@ const emit = defineEmits<{
 }
 
 .service-compact-notice__warning {
-  color: #fde68a;
+  color: var(--material-warning-text);
 }
 
 .service-compact-notice__divider {
   flex: 0 0 auto;
-  color: rgba(148, 163, 184, 0.72);
+  color: var(--material-neutral-text);
 }
 
 .service-compact-notice__info {
-  color: #bfdbfe;
+  color: var(--material-info-text);
 }
 
 .service-detail-grid {

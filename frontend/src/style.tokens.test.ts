@@ -4,6 +4,12 @@ import { contrastRatio } from './utils/contrast'
 // @ts-expect-error The app tsconfig intentionally omits Node globals; this test reads a local CSS source file.
 const { readFileSync } = await import('node:fs') as { readFileSync: (path: URL, encoding: string) => string }
 const css = readFileSync(new URL('./style.css', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
+const dockerManagerSource = readFileSync(new URL('./components/DockerManagerDialog.vue', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
+const processManagerSource = readFileSync(new URL('./components/ProcessManagerDialog.vue', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
+const tunnelManagerSource = readFileSync(new URL('./components/TunnelManagerDialog.vue', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
+const serviceListSource = readFileSync(new URL('./components/service-manager/ServiceManagerList.vue', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
+const serviceDetailsSource = readFileSync(new URL('./components/service-manager/ServiceManagerDetails.vue', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
+const serviceJournalSource = readFileSync(new URL('./components/service-manager/ServiceJournalPanel.vue', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
 
 function block(selector: string) {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -138,6 +144,74 @@ describe('theme and overlay tokens', () => {
     expect(resolveToken(light, 'primary')).toBe('#245fca')
   })
 
+  it('defines semantic material state tokens and uses them in inner management panels', () => {
+    const requiredStateTokens = [
+      'material-hover-bg',
+      'material-selected-bg',
+      'material-selected-soft-bg',
+      'material-selected-border',
+      'material-info-bg',
+      'material-info-border',
+      'material-info-text',
+      'material-warning-bg',
+      'material-warning-border',
+      'material-warning-text',
+      'material-danger-bg',
+      'material-danger-border',
+      'material-danger-text',
+      'material-success-bg',
+      'material-success-border',
+      'material-success-text',
+      'material-neutral-bg',
+      'material-neutral-text',
+      'material-console-bg',
+      'material-table-divider',
+    ]
+
+    for (const tokens of [dark, macosGrayDark, light]) {
+      for (const token of requiredStateTokens) expect(tokens[token]).toBeTruthy()
+      expect(tokens['docker-console-bg']).toBe('var(--material-console-bg)')
+      expect(tokens['docker-selected-bg']).toBe('var(--material-selected-bg)')
+      expect(tokens['docker-selected-soft-bg']).toBe('var(--material-selected-soft-bg)')
+    }
+
+    expect(resolveToken(dark, 'material-selected-bg')).toBe('rgba(63, 125, 255, .20)')
+    expect(resolveToken(light, 'material-selected-bg')).toBe('rgba(36, 95, 202, .16)')
+    expect(resolveToken(dark, 'material-hover-bg')).toBe('rgba(255, 255, 255, .07)')
+    expect(resolveToken(light, 'material-hover-bg')).toBe('rgba(30, 41, 59, .06)')
+
+    for (const source of [
+      dockerManagerSource,
+      processManagerSource,
+      tunnelManagerSource,
+      serviceListSource,
+      serviceDetailsSource,
+      serviceJournalSource,
+    ]) {
+      expect(source).not.toContain('rgba(37, 99, 235')
+      expect(source).not.toContain('rgba(59, 130, 246')
+      expect(source).not.toContain('rgba(96, 165, 250')
+      expect(source).not.toContain('rgba(15, 23, 42')
+      expect(source).not.toContain('rgba(30, 41, 59')
+    }
+
+    expect(dockerManagerSource).toContain('var(--material-selected-bg)')
+    expect(dockerManagerSource).toContain('var(--material-info-border)')
+    expect(dockerManagerSource).toContain('var(--material-warning-bg)')
+    expect(processManagerSource).toContain('var(--material-hover-bg)')
+    expect(processManagerSource).toContain('var(--material-selected-bg)')
+    expect(processManagerSource).toContain('var(--material-card-bg)')
+    expect(tunnelManagerSource).toContain('var(--material-selected-bg)')
+    expect(tunnelManagerSource).toContain('var(--material-info-border)')
+    expect(serviceListSource).toContain('var(--material-selected-bg)')
+    expect(serviceListSource).toContain('var(--material-success-bg)')
+    expect(serviceDetailsSource).toContain('var(--material-card-bg)')
+    expect(serviceDetailsSource).toContain('var(--material-warning-text)')
+    expect(serviceJournalSource).toContain('var(--material-console-bg)')
+    expect(serviceJournalSource).toContain('var(--material-info-bg)')
+    expect(serviceJournalSource).toContain('var(--material-danger-bg)')
+  })
+
   it('provides shared viewport popover classes with fixed positioning and internal scrolling', () => {
     const popover = block('.viewport-popover')
     const scroll = block('.viewport-popover-scroll')
@@ -206,7 +280,7 @@ describe('theme and overlay tokens', () => {
     expect(dark.primary).toBe('var(--material-accent)')
     expect(resolveToken(dark, 'primary')).toBe('#3f7dff')
     expect(dark['sftp-surface']).toBe('#24272c')
-    expect(dark['docker-console-bg']).toBe('#1f2023')
+    expect(resolveToken(dark, 'docker-console-bg')).toBe('#1f2023')
     expect(macosGrayDark).toMatchObject({
       bg: dark.bg,
       sidebar: dark.sidebar,

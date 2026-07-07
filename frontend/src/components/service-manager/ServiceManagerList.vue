@@ -56,9 +56,9 @@ const emit = defineEmits<{
   overflow-x: hidden;
   overflow-y: auto;
   padding: 10px;
-  border: 1px solid var(--border, rgba(148, 163, 184, 0.16));
+  border: 1px solid var(--material-border);
   border-radius: 10px;
-  background: var(--panel-2, rgba(15, 23, 42, 0.72));
+  background: var(--material-card-bg);
 }
 
 .service-list-header,
@@ -90,10 +90,14 @@ const emit = defineEmits<{
   text-align: left;
 }
 
-.service-row:hover,
+.service-row:hover {
+  border-color: var(--material-selected-border);
+  background: var(--material-hover-bg);
+}
+
 .service-row.selected {
-  border-color: rgba(96, 165, 250, 0.36);
-  background: rgba(37, 99, 235, 0.12);
+  border-color: var(--material-selected-border);
+  background: var(--material-selected-bg);
 }
 
 .service-row-main {
@@ -123,32 +127,32 @@ const emit = defineEmits<{
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: #64748b;
+  background: var(--material-neutral-text);
 }
 
 .service-dot.running,
 .service-badge.running {
-  background: rgba(34, 197, 94, 0.18);
-  color: #86efac;
+  background: var(--material-success-bg);
+  color: var(--material-success-text);
 }
 
 .service-dot.failed,
 .service-badge.failed {
-  background: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
+  background: var(--material-danger-bg);
+  color: var(--material-danger-text);
 }
 
 .service-dot.pending,
 .service-badge.pending {
-  background: rgba(245, 158, 11, 0.2);
-  color: #facc15;
+  background: var(--material-warning-bg);
+  color: var(--material-warning-text);
 }
 
 .service-dot.stopped,
 .service-badge.stopped,
 .service-badge.disabled {
-  background: rgba(100, 116, 139, 0.2);
-  color: #cbd5e1;
+  background: var(--material-neutral-bg);
+  color: var(--material-neutral-text);
 }
 
 .service-badges {
@@ -168,13 +172,13 @@ const emit = defineEmits<{
 }
 
 .service-badge.enabled {
-  background: rgba(59, 130, 246, 0.18);
-  color: #93c5fd;
+  background: var(--material-info-bg);
+  color: var(--material-info-text);
 }
 
 .service-badge.other {
-  background: rgba(148, 163, 184, 0.14);
-  color: #cbd5e1;
+  background: var(--material-neutral-bg);
+  color: var(--material-neutral-text);
 }
 
 .empty {

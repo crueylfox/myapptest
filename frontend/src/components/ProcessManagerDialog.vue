@@ -848,12 +848,12 @@ function safeStringList(value: unknown): string[] {
 
 .process-table-head button:hover {
   color: var(--text);
-  background: rgba(148, 163, 184, 0.1);
+  background: var(--material-hover-bg);
 }
 
 .table-sort-arrow {
   flex: 0 0 auto;
-  color: #9ec0ff;
+  color: var(--material-accent-text);
   font-size: 11px;
 }
 
@@ -873,7 +873,7 @@ function safeStringList(value: unknown): string[] {
   width: 1px;
   height: 100%;
   margin: 0 auto;
-  background: rgba(148, 163, 184, 0.36);
+  background: var(--material-table-divider);
 }
 
 .table-column-resizer:hover::before {
@@ -893,8 +893,8 @@ function safeStringList(value: unknown): string[] {
 
 .process-table-row:hover,
 .process-table-row.selected {
-  border-color: rgba(96, 165, 250, 0.55);
-  background: rgba(37, 99, 235, 0.16);
+  border-color: var(--material-selected-border);
+  background: var(--material-selected-bg);
 }
 
 .process-table-row strong {
@@ -954,8 +954,8 @@ function safeStringList(value: unknown): string[] {
   flex: 0 0 auto;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.18);
-  color: #bfdbfe;
+  background: var(--material-info-bg);
+  color: var(--material-info-text);
   font-size: 12px;
 }
 
@@ -972,7 +972,7 @@ function safeStringList(value: unknown): string[] {
   margin: 0;
   padding: 8px 10px;
   border-radius: 10px;
-  background: rgba(30, 41, 59, 0.65);
+  background: var(--material-card-bg);
 }
 
 .process-facts dt {
@@ -1008,7 +1008,7 @@ function safeStringList(value: unknown): string[] {
   margin: 6px 0 0;
   padding: 8px 10px;
   border-radius: 10px;
-  background: rgba(2, 6, 23, 0.72);
+  background: var(--material-console-bg);
   white-space: pre-wrap;
   word-break: break-word;
 }

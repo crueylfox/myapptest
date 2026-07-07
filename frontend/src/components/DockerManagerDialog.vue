@@ -1420,13 +1420,13 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .docker-compose-project-row.selected {
-  border-color: rgba(96, 165, 250, 0.62);
-  background: var(--docker-selected-bg);
+  border-color: var(--material-selected-border);
+  background: var(--material-selected-bg);
 }
 
 .docker-compose-service-row.selected {
-  border-color: rgba(96, 165, 250, 0.62);
-  background: var(--docker-selected-soft-bg);
+  border-color: var(--material-selected-border);
+  background: var(--material-selected-soft-bg);
 }
 
 .docker-compose-services {
@@ -1457,7 +1457,7 @@ function errorMessage(reason: unknown, fallback: string) {
   gap: 8px;
   align-items: center;
   padding: 8px 9px;
-  border: 1px solid rgba(96, 165, 250, 0.24);
+  border: 1px solid var(--material-info-border);
   border-radius: 10px;
   background: var(--material-panel-bg);
 }
@@ -1545,9 +1545,9 @@ function errorMessage(reason: unknown, fallback: string) {
   flex-wrap: wrap;
   gap: 8px;
   padding: 7px 8px;
-  border: 1px solid rgba(96, 165, 250, 0.22);
+  border: 1px solid var(--material-info-border);
   border-radius: 10px;
-  background: rgba(37, 99, 235, 0.11);
+  background: var(--material-info-bg);
 }
 
 .docker-batch-bar span {
@@ -1580,8 +1580,8 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .docker-container-card.selected {
-  border-color: rgba(96, 165, 250, 0.62);
-  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.16) inset;
+  border-color: var(--material-selected-border);
+  box-shadow: 0 0 0 1px var(--material-accent-focus) inset;
 }
 
 .container-main,
@@ -1648,7 +1648,7 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .container-main code {
-  color: #93c5fd;
+  color: var(--material-info-text);
   font-family: var(--mono-font, 'Cascadia Mono', Consolas, monospace);
   font-size: 12px;
 }
@@ -1657,29 +1657,29 @@ function errorMessage(reason: unknown, fallback: string) {
   justify-self: start;
   border-radius: 999px;
   padding: 2px 7px;
-  background: rgba(148, 163, 184, 0.1);
+  background: var(--material-neutral-bg);
 }
 
 .container-state.running {
-  color: #86efac;
+  color: var(--material-success-text);
 }
 
 .container-state.stopped {
-  color: #cbd5e1;
+  color: var(--material-neutral-text);
 }
 
 .container-state.warning {
-  color: #fde68a;
+  color: var(--material-warning-text);
 }
 
 .container-state.failed {
-  color: #fca5a5;
+  color: var(--material-danger-text);
 }
 
 .container-state.pending {
-  color: #fde68a;
-  background: rgba(245, 158, 11, 0.14);
-  border: 1px solid rgba(245, 158, 11, 0.24);
+  color: var(--material-warning-text);
+  background: var(--material-warning-bg);
+  border: 1px solid var(--material-warning-border);
 }
 
 .container-actions {
@@ -1733,7 +1733,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .detail-tabs button.active {
   color: var(--text);
   border-color: transparent;
-  background: var(--docker-selected-bg);
+  background: var(--material-selected-bg);
   box-shadow: inset 0 -2px 0 var(--primary, #3f7dff);
 }
 

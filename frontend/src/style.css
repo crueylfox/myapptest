@@ -21,6 +21,26 @@
   --material-accent-border: rgba(63, 125, 255, .58);
   --material-accent-focus: rgba(63, 125, 255, .24);
   --material-accent-text: #9ab8ff;
+  --material-hover-bg: rgba(255, 255, 255, .07);
+  --material-selected-bg: var(--material-accent-soft-bg);
+  --material-selected-soft-bg: var(--material-accent-muted-bg);
+  --material-selected-border: var(--material-accent-border);
+  --material-info-bg: rgba(63, 125, 255, .14);
+  --material-info-border: rgba(63, 125, 255, .34);
+  --material-info-text: #bfdbfe;
+  --material-warning-bg: rgba(245, 158, 11, .16);
+  --material-warning-border: rgba(245, 158, 11, .30);
+  --material-warning-text: #fde68a;
+  --material-danger-bg: rgba(239, 68, 68, .18);
+  --material-danger-border: rgba(239, 68, 68, .32);
+  --material-danger-text: #fca5a5;
+  --material-success-bg: rgba(34, 197, 94, .18);
+  --material-success-border: rgba(34, 197, 94, .30);
+  --material-success-text: #86efac;
+  --material-neutral-bg: rgba(148, 163, 184, .14);
+  --material-neutral-text: #cbd5e1;
+  --material-console-bg: #1f2023;
+  --material-table-divider: rgba(148, 163, 184, .36);
   --primary: var(--material-accent);
   --danger: #ff7b86;
   --input: #24272c;
@@ -67,10 +87,10 @@
   --docker-panel-strong-bg: var(--panel-2);
   --docker-row-bg: rgba(42, 45, 50, 0.42);
   --docker-row-strong-bg: rgba(42, 45, 50, 0.48);
-  --docker-console-bg: #1f2023;
+  --docker-console-bg: var(--material-console-bg);
   --docker-console-text: #eceff4;
-  --docker-selected-bg: var(--material-accent-soft-bg);
-  --docker-selected-soft-bg: var(--material-accent-muted-bg);
+  --docker-selected-bg: var(--material-selected-bg);
+  --docker-selected-soft-bg: var(--material-selected-soft-bg);
   --z-popover: 40;
   --z-context: 50;
   --z-modal: 70;
@@ -103,6 +123,26 @@
   --material-accent-border: rgba(63, 125, 255, .58);
   --material-accent-focus: rgba(63, 125, 255, .24);
   --material-accent-text: #9ab8ff;
+  --material-hover-bg: rgba(255, 255, 255, .07);
+  --material-selected-bg: var(--material-accent-soft-bg);
+  --material-selected-soft-bg: var(--material-accent-muted-bg);
+  --material-selected-border: var(--material-accent-border);
+  --material-info-bg: rgba(63, 125, 255, .14);
+  --material-info-border: rgba(63, 125, 255, .34);
+  --material-info-text: #bfdbfe;
+  --material-warning-bg: rgba(245, 158, 11, .16);
+  --material-warning-border: rgba(245, 158, 11, .30);
+  --material-warning-text: #fde68a;
+  --material-danger-bg: rgba(239, 68, 68, .18);
+  --material-danger-border: rgba(239, 68, 68, .32);
+  --material-danger-text: #fca5a5;
+  --material-success-bg: rgba(34, 197, 94, .18);
+  --material-success-border: rgba(34, 197, 94, .30);
+  --material-success-text: #86efac;
+  --material-neutral-bg: rgba(148, 163, 184, .14);
+  --material-neutral-text: #cbd5e1;
+  --material-console-bg: #1f2023;
+  --material-table-divider: rgba(148, 163, 184, .36);
   --primary: var(--material-accent);
   --danger: #ff7b86;
   --input: #24272c;
@@ -149,10 +189,10 @@
   --docker-panel-strong-bg: var(--panel-2);
   --docker-row-bg: rgba(42, 45, 50, 0.42);
   --docker-row-strong-bg: rgba(42, 45, 50, 0.48);
-  --docker-console-bg: #1f2023;
+  --docker-console-bg: var(--material-console-bg);
   --docker-console-text: #eceff4;
-  --docker-selected-bg: var(--material-accent-soft-bg);
-  --docker-selected-soft-bg: var(--material-accent-muted-bg);
+  --docker-selected-bg: var(--material-selected-bg);
+  --docker-selected-soft-bg: var(--material-selected-soft-bg);
 }
 
 :root[data-theme="light"] {
@@ -174,6 +214,26 @@
   --material-accent-border: rgba(36, 95, 202, .42);
   --material-accent-focus: rgba(36, 95, 202, .22);
   --material-accent-text: #1d4fb0;
+  --material-hover-bg: rgba(30, 41, 59, .06);
+  --material-selected-bg: var(--material-accent-soft-bg);
+  --material-selected-soft-bg: var(--material-accent-muted-bg);
+  --material-selected-border: var(--material-accent-border);
+  --material-info-bg: rgba(36, 95, 202, .10);
+  --material-info-border: rgba(36, 95, 202, .26);
+  --material-info-text: #1d4fb0;
+  --material-warning-bg: rgba(217, 119, 6, .14);
+  --material-warning-border: rgba(217, 119, 6, .30);
+  --material-warning-text: #92400e;
+  --material-danger-bg: rgba(216, 63, 77, .14);
+  --material-danger-border: rgba(216, 63, 77, .30);
+  --material-danger-text: #b4232f;
+  --material-success-bg: rgba(5, 150, 105, .14);
+  --material-success-border: rgba(5, 150, 105, .30);
+  --material-success-text: #047857;
+  --material-neutral-bg: rgba(100, 116, 139, .13);
+  --material-neutral-text: #526276;
+  --material-console-bg: #f8fafc;
+  --material-table-divider: rgba(100, 116, 139, .32);
   --primary: var(--material-accent);
   --danger: #d83f4d;
   --input: #ffffff;
@@ -219,10 +279,10 @@
   --docker-panel-strong-bg: rgba(248, 250, 252, 0.86);
   --docker-row-bg: rgba(255, 255, 255, 0.64);
   --docker-row-strong-bg: rgba(241, 245, 249, 0.72);
-  --docker-console-bg: #f8fafc;
+  --docker-console-bg: var(--material-console-bg);
   --docker-console-text: #172234;
-  --docker-selected-bg: var(--material-accent-soft-bg);
-  --docker-selected-soft-bg: var(--material-accent-muted-bg);
+  --docker-selected-bg: var(--material-selected-bg);
+  --docker-selected-soft-bg: var(--material-selected-soft-bg);
 }
 
 * { box-sizing: border-box; }
