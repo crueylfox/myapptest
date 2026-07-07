@@ -12,6 +12,7 @@ const TRANSFER_POPOVER_MARGIN = 12
 const TRANSFER_POPOVER_MAX_WIDTH = 620
 const TRANSFER_POPOVER_MAX_HEIGHT = 360
 const TRANSFER_POPOVER_HEIGHT_OFFSET = 96
+const TRANSFER_STATUSBAR_DETECTION_HEIGHT = 80
 
 export function useWorkspaceTransferOverlayFlow(options: WorkspaceTransferOverlayFlowOptions) {
   const transferPopover = ref(false)
@@ -29,6 +30,7 @@ export function useWorkspaceTransferOverlayFlow(options: WorkspaceTransferOverla
   function updateTransferPopoverPosition() {
     if (!transferPopover.value || !transferButton.value) return
     const { width: viewportWidth, height: viewportHeight } = viewportSize()
+    const buttonRect = transferButton.value.getBoundingClientRect()
     const rootRect = options.rootRef.value?.getBoundingClientRect()
     const workspaceLeft = Math.max(TRANSFER_POPOVER_MARGIN, rootRect?.left ?? TRANSFER_POPOVER_MARGIN)
     const workspaceTop = Math.max(TRANSFER_POPOVER_MARGIN, rootRect?.top ?? TRANSFER_POPOVER_MARGIN)
@@ -41,7 +43,16 @@ export function useWorkspaceTransferOverlayFlow(options: WorkspaceTransferOverla
       rootRect?.bottom && rootRect.bottom > rootRect.top ? rootRect.bottom : viewportHeight - TRANSFER_POPOVER_MARGIN,
     )
     const availableWidth = Math.max(0, workspaceRight - workspaceLeft)
-    const availableHeight = Math.max(0, workspaceBottom - workspaceTop)
+    const workspaceBottomInset = Math.max(TRANSFER_POPOVER_MARGIN, viewportHeight - workspaceBottom)
+    const statusbarTop = buttonRect.top >= workspaceBottom - TRANSFER_STATUSBAR_DETECTION_HEIGHT
+      ? Math.max(workspaceTop, buttonRect.top)
+      : null
+    const bottom = Math.max(
+      workspaceBottomInset,
+      statusbarTop === null ? 0 : viewportHeight - statusbarTop + TRANSFER_POPOVER_MARGIN,
+    )
+    const reservedBottomInsideWorkspace = Math.max(0, bottom - workspaceBottomInset)
+    const availableHeight = Math.max(0, workspaceBottom - workspaceTop - reservedBottomInsideWorkspace)
     const width = Math.min(TRANSFER_POPOVER_MAX_WIDTH, availableWidth)
     const maxHeight = Math.min(
       TRANSFER_POPOVER_MAX_HEIGHT,
@@ -49,7 +60,6 @@ export function useWorkspaceTransferOverlayFlow(options: WorkspaceTransferOverla
       availableHeight,
     )
     const left = workspaceRight - width
-    const bottom = Math.max(TRANSFER_POPOVER_MARGIN, viewportHeight - workspaceBottom)
     transferPopoverStyle.value = {
       position: 'fixed',
       left: `${Math.round(left)}px`,

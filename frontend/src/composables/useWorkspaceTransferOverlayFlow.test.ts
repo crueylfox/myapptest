@@ -82,7 +82,7 @@ describe('useWorkspaceTransferOverlayFlow', () => {
     const bottom = Number.parseInt(flow.transferPopoverStyle.value.bottom ?? '', 10)
     const width = Number.parseInt(flow.transferPopoverStyle.value.width ?? '', 10)
     expect(1180 - (left + width)).toBeLessThanOrEqual(24)
-    expect(bottom).toBe(40)
+    expect(bottom).toBe(48)
     expect(flow.transferPopoverStyle.value.top).toBeUndefined()
     expect(flow.transferPopoverStyle.value.width).toBe('620px')
   })
@@ -108,13 +108,14 @@ describe('useWorkspaceTransferOverlayFlow', () => {
     await nextTick()
     root.getBoundingClientRect = () => rect({ left: 0, top: 0, right: 900, bottom: 640, width: 900, height: 640 })
     panel.getBoundingClientRect = () => rect({ left: 0, top: 500, right: 900, bottom: 640, width: 900, height: 140 })
+    button.getBoundingClientRect = () => rect({ left: 720, top: 616, right: 884, bottom: 640, width: 164, height: 24 })
     flow.updateTransferPopoverPosition()
 
     const left = Number.parseInt(flow.transferPopoverStyle.value.left ?? '', 10)
     const bottom = Number.parseInt(flow.transferPopoverStyle.value.bottom ?? '', 10)
     const width = Number.parseInt(flow.transferPopoverStyle.value.width ?? '', 10)
     expect(900 - (left + width)).toBeLessThanOrEqual(24)
-    expect(bottom).toBe(80)
+    expect(bottom).toBe(116)
     expect(flow.transferPopoverStyle.value.top).toBeUndefined()
   })
 
@@ -135,8 +136,33 @@ describe('useWorkspaceTransferOverlayFlow', () => {
     await nextTick()
 
     expect(flow.transferPopoverStyle.value.top).toBeUndefined()
-    expect(flow.transferPopoverStyle.value.bottom).toBe('20px')
+    expect(flow.transferPopoverStyle.value.bottom).toBe('56px')
     expect(flow.transferPopoverStyle.value.transformOrigin).toBe('bottom right')
+  })
+
+  it('keeps the transfer queue above the bottom status bar with a safe gap', async () => {
+    setViewportSize(900, 640)
+    const root = document.createElement('div')
+    root.getBoundingClientRect = () => rect({ left: 0, top: 0, right: 900, bottom: 640, width: 900, height: 640 })
+    const button = document.createElement('button')
+    button.className = 'status-transfer'
+    button.getBoundingClientRect = () => rect({ left: 760, top: 604, right: 884, bottom: 628, width: 124, height: 24 })
+    const flow = useWorkspaceTransferOverlayFlow({
+      rootRef: ref(root),
+      sftpExpanded: ref(true),
+      scheduleAfterOpen: (callback) => nextTick(callback),
+    })
+    flow.transferButton.value = button
+
+    flow.openTransferPopover()
+    await nextTick()
+
+    const bottom = Number.parseInt(flow.transferPopoverStyle.value.bottom ?? '', 10)
+    const width = Number.parseInt(flow.transferPopoverStyle.value.width ?? '', 10)
+    const left = Number.parseInt(flow.transferPopoverStyle.value.left ?? '', 10)
+    expect(bottom).toBe(48)
+    expect(900 - (left + width)).toBeGreaterThanOrEqual(12)
+    expect(900 - (left + width)).toBeLessThanOrEqual(24)
   })
 
   it('preserves outside click and Escape close behavior without owning other workspace Escape handling', () => {

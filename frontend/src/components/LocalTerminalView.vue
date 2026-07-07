@@ -261,10 +261,27 @@ function stripInitialIsolatedPercentLine(text: string) {
   if (prefixEnd < 0) return null
   const prefix = text.slice(0, prefixEnd)
   const body = text.slice(prefixEnd)
-  if (body === '%' || body === '%\r') return null
-  if (body.startsWith('%\r\n')) return prefix + body.slice(3)
-  if (body.startsWith('%\n')) return prefix + body.slice(2)
-  return text
+  if (!body.startsWith('%')) return text
+  let index = 1
+  let lineControls = ''
+  while (index < body.length) {
+    const char = body[index]
+    if (char === '\n') return prefix + lineControls + body.slice(index + 1)
+    if (char === '\r') {
+      if (index + 1 >= body.length) return null
+      if (body[index + 1] === '\n') return prefix + lineControls + body.slice(index + 2)
+      return text
+    }
+    if (char === '\x1b') {
+      const controlEnd = terminalControlSequenceEnd(body, index)
+      if (controlEnd < 0) return null
+      lineControls += body.slice(index, controlEnd)
+      index = controlEnd
+      continue
+    }
+    return text
+  }
+  return null
 }
 
 function initialTerminalControlPrefixEnd(input: string) {
@@ -288,6 +305,18 @@ function initialTerminalControlPrefixEnd(input: string) {
     index += 2
   }
   return index
+}
+
+function terminalControlSequenceEnd(input: string, index: number) {
+  if (input[index] !== '\x1b') return -1
+  if (index + 1 >= input.length) return -1
+  const introducer = input[index + 1]
+  if (introducer === '[') {
+    const end = findAnsiCsiEnd(input, index + 2)
+    return end === -1 ? -1 : end + 1
+  }
+  if (introducer === ']') return findAnsiOscEnd(input, index + 2)
+  return index + 2
 }
 
 function stripLocalCommandControlSequences(data: string) {

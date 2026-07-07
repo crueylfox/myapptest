@@ -888,7 +888,7 @@ test('macOS dark settings radios and overlay menus use visible checked state and
   })
   expect(radioStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
   expect(radioStyle.backgroundImage).toContain('radial-gradient')
-  expect(radioStyle.boxShadow).toContain('147, 197, 253')
+  expect(radioStyle.boxShadow).toContain('159, 195, 255')
 
   const checkedCheckbox = page.locator('[data-testid="macos-dark-checkbox-checked"]')
   await expect(checkedCheckbox).toBeChecked()
@@ -900,9 +900,9 @@ test('macOS dark settings radios and overlay menus use visible checked state and
       boxShadow: style.boxShadow,
     }
   })
-  expect(checkboxStyle.backgroundColor).toBe('rgb(37, 99, 235)')
+  expect(checkboxStyle.backgroundColor).toBe('rgb(91, 140, 255)')
   expect(checkboxStyle.backgroundImage).toContain('data:image/svg+xml')
-  expect(checkboxStyle.boxShadow).toContain('147, 197, 253')
+  expect(checkboxStyle.boxShadow).toContain('159, 195, 255')
 
   for (const selector of [
     '.topbar-menu',
@@ -1379,9 +1379,9 @@ test('Settings header actions render as original button styles without pipe sepa
   const closeBox = await box(close)
   expect(Math.abs(saveBox.height - closeBox.height)).toBeLessThanOrEqual(1)
   expect(Math.abs((saveBox.y + saveBox.height / 2) - (closeBox.y + closeBox.height / 2))).toBeLessThanOrEqual(1)
-  expect(await primary.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe('rgb(122, 162, 216)')
+  expect(await primary.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe('rgb(106, 162, 255)')
   await primary.hover()
-  expect(await primary.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe('rgb(122, 162, 216)')
+  expect(await primary.evaluate((element) => window.getComputedStyle(element).backgroundColor)).toBe('rgb(106, 162, 255)')
 })
 
 test('transfer popover many items stays bounded with internal scrolling', async ({ page }) => {

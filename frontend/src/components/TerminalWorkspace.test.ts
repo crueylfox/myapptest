@@ -81,8 +81,8 @@ const defaultProfile: TerminalProfile = {
   scrollback: 10000,
   themeName: 'serverpilot-dark',
   foreground: '#eceff4',
-  background: '#17181b',
-  selectionBackground: '#5b6f8f66',
+  background: '#1f2023',
+  selectionBackground: '#5b8cff66',
   cursorColor: '#f5f7fa',
   createdAt: '',
   updatedAt: '',
@@ -2666,7 +2666,7 @@ describe('TerminalWorkspace server states', () => {
     const width = Number.parseInt(popover?.style.width ?? '', 10)
     const maxHeight = Number.parseInt(popover?.style.maxHeight ?? '', 10)
     expect(left).toBeGreaterThanOrEqual(12)
-    expect(bottom).toBeGreaterThanOrEqual(12)
+    expect(bottom).toBe(36)
     expect(popover?.style.top).toBe('')
     expect(left + width).toBeLessThanOrEqual(348)
     expect(bottom + maxHeight).toBeLessThanOrEqual(228)
@@ -2692,6 +2692,14 @@ describe('TerminalWorkspace server states', () => {
     const originalMaxHeight = popover?.style.maxHeight
 
     setViewportSize(330, 210)
+    mockTransferButtonRect(wrapper, {
+      left: 260,
+      top: 174,
+      right: 318,
+      bottom: 198,
+      width: 58,
+      height: 24,
+    })
     window.dispatchEvent(new Event('resize'))
     await wrapper.vm.$nextTick()
     await Promise.resolve()
@@ -2705,7 +2713,7 @@ describe('TerminalWorkspace server states', () => {
     expect(resizedPopover.style.width).not.toBe(originalWidth)
     expect(resizedPopover.style.maxHeight).not.toBe(originalMaxHeight)
     expect(left + width).toBeLessThanOrEqual(318)
-    expect(bottom).toBeGreaterThanOrEqual(12)
+    expect(bottom).toBe(48)
     expect(bottom + maxHeight).toBeLessThanOrEqual(198)
 
     resizedPopover.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
@@ -2746,8 +2754,7 @@ describe('TerminalWorkspace server states', () => {
     const width = Number.parseInt(popover?.style.width ?? '', 10)
     expect(left + width).toBeLessThanOrEqual(1188)
     expect(1188 - (left + width)).toBeLessThanOrEqual(24)
-    expect(bottom).toBeGreaterThanOrEqual(12)
-    expect(bottom).toBeLessThanOrEqual(24)
+    expect(bottom).toBe(48)
     document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
     await wrapper.vm.$nextTick()
   })

@@ -211,12 +211,12 @@ describe('first-batch UI regression contracts', () => {
     expect(block('.alert-center-backdrop')).not.toContain('backdrop-filter')
     expect(radioChecked).toContain('background-image: radial-gradient')
     expect(radioChecked).toContain('background-color: var(--primary)')
-    expect(radioDarkChecked).toContain('border-color: #93c5fd')
-    expect(radioDarkChecked).toContain('background-color: #2563eb')
+    expect(radioDarkChecked).toContain('border-color: #9fc3ff')
+    expect(radioDarkChecked).toContain('background-color: #5b8cff')
     expect(checkboxChecked).toContain('background-image: url("data:image/svg+xml')
     expect(checkboxChecked).toContain('background-color: var(--primary)')
-    expect(checkboxDarkChecked).toContain('border-color: #93c5fd')
-    expect(checkboxDarkChecked).toContain('background-color: #2563eb')
+    expect(checkboxDarkChecked).toContain('border-color: #9fc3ff')
+    expect(checkboxDarkChecked).toContain('background-color: #5b8cff')
   })
 
   it('keeps workspace tab titles ellipsized and close clicks isolated', () => {

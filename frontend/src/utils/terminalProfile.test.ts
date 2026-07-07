@@ -38,8 +38,8 @@ const profile: TerminalProfile = {
   scrollback: 10000,
   themeName: 'serverpilot-dark',
   foreground: '#eceff4',
-  background: '#17181b',
-  selectionBackground: '#5b6f8f66',
+  background: '#1f2023',
+  selectionBackground: '#5b8cff66',
   cursorColor: '#f5f7fa',
   createdAt: '',
   updatedAt: '',
@@ -67,7 +67,9 @@ describe('terminal profile ANSI colors', () => {
       expect(options.theme?.[key]).toBe(normalizeTerminalProfileTheme(profile)[key])
     }
     expect(options.theme?.foreground).toBe('#eceff4')
-    expect(options.theme?.background).toBe('#17181b')
+    expect(options.theme?.background).toBe('#1f2023')
+    expect(options.theme?.selectionBackground).toBe('#5b8cff66')
+    expect(options.theme?.blue).toBe('#6aa2ff')
     expect(options.theme?.cursor).toBe('#f5f7fa')
     expect(options.theme?.background).not.toBe('#07111f')
   })

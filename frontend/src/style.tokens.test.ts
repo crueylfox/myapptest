@@ -131,14 +131,14 @@ describe('theme and overlay tokens', () => {
   })
 
   it('uses the macOS gray palette as the production dark theme', () => {
-    expect(dark.bg).toBe('#17181b')
-    expect(dark.sidebar).toBe('#1b1c20')
-    expect(dark.panel).toBe('#202126')
-    expect(dark['panel-2']).toBe('#26272d')
+    expect(dark.bg).toBe('#1f2023')
+    expect(dark.sidebar).toBe('#202226')
+    expect(dark.panel).toBe('#26292e')
+    expect(dark['panel-2']).toBe('#2a2d32')
     expect(dark.border).toBe('rgba(255, 255, 255, .10)')
-    expect(dark.primary).toBe('#7aa2d8')
-    expect(dark['sftp-surface']).toBe('#1e1f24')
-    expect(dark['docker-console-bg']).toBe('#17181b')
+    expect(dark.primary).toBe('#6aa2ff')
+    expect(dark['sftp-surface']).toBe('#24272c')
+    expect(dark['docker-console-bg']).toBe('#1f2023')
     expect(macosGrayDark).toMatchObject({
       bg: dark.bg,
       sidebar: dark.sidebar,
@@ -159,8 +159,8 @@ describe('theme and overlay tokens', () => {
     expect(checked).toContain('background-image: radial-gradient')
     expect(checked).toContain('background-color: var(--primary)')
     expect(checked).toContain('border-color: var(--primary)')
-    expect(darkChecked).toContain('border-color: #93c5fd')
-    expect(darkChecked).toContain('background-color: #2563eb')
+    expect(darkChecked).toContain('border-color: #9fc3ff')
+    expect(darkChecked).toContain('background-color: #5b8cff')
     expect(darkChecked).toContain('background-image: radial-gradient')
   })
 
@@ -174,8 +174,8 @@ describe('theme and overlay tokens', () => {
     expect(checkbox).toContain('background-color: var(--input)')
     expect(checked).toContain('background-color: var(--primary)')
     expect(checked).toContain('background-image: url("data:image/svg+xml')
-    expect(darkChecked).toContain('border-color: #93c5fd')
-    expect(darkChecked).toContain('background-color: #2563eb')
+    expect(darkChecked).toContain('border-color: #9fc3ff')
+    expect(darkChecked).toContain('background-color: #5b8cff')
     expect(darkChecked).toContain('background-image: url("data:image/svg+xml')
   })
 
@@ -1277,12 +1277,24 @@ describe('theme and overlay tokens', () => {
     const separator = block('.transfer-popover-action-separator')
     const active = block('.transfer-popover-actions button.active')
 
-    expect(actions).toContain('gap: 6px')
+    expect(actions).toContain('gap: 10px')
     expect(separator).toContain('flex: 0 0 auto')
+    expect(separator).toContain('margin: 0 2px')
     expect(separator).toContain('pointer-events: none')
     expect(separator).toContain('color:')
     expect(active).toContain('background:')
     expect(css).not.toContain('.transfer-popover-actions button + button::before')
+  })
+
+  it('aligns settings font-size slider ticks with the range track instead of floating below it', () => {
+    const slider = block('.settings-font-slider input[type="range"]')
+    const ticks = block('.settings-font-ticks')
+    const tick = block('.settings-font-tick::before')
+
+    expect(slider).toContain('height: 24px')
+    expect(ticks).toContain('margin-top: -10px')
+    expect(ticks).toContain('padding: 0 8px')
+    expect(tick).toContain('height: 10px')
   })
 
   it('removes terminal profile divider chrome without negative margin hacks', () => {

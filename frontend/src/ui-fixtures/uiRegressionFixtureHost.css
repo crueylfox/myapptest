@@ -123,7 +123,7 @@ body,
   display: grid;
   place-items: stretch;
   border-color: var(--border);
-  background: #17181b;
+  background: #1f2023;
 }
 
 .ui-fixture-compact-monitor {
@@ -161,7 +161,7 @@ body,
   min-height: 0;
   display: grid;
   place-items: center;
-  background: #17181b;
+  background: #1f2023;
 }
 
 .ui-fixture-local-workspace .local-terminal-view-stub {

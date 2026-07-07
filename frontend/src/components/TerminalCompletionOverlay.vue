@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import type { CommandSuggestion } from '../types'
 import type { TerminalCompletionPosition } from '../composables/terminalCompletionPosition'
 import CommandText from './CommandText.vue'
@@ -18,6 +18,7 @@ const emit = defineEmits<{
   insert: [suggestion: CommandSuggestion]
   disable: []
 }>()
+const overlayRef = ref<HTMLElement | null>(null)
 
 const overlayStyle = computed(() => props.position
   ? {
@@ -35,10 +36,16 @@ function sourceLabel(suggestion: CommandSuggestion) {
   if (suggestion.source === 'builtin') return '内置'
   return '建议'
 }
+watch(() => [props.open, props.selectedIndex, props.suggestions.length] as const, async () => {
+  if (!props.open || props.selectedIndex < 0 || props.selectedIndex >= props.suggestions.length) return
+  await nextTick()
+  const selected = overlayRef.value?.querySelector<HTMLElement>('[data-testid="completion-selected"]')
+  selected?.scrollIntoView?.({ block: 'nearest' })
+}, { flush: 'post' })
 </script>
 
 <template>
-  <div v-if="open" class="terminal-completion" data-testid="terminal-completion-overlay" :style="overlayStyle">
+  <div v-if="open" ref="overlayRef" class="terminal-completion" data-testid="terminal-completion-overlay" :style="overlayStyle">
     <header>
       <strong>命令补全</strong>
       <span>{{ busy ? '加载中' : `${suggestions.length} 条` }}</span>
