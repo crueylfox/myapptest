@@ -1126,6 +1126,19 @@ describe('theme and overlay tokens', () => {
     expect(splitterStyles).not.toContain('line-height')
   })
 
+  it('renders workspace splitters as equal one-pixel hairlines inside larger hit areas', () => {
+    const base = block('.horizontal-splitter, .vertical-splitter')
+    const sharedLine = block('.horizontal-splitter::before, .vertical-splitter::before')
+    const horizontalLine = block('.horizontal-splitter::before')
+    const verticalLine = block('.vertical-splitter::before')
+
+    expect(base).toContain('background: transparent')
+    expect(base).toContain('isolation: isolate')
+    expect(sharedLine).toContain('background: var(--splitter-line)')
+    expect(horizontalLine).toContain('height: 1px')
+    expect(verticalLine).toContain('width: 1px')
+  })
+
   it('keeps terminal surfaces continuous without fake xterm padding', () => {
     const terminalHostStyles = block('.terminal-view')
     const xtermStyles = block('.terminal-view .xterm')
@@ -1215,6 +1228,17 @@ describe('theme and overlay tokens', () => {
     expect(sparklinePath).not.toContain('stroke-dasharray')
     expect(css).not.toContain('stroke-dasharray')
     expect(css).not.toContain('.network-stat-row {')
+  })
+
+  it('keeps compact monitor summary network rates on one line', () => {
+    const networkLine = block('.compact-resource-network .resource-line')
+    const rate = block('.compact-resource-network .resource-line span')
+    const upload = block('.compact-resource-network .resource-line small')
+
+    expect(networkLine).toContain('grid-template-columns: 34px minmax(max-content, 1fr) minmax(max-content, 1fr)')
+    expect(rate).toContain('white-space: nowrap')
+    expect(rate).toContain('text-align: right')
+    expect(upload).toContain('white-space: nowrap')
   })
 
   it('centers final settings navigation labels with readable typography', () => {

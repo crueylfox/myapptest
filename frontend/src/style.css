@@ -9,6 +9,7 @@
   --panel-2: #2a2d32;
   --panel-soft: #24272c;
   --border: rgba(255, 255, 255, .10);
+  --splitter-line: rgba(255, 255, 255, .12);
   --text: #eceff4;
   --muted: #a8adb7;
   --primary: #6aa2ff;
@@ -63,6 +64,7 @@
   --panel-2: #2a2d32;
   --panel-soft: #24272c;
   --border: rgba(255, 255, 255, .10);
+  --splitter-line: rgba(255, 255, 255, .12);
   --text: #eceff4;
   --muted: #a8adb7;
   --primary: #6aa2ff;
@@ -106,6 +108,7 @@
   --panel-2: #f5f7fa;
   --panel-soft: #f8fafc;
   --border: #cfd8e6;
+  --splitter-line: #cfd8e6;
   --text: #172234;
   --muted: #526276;
   --primary: #326fde;
@@ -715,6 +718,9 @@ button { border: 0; cursor: pointer; background: transparent; }
 .resource-line strong { font-size: 13px; }
 .resource-line span { color: var(--text); text-align: right; font-size: 15px; font-variant-numeric: tabular-nums; }
 .resource-line small { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); text-align: right; font-size: 12px; }
+.compact-resource-network .resource-line { grid-template-columns: 34px minmax(max-content, 1fr) minmax(max-content, 1fr); }
+.compact-resource-network .resource-line span { white-space: nowrap; text-align: right; }
+.compact-resource-network .resource-line small { white-space: nowrap; }
 .metric-progress { height: 4px; overflow: hidden; border-radius: 999px; background: color-mix(in srgb, var(--progress-track) 74%, transparent); }
 .metric-progress i { display: block; height: 100%; max-width: 100%; background: color-mix(in srgb, var(--primary) 58%, transparent); }
 .metric-progress.memory i { background: color-mix(in srgb, #70d787 50%, transparent); }
@@ -890,10 +896,13 @@ button { border: 0; cursor: pointer; background: transparent; }
 .network-diag-status-badge.is-canceled { border-color: #f2aa4c66; background: #f2aa4c22; color: #f2c777; }
 .network-diag-status-badge.is-failed { border-color: #ef5b6777; background: #ef5b6724; color: #f3a0a7; }
 .network-diagnostics-output { flex: 1 1 auto; min-height: 0; margin: 0; padding: 10px; overflow: auto; border: 1px solid var(--border); border-radius: 7px; background: #050914; color: #d8e2f1; font-family: "Cascadia Mono", "Consolas", monospace; font-size: 12px; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
-.horizontal-splitter, .vertical-splitter { position: relative; padding: 0; background: var(--border); }
+.horizontal-splitter::before { width: 100%; height: 1px; }
+.vertical-splitter::before { width: 1px; height: 100%; }
+.horizontal-splitter, .vertical-splitter { position: relative; isolation: isolate; padding: 0; background: transparent; }
+.horizontal-splitter::before, .vertical-splitter::before { content: ""; position: absolute; z-index: 0; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 999px; background: var(--splitter-line); pointer-events: none; }
 .horizontal-splitter { min-height: 10px; cursor: row-resize; }
 .vertical-splitter { grid-column: 2; grid-row: 1 / 3; min-width: 10px; cursor: col-resize; }
-.horizontal-splitter:hover, .vertical-splitter:hover { background: color-mix(in srgb, var(--border) 76%, var(--primary) 24%); }
+.horizontal-splitter:hover::before, .vertical-splitter:hover::before { background: color-mix(in srgb, var(--splitter-line) 76%, var(--primary) 24%); }
 .mount-panel { min-height: 120px; display: grid; grid-template-rows: 24px minmax(0, 1fr); gap: 6px; overflow: hidden; padding: 9px 10px; background: var(--sidebar); }
 .split-monitorCollapsed .mount-panel, .split-mountsCollapsed .compact-monitor { min-height: 0; height: 100%; }
 .mount-panel > header { height: 24px; }

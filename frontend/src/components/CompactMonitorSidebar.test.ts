@@ -118,6 +118,8 @@ describe('CompactMonitorSidebar', () => {
 
     expect(wrapper.find('.compact-resource-disk').exists()).toBe(true)
     expect(wrapper.find('.compact-resource-network').exists()).toBe(true)
+    expect(wrapper.find('.compact-resource-disk strong').text()).toBe('磁盘')
+    expect(wrapper.find('.compact-resource-network strong').text()).toBe('网络')
     expect(wrapper.get('.monitor-details-toggle').text()).toContain('详细监控')
     expect(wrapper.get('.process-panel').attributes('style')).toContain('display: none')
     expect(wrapper.get('.network-compact').attributes('style')).toContain('display: none')

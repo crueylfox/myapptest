@@ -376,7 +376,7 @@ onBeforeUnmount(() => {
       </section>
       <section class="compact-resource compact-resource-disk">
         <div class="resource-line">
-          <strong>纾佺洏</strong>
+          <strong>磁盘</strong>
           <span>{{ formatPercent(diskPercent) }}</span>
           <small>{{ diskSummary }}</small>
         </div>
@@ -384,7 +384,7 @@ onBeforeUnmount(() => {
       </section>
       <section class="compact-resource compact-resource-network">
         <div class="resource-line">
-          <strong>缃戠粶</strong>
+          <strong>网络</strong>
           <span>{{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
           <small>{{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</small>
         </div>
