@@ -891,7 +891,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .table-column-resizer:hover::before { background: #60a5fa; }
 .network-details-empty { margin: 18px; color: var(--muted); text-align: center; font-size: var(--ui-font-size-small); }
 .network-diagnostics-panel { height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 8px 16px 14px; overflow: hidden; }
-.network-diagnostics-commandbar { flex: 0 0 auto; min-width: 0; min-height: 38px; display: flex; flex-wrap: nowrap; align-items: center; gap: 6px 8px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+.network-diagnostics-commandbar { flex: 0 0 auto; min-width: 0; min-height: 38px; display: flex; flex-wrap: nowrap; align-items: center; gap: 6px 8px; padding: 6px 8px; border: 1px solid var(--glass-border); border-radius: 8px; background: var(--glass-card-bg); }
 .network-diagnostics-commandbar .network-diagnostics-types { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 4px; padding: 0; border-right: 0; background: transparent; }
 .network-diagnostics-commandbar .network-diagnostics-types .command-light-action { justify-content: center; width: auto; min-height: 30px; padding: 3px 8px; border: 0; background: transparent; white-space: nowrap; }
 .network-diagnostics-commandbar .network-diagnostics-types .command-light-action.active { border-color: transparent; color: var(--text); background: rgba(122, 162, 216, .18); box-shadow: inset 0 -2px 0 var(--primary); }
@@ -900,10 +900,10 @@ button { border: 0; cursor: pointer; background: transparent; }
 .network-diagnostics-target input { width: 220px; min-width: 160px; max-width: 280px; height: 34px; }
 .network-diagnostics-port input { width: 84px; height: 34px; }
 .network-diagnostics-modal { display: flex; flex-direction: column; width: min(900px, calc(100vw - 32px)); height: min(640px, calc(100vh - 32px)); min-height: 0; padding: 0; overflow: hidden; }
-.network-diagnostics-modal > header { flex: 0 0 auto; padding: 10px 16px 8px; border-bottom: 1px solid var(--border); }
+.network-diagnostics-modal > header { flex: 0 0 auto; padding: 10px 16px 8px; border-bottom: 1px solid var(--glass-border); background: var(--glass-header-bg); }
 .network-diagnostics-modal h2 { margin: 0 0 3px; }
 .network-diagnostics-modal header small { color: var(--muted); }
-.network-diagnostics-toolbar { flex: 0 0 auto; display: flex; flex-wrap: nowrap; align-items: end; gap: 10px; padding: 8px 16px; border-bottom: 1px solid var(--border); }
+.network-diagnostics-toolbar { flex: 0 0 auto; display: flex; flex-wrap: nowrap; align-items: end; gap: 10px; padding: 8px 16px; border-bottom: 1px solid var(--glass-border); background: var(--glass-header-bg); }
 .network-diag-select-field, .network-diagnostics-form label { display: grid; min-width: 0; gap: 4px; color: var(--muted); font-size: var(--ui-font-size-small); }
 .network-diag-server-select-field { flex: 0 0 420px; width: 420px; min-width: 320px; max-width: 420px; }
 .network-diag-interface-select-field { flex: 0 0 280px; width: 280px; min-width: 220px; max-width: 280px; }
@@ -911,8 +911,8 @@ button { border: 0; cursor: pointer; background: transparent; }
 .network-diag-select { width: 100%; max-width: 100%; padding: 0 42px 0 10px; background-color: var(--input); line-height: 30px; }
 .network-diag-server-select, .network-diag-interface-select { min-width: 0; }
 .network-diag-refresh-button { height: 32px; min-width: 64px; width: auto; padding: 0 12px; align-self: end; }
-.network-diagnostics-body { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 104px minmax(0, 1fr); }
-.network-diagnostics-types { display: grid; align-content: start; gap: 5px; padding: 10px; border-right: 1px solid var(--border); background: var(--sidebar); }
+.network-diagnostics-body { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 104px minmax(0, 1fr); background: var(--glass-panel-bg); }
+.network-diagnostics-body > .network-diagnostics-types { display: grid; align-content: start; gap: 5px; padding: 10px; border-right: 1px solid var(--glass-border); background: var(--glass-card-bg); }
 .network-diagnostics-types button { justify-content: flex-start; width: 100%; min-height: 32px; padding: 5px 9px; border: 0; background: transparent; color: var(--muted); }
 .network-diagnostics-types button.active { border-color: transparent; background: rgba(122, 162, 216, .18); color: var(--text); box-shadow: inset 0 -2px 0 var(--primary); }
 .network-diagnostics-main { min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); align-content: start; gap: 8px; padding: 8px 12px 10px; overflow: hidden; }
@@ -1096,8 +1096,8 @@ button { border: 0; cursor: pointer; background: transparent; }
 .sftp-content.wails-drop-target-active .sftp-drop-overlay, .sftp-content.drop-active .sftp-drop-overlay { display: grid; }
 .sftp-drop-overlay strong { font-size: 15px; }
 .sftp-drop-overlay span { max-width: min(620px, 80%); overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
-.remote-properties-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(6, 10, 18, .58); }
-.remote-properties-dialog { width: min(720px, 100%); max-height: min(760px, calc(100vh - 36px)); display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto auto; gap: 12px; overflow: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); box-shadow: 0 22px 70px var(--shadow-strong); padding: 14px; }
+.remote-properties-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: flex; align-items: center; justify-content: center; padding: 18px; background: var(--glass-backdrop-bg); }
+.remote-properties-dialog { width: min(720px, 100%); max-height: min(760px, calc(100vh - 36px)); display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto auto; gap: 12px; overflow: auto; border: 1px solid var(--glass-border); border-radius: 10px; background: var(--glass-surface-bg); box-shadow: var(--glass-shadow); padding: 14px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
 .remote-properties-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .remote-properties-header div { min-width: 0; display: grid; gap: 3px; }
 .remote-properties-header strong { font-size: 14px; }
@@ -1121,8 +1121,8 @@ button { border: 0; cursor: pointer; background: transparent; }
 .remote-permission-grid label { display: flex; align-items: center; justify-content: center; min-height: 26px; border: 1px solid var(--border); border-radius: 7px; background: var(--panel-2); }
 .remote-permission-grid input { width: 15px; height: 15px; }
 .remote-properties-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); padding-top: 12px; }
-.sftp-editor-backdrop { position: fixed; z-index: var(--z-modal); inset: 0; display: grid; place-items: center; padding: 28px; background: var(--editor-backdrop); }
-.sftp-editor { width: min(1020px, 94vw); height: min(720px, 88vh); min-height: 390px; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); box-shadow: 0 24px 80px var(--shadow-deep); }
+.sftp-editor-backdrop { position: fixed; z-index: var(--z-modal); inset: 0; display: grid; place-items: center; padding: 28px; background: var(--glass-backdrop-bg); }
+.sftp-editor { width: min(1020px, 94vw); height: min(720px, 88vh); min-height: 390px; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; overflow: hidden; border: 1px solid var(--glass-border); border-radius: 8px; background: var(--glass-surface-bg); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
 .sftp-editor header, .sftp-editor footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
 .sftp-editor footer { border-top: 1px solid var(--border); border-bottom: 0; }
 .sftp-editor header div { min-width: 0; display: grid; gap: 3px; }
@@ -1131,7 +1131,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .sftp-editor-header { grid-row: 1; }
 .sftp-editor-title { min-width: 0; }
 .sftp-editor-close { flex: 0 0 auto; }
-.sftp-editor-toolbar { grid-row: 2; min-width: 0; display: grid; gap: 0; border-bottom: 1px solid var(--border); background: var(--sidebar); }
+.sftp-editor-toolbar { grid-row: 2; min-width: 0; display: grid; gap: 0; border-bottom: 1px solid var(--glass-border); background: var(--glass-header-bg); }
 .sftp-editor-search { min-width: 0; display: flex; align-items: center; gap: 6px; padding: 8px 12px; overflow: hidden; }
 .sftp-editor-toolbar-nowrap { flex-wrap: nowrap; }
 .sftp-editor-search input[type="search"] { flex: 1 1 220px; width: auto; min-width: 160px; max-width: 360px; height: 28px; font-size: 12px; }
@@ -1149,7 +1149,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .sftp-editor-replace-row label { min-width: 0; display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; }
 .sftp-editor-replace-row input[type="search"], .sftp-editor-replace-row input[type="text"] { flex: 1 1 180px; min-width: 140px; max-width: 260px; height: 28px; font-size: 12px; }
 .sftp-editor-replace-row .replace-notice { color: var(--primary); font-size: 11px; white-space: nowrap; }
-.sftp-editor-more-menu { position: fixed; z-index: calc(var(--z-modal) + 1); min-width: 150px; display: grid; gap: 3px; padding: 6px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); box-shadow: 0 16px 42px var(--shadow-strong); }
+.sftp-editor-more-menu { position: fixed; z-index: calc(var(--z-modal) + 1); min-width: 150px; display: grid; gap: 3px; padding: 6px; border: 1px solid var(--glass-border); border-radius: 8px; background: var(--glass-card-bg); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
 .sftp-editor-more-menu button { display: flex; align-items: center; justify-content: flex-start; border-radius: 6px; color: var(--text); text-align: left; }
 .sftp-editor-more-menu button:hover:not(:disabled) { background: var(--panel-2); }
 .sftp-editor-more-menu button:disabled { cursor: not-allowed; opacity: .58; }

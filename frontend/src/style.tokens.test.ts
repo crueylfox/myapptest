@@ -265,6 +265,49 @@ describe('theme and overlay tokens', () => {
     expect(alertBackdrop).not.toContain('backdrop-filter')
   })
 
+  it('uses shared glass tokens for remaining high-risk modal surfaces', () => {
+    const remoteBackdrop = block('.remote-properties-backdrop')
+    const remoteDialog = block('.remote-properties-dialog')
+    const editorBackdrop = block('.sftp-editor-backdrop')
+    const editor = block('.sftp-editor')
+    const editorToolbar = block('.sftp-editor-toolbar')
+    const editorMore = block('.sftp-editor-more-menu')
+    const diagnosticsHeader = block('.network-diagnostics-modal > header')
+    const diagnosticsToolbar = block('.network-diagnostics-toolbar')
+    const diagnosticsBody = block('.network-diagnostics-body')
+    const diagnosticsTypes = block('.network-diagnostics-body > .network-diagnostics-types')
+    const diagnosticsCommandbar = block('.network-diagnostics-commandbar')
+
+    for (const backdrop of [remoteBackdrop, editorBackdrop]) {
+      expect(backdrop).toContain('background: var(--glass-backdrop-bg)')
+      expect(backdrop).not.toContain('backdrop-filter')
+    }
+
+    for (const surface of [remoteDialog, editor]) {
+      expect(surface).toContain('border: 1px solid var(--glass-border)')
+      expect(surface).toContain('background: var(--glass-surface-bg)')
+      expect(surface).toContain('box-shadow: var(--glass-shadow)')
+      expect(surface).toContain('backdrop-filter: var(--glass-blur)')
+      expect(surface).toContain('-webkit-backdrop-filter: var(--glass-blur)')
+    }
+
+    for (const headerSurface of [editorToolbar, diagnosticsHeader, diagnosticsToolbar]) {
+      expect(headerSurface).toContain('border-bottom: 1px solid var(--glass-border)')
+      expect(headerSurface).toContain('background: var(--glass-header-bg)')
+    }
+
+    expect(editorMore).toContain('border: 1px solid var(--glass-border)')
+    expect(editorMore).toContain('background: var(--glass-card-bg)')
+    expect(editorMore).toContain('box-shadow: var(--glass-shadow)')
+    expect(editorMore).toContain('backdrop-filter: var(--glass-blur)')
+    expect(editorMore).toContain('-webkit-backdrop-filter: var(--glass-blur)')
+    expect(diagnosticsBody).toContain('background: var(--glass-panel-bg)')
+    expect(diagnosticsTypes).toContain('border-right: 1px solid var(--glass-border)')
+    expect(diagnosticsTypes).toContain('background: var(--glass-card-bg)')
+    expect(diagnosticsCommandbar).toContain('border: 1px solid var(--glass-border)')
+    expect(diagnosticsCommandbar).toContain('background: var(--glass-card-bg)')
+  })
+
   it('keeps workspace tab close control right-aligned without layout hacks', () => {
     const tab = block('.terminal-tab')
     const close = block('.terminal-close')
