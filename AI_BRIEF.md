@@ -103,10 +103,10 @@ Updated: 2026-07-07
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local focused frontend regression tests for layout, settings slider, local terminal, monitor density, and terminal profile: passed, 6 files / 201 tests.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1669 tests, 88 Playwright tests, and frontend build.
+- Local focused beta34 frontend regression tests for compact monitor, terminal profile, and style tokens: passed, 3 files / 79 tests.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1672 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
-- Local Windows `wails build -platform darwin/universal`: not run for this hotfix; Windows local builds do not produce the macOS app.
+- Local Windows `wails build`: passed for beta34; EXE `build\bin\ServerPilot.exe`; SHA-256 `C1E07E50D5FBDB6494EBD063B6301B7DE0E26A76DD02C24B2310C175CE74BD52`; Windows local `wails build -platform darwin/universal` was not run and does not produce a macOS app.
 - GitHub Actions `Build macOS` run `28839378200`: success for commit `a1fd256928a924a05390b62e1208ca2bc377666a`.
 - GitHub Actions `Build macOS` run `28842976967`: success for commit `77516e620d64cbac9497c873edc47277ec9cc480`.
 - Artifact: `ServerPilot-macos-unsigned`.
