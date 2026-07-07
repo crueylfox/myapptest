@@ -8,7 +8,7 @@ Updated: 2026-07-07
 - Previous delivery version: `0.5.0-beta.28` PASS.
 - Current VERSION: `0.5.0-beta.35`.
 - Recommended delivery version: `0.5.0-beta.35` user-smoke-required.
-- Current round: beta35 Windows/macOS default terminal theme sync and Windows EXE comparison package after beta31 cross-platform Key Vault backup, beta32 terminal layout, beta33 slider/prompt, and beta34 monitor/color packages.
+- Current round: beta35 Windows/macOS default terminal theme sync, compact monitor network-summary removal, and Windows EXE comparison package after beta31 cross-platform Key Vault backup, beta32 terminal layout, beta33 slider/prompt, and beta34 monitor/color packages.
 - Version bump this hotfix: yes; `0.5.0-beta.34` -> `0.5.0-beta.35` before repackaging.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
@@ -103,10 +103,10 @@ Updated: 2026-07-07
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local focused beta34 frontend regression tests for compact monitor, terminal profile, and style tokens: passed, 3 files / 79 tests.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1672 tests, 89 Playwright tests, and frontend build.
+- Local focused beta35 regression tests for persistence migration and compact monitor: passed.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1671 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
-- Local Windows `wails build`: passed for beta34; EXE `build\bin\ServerPilot.exe`; SHA-256 `C1E07E50D5FBDB6494EBD063B6301B7DE0E26A76DD02C24B2310C175CE74BD52`; Windows local `wails build -platform darwin/universal` was not run and does not produce a macOS app.
+- Local Windows `wails build`: passed for beta35; EXE `build\bin\ServerPilot.exe`; SHA-256 `458759D87E8A469A33E5B33FDF8AC12B25F2823165AFF4C6F01482FAE7E96441`; Windows local `wails build -platform darwin/universal` was not run and does not produce a macOS app.
 - GitHub Actions `Build macOS` run `28839378200`: success for commit `a1fd256928a924a05390b62e1208ca2bc377666a`.
 - GitHub Actions `Build macOS` run `28842976967`: success for commit `77516e620d64cbac9497c873edc47277ec9cc480`.
 - Artifact: `ServerPilot-macos-unsigned`.
