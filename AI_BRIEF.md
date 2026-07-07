@@ -107,12 +107,13 @@ Updated: 2026-07-07
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local focused beta36 regression tests for macOS native font/titlebar chrome: passed.
+- Local focused beta38 regression tests for macOS monitor sidebar titlebar safe-zone: passed.
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1674 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions `Build macOS` run `28853035534`: success for commit `102ee45f8ccc1c7e669f0db3159af440f3ea3bcf`.
+- GitHub Actions `Build macOS` run `28856250391`: success for commit `24f6ad52a951f7c5f3b0d806bbd81af3c5c009bb`.
 - Artifact: `ServerPilot-macos-unsigned`.
+- Artifact API digest: `sha256:4e38a6f3dd1a207efef623d672baee1f776904cb2ab81e057e847c3e07a3e16e`.
 - Artifact contains `ServerPilot-macos-universal-unsigned.zip`, `ServerPilot-macos-universal-unsigned.dmg`, and their `.sha256` files.
 - macOS artifact came from the GitHub Actions macOS runner.
 
