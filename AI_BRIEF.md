@@ -6,10 +6,10 @@ Updated: 2026-07-07
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.39`.
-- Recommended delivery version: `0.5.0-beta.39` user-smoke-required.
-- Current round: beta39 glass visual token V1 + manager dialog V2 adaptation after beta31 cross-platform Key Vault backup and beta38 macOS monitor sidebar titlebar safe-zone hotfix.
-- Version bump this hotfix: yes; `0.5.0-beta.38` -> `0.5.0-beta.39` before repackaging.
+- Current VERSION: `0.5.0-beta.40`.
+- Recommended delivery version: `0.5.0-beta.40` user-smoke-required.
+- Current round: beta40 glass visual V3/V4 packaging after beta31 cross-platform Key Vault backup and beta39 glass token rollout.
+- Version bump this packaging round: yes; `0.5.0-beta.39` -> `0.5.0-beta.40` before repackaging.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Beta31 handoff commit: `09fa695` (`chore: finalize beta31 handoff and generated bindings`).
 
@@ -62,14 +62,7 @@ Updated: 2026-07-07
   - Settings radio policy options use full-surface checked styling, not a left-marker-only active state.
   - macOS local terminal initial `%` stripping handles split output chunks without changing SSH terminal behavior.
 - Beta31 same-version terminal/theme/queue follow-up keeps the transfer queue above the status bar, strengthens the Codex-like blue accent on graphite surfaces, fixes command-completion keyboard auto-scroll, aligns font-size slider ticks with the track, and handles ANSI-prefixed stray macOS `%` prompts.
-- Beta32 terminal layout/density/color hotfix:
-  - Version bumped from `0.5.0-beta.31` to `0.5.0-beta.32` before repackaging.
-  - Floating Command button reclamps after terminal/SFTP layout changes.
-  - Default SFTP bottom pane height is reduced to improve SSH terminal density.
-  - Settings UI font-size slider ticks align with the track.
-  - macOS local terminal strips the initial isolated `%` repaint without changing SSH or Windows shells.
-  - Default dark terminal profile uses graphite/Codex-like background with brighter blue ANSI/accent handling.
-  - Compact monitor defaults to a lighter summary mode with explicit expand/collapse for details.
+- Beta32 terminal layout/density/color hotfix covered Command button reclamp, SFTP density, font slider ticks, macOS `%` prompt stripping, graphite terminal colors, and compact monitor density.
 - Beta36 macOS native font/titlebar hotfix:
   - macOS UI font stack uses Apple system/SF/PingFang/Helvetica fallbacks through platform-specific CSS variables.
   - macOS terminal default font stack uses the native monospace CSS token while custom terminal fonts remain unchanged.
@@ -86,6 +79,10 @@ Updated: 2026-07-07
   - `style.css` defines shared glass backdrop, surface, panel, card, border, shadow, blur, and header tokens for dark/light themes.
   - Tunnel, Docker, Process, and Service manager dialog CSS consumes shared glass tokens for shell, header/toolbar, panels, and cards.
   - This round only changes UI surface CSS and tests; no event, store, API, data-flow, polling, connection, or filtering logic changed.
+- Beta40 glass visual V3/V4 packaging:
+  - Alert Center, Multi-server Dashboard, Network Details, SFTP properties/editor, editor More menu, and Network Diagnostics surfaces consume shared glass tokens.
+  - macOS collapsed local/SSH workspace topbar restores the traffic-light safe-left padding so tabs do not sit under native window buttons.
+  - This round remains UI surface CSS/tests only; no event, store, API, data-flow, polling, connection, or filtering logic changed.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.
@@ -111,8 +108,11 @@ Updated: 2026-07-07
 ## 4. Validation
 - Local `go test ./...`: passed.
 - Local focused beta39 regression tests for glass tokens and manager dialog CSS adoption: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1678 tests, 89 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1679 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
+- Local Windows `wails build`: passed and produced the Windows EXE only.
+- Beta40 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.40.exe`.
+- Beta40 Windows EXE SHA-256: `F8A092C93F4E21CBBB878135D83B8683CE6CB313367CE1B595632819E7848AC9`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 - GitHub Actions `Build macOS` run `28856250391`: success for commit `24f6ad52a951f7c5f3b0d806bbd81af3c5c009bb`.
 - Artifact: `ServerPilot-macos-unsigned`.
