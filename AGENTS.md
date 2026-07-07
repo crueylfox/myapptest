@@ -84,7 +84,13 @@ Large refactor mode:
 
 Version bump rule:
 
-- Any development round that produces a new `build/bin/ServerPilot.exe` must bump the application version in the same commit.
+- Any development round that produces a new user-deliverable package or
+  installer must bump the application version in the same commit before
+  packaging. This includes Windows EXE builds and GitHub Actions macOS
+  artifacts.
+- If a request asks for a same-version/no-bump build and also asks to repackage
+  a user-deliverable artifact, treat that as a conflict and stop to report it
+  instead of producing another same-version package.
 - Version sources must stay synchronized:
   - `VERSION`
   - `internal/version`
@@ -94,5 +100,7 @@ Version bump rule:
   - tests that assert app version
 - `GetAppVersion()` and Settings header must show the bumped version.
 - `AI_BRIEF.md` must record old version, new version, EXE path, and SHA-256.
-- Do not produce a new EXE with the same version as the previous delivered EXE unless the round is explicitly docs-only and no EXE is built.
+- Do not produce a new EXE or macOS artifact with the same version as the
+  previous delivered package unless the round is explicitly docs-only and no
+  package is built.
 - For alpha/beta builds, increment the prerelease number, e.g. `0.4.0-beta.1` -> `0.4.0-beta.2`.
