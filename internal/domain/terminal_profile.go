@@ -107,17 +107,17 @@ func DefaultTerminalProfile() TerminalProfile {
 		ID:                  DefaultTerminalProfileID,
 		Name:                "默认",
 		FontFamily:          "Consolas, Cascadia Mono, monospace",
-		FontSize:            15,
+		FontSize:            13,
 		LineHeight:          1.2,
 		LetterSpacing:       0,
 		CursorStyle:         TerminalCursorBlock,
 		CursorBlink:         true,
 		Scrollback:          10000,
 		ThemeName:           TerminalThemeServerPilotDark,
-		Foreground:          "#dbeafe",
-		Background:          "#07111f",
-		SelectionBackground: "#2563eb66",
-		CursorColor:         "#ffffff",
+		Foreground:          "#d7dde5",
+		Background:          "#15171a",
+		SelectionBackground: "#5b8cff47",
+		CursorColor:         "#dce6f2",
 	}
 }
 

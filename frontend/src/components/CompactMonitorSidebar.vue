@@ -382,14 +382,6 @@ onBeforeUnmount(() => {
         </div>
         <div class="metric-progress disk"><i :style="{ width: `${clampPercent(diskPercent)}%` }"></i></div>
       </section>
-      <section class="compact-resource compact-resource-network">
-        <div class="resource-line">
-          <strong>网络</strong>
-          <span>{{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
-          <small>{{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</small>
-        </div>
-      </section>
-
       <button type="button" class="monitor-details-toggle" @click="toggleMonitorDetails">
         {{ monitorDetailsExpanded ? '收起详细监控' : '展开详细监控' }}
       </button>

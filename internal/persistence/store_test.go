@@ -30,7 +30,7 @@ func TestDefaultSettingsAndMigrationVersion(t *testing.T) {
 		t.Fatalf("settings = %+v", value)
 	}
 	version, err := store.MigrationVersion(ctx)
-	if err != nil || version != 24 {
+	if err != nil || version != 25 {
 		t.Fatalf("migration version=%d err=%v", version, err)
 	}
 }
@@ -66,7 +66,7 @@ CREATE TABLE credential_refs (
 			t.Fatal(err)
 		}
 		version, err := store.MigrationVersion(ctx)
-		if err != nil || version != 24 {
+		if err != nil || version != 25 {
 			t.Fatalf("migration version=%d err=%v", version, err)
 		}
 		settings, err := store.GetSettings(ctx)
@@ -793,6 +793,7 @@ func TestTerminalProfileCRUDAndResolution(t *testing.T) {
 	if _, err := store.CreateTerminalProfile(ctx, terminalProfileRequest("默认")); !errors.Is(err, ErrTerminalProfileNameExists) {
 		t.Fatalf("duplicate profile err=%v", err)
 	}
+	assertGraphiteDefaultTerminalProfile(t, profiles[0])
 	custom, err := store.CreateTerminalProfile(ctx, terminalProfileRequest("Work"))
 	if err != nil {
 		t.Fatal(err)
@@ -870,6 +871,134 @@ func TestTerminalProfileCRUDAndResolution(t *testing.T) {
 	}
 	if resolved.ID != custom.ID {
 		t.Fatalf("resolved after force delete should inherit default = %+v", resolved)
+	}
+}
+
+func TestLegacyDefaultTerminalProfileMigratesToGraphiteTheme(t *testing.T) {
+	ctx := context.Background()
+	path := filepath.Join(t.TempDir(), "legacy-terminal-profile.db")
+	createTerminalProfileMigrationFixture(t, path, terminalProfileMigrationFixture{
+		fontSize:            15,
+		foreground:          "#dbeafe",
+		background:          "#07111f",
+		selectionBackground: "#2563eb66",
+		cursorColor:         "#ffffff",
+	})
+	store, err := Open(ctx, path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer store.Close()
+	profile, err := store.GetTerminalProfile(ctx, domain.DefaultTerminalProfileID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertGraphiteDefaultTerminalProfile(t, profile)
+}
+
+func TestCustomizedDefaultTerminalProfileIsNotOverwrittenByGraphiteMigration(t *testing.T) {
+	ctx := context.Background()
+	path := filepath.Join(t.TempDir(), "custom-terminal-profile.db")
+	createTerminalProfileMigrationFixture(t, path, terminalProfileMigrationFixture{
+		fontSize:            15,
+		foreground:          "#ffffff",
+		background:          "#07111f",
+		selectionBackground: "#2563eb66",
+		cursorColor:         "#ffffff",
+	})
+	store, err := Open(ctx, path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer store.Close()
+	profile, err := store.GetTerminalProfile(ctx, domain.DefaultTerminalProfileID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if profile.Foreground != "#ffffff" ||
+		profile.Background != "#07111f" ||
+		profile.SelectionBackground != "#2563eb66" ||
+		profile.CursorColor != "#ffffff" ||
+		profile.FontSize != 15 {
+		t.Fatalf("customized profile was overwritten: %+v", profile)
+	}
+}
+
+type terminalProfileMigrationFixture struct {
+	fontSize            int
+	foreground          string
+	background          string
+	selectionBackground string
+	cursorColor         string
+}
+
+func createTerminalProfileMigrationFixture(t *testing.T, path string, fixture terminalProfileMigrationFixture) {
+	t.Helper()
+	ctx := context.Background()
+	db, err := sql.Open("sqlite", path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = db.ExecContext(ctx, `
+CREATE TABLE schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL);
+CREATE TABLE terminal_profiles (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    font_family TEXT NOT NULL,
+    font_size INTEGER NOT NULL,
+    line_height REAL NOT NULL,
+    letter_spacing REAL NOT NULL,
+    cursor_style TEXT NOT NULL,
+    cursor_blink INTEGER NOT NULL,
+    scrollback INTEGER NOT NULL,
+    theme_name TEXT NOT NULL,
+    foreground TEXT NOT NULL,
+    background TEXT NOT NULL,
+    selection_background TEXT NOT NULL,
+    cursor_color TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);`)
+	if err != nil {
+		_ = db.Close()
+		t.Fatal(err)
+	}
+	for version := 1; version <= 24; version++ {
+		if _, err := db.ExecContext(ctx,
+			"INSERT INTO schema_migrations(version, applied_at) VALUES(?, CURRENT_TIMESTAMP)",
+			version,
+		); err != nil {
+			_ = db.Close()
+			t.Fatal(err)
+		}
+	}
+	_, err = db.ExecContext(ctx, `INSERT INTO terminal_profiles(
+    id, name, font_family, font_size, line_height, letter_spacing,
+    cursor_style, cursor_blink, scrollback, theme_name,
+    foreground, background, selection_background, cursor_color, created_at, updated_at
+) VALUES(
+    'default', 'Default', 'Consolas, Cascadia Mono, monospace', ?, 1.2, 0,
+    'block', 1, 10000, 'serverpilot-dark',
+    ?, ?, ?, ?,
+    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+)`, fixture.fontSize, fixture.foreground, fixture.background, fixture.selectionBackground, fixture.cursorColor)
+	if closeErr := db.Close(); err == nil {
+		err = closeErr
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func assertGraphiteDefaultTerminalProfile(t *testing.T, profile domain.TerminalProfile) {
+	t.Helper()
+	if profile.FontSize != 13 ||
+		profile.Foreground != "#d7dde5" ||
+		profile.Background != "#15171a" ||
+		profile.SelectionBackground != "#5b8cff47" ||
+		profile.CursorColor != "#dce6f2" ||
+		profile.ThemeName != domain.TerminalThemeServerPilotDark {
+		t.Fatalf("default terminal profile = %+v", profile)
 	}
 }
 

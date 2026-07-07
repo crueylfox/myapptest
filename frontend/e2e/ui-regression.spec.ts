@@ -409,9 +409,9 @@ test('compact network card keeps max avg min values in a left gutter without vis
 
   const resourceRows = shell.locator('.compact-resource .resource-line')
   const resourceProgresses = shell.locator('.compact-resource .metric-progress')
-  await expect(resourceRows).toHaveCount(5)
+  await expect(resourceRows).toHaveCount(4)
   await expect(resourceProgresses).toHaveCount(4)
-  for (let index = 0; index < 5; index += 1) {
+  for (let index = 0; index < 4; index += 1) {
     const row = resourceRows.nth(index)
     const label = row.locator('strong')
     const percent = row.locator('span')

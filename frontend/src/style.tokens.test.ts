@@ -1230,17 +1230,6 @@ describe('theme and overlay tokens', () => {
     expect(css).not.toContain('.network-stat-row {')
   })
 
-  it('keeps compact monitor summary network rates on one line', () => {
-    const networkLine = block('.compact-resource-network .resource-line')
-    const rate = block('.compact-resource-network .resource-line span')
-    const upload = block('.compact-resource-network .resource-line small')
-
-    expect(networkLine).toContain('grid-template-columns: 34px minmax(max-content, 1fr) minmax(max-content, 1fr)')
-    expect(rate).toContain('white-space: nowrap')
-    expect(rate).toContain('text-align: right')
-    expect(upload).toContain('white-space: nowrap')
-  })
-
   it('centers final settings navigation labels with readable typography', () => {
     const overlayShell = block('.settings-page-overlay .settings-category-shell')
     const nav = block('.settings-category-nav')

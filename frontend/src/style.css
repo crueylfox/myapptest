@@ -718,9 +718,6 @@ button { border: 0; cursor: pointer; background: transparent; }
 .resource-line strong { font-size: 13px; }
 .resource-line span { color: var(--text); text-align: right; font-size: 15px; font-variant-numeric: tabular-nums; }
 .resource-line small { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); text-align: right; font-size: 12px; }
-.compact-resource-network .resource-line { grid-template-columns: 34px minmax(max-content, 1fr) minmax(max-content, 1fr); }
-.compact-resource-network .resource-line span { white-space: nowrap; text-align: right; }
-.compact-resource-network .resource-line small { white-space: nowrap; }
 .metric-progress { height: 4px; overflow: hidden; border-radius: 999px; background: color-mix(in srgb, var(--progress-track) 74%, transparent); }
 .metric-progress i { display: block; height: 100%; max-width: 100%; background: color-mix(in srgb, var(--primary) 58%, transparent); }
 .metric-progress.memory i { background: color-mix(in srgb, #70d787 50%, transparent); }

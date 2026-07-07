@@ -117,9 +117,8 @@ describe('CompactMonitorSidebar', () => {
     const wrapper = render({ details: false })
 
     expect(wrapper.find('.compact-resource-disk').exists()).toBe(true)
-    expect(wrapper.find('.compact-resource-network').exists()).toBe(true)
+    expect(wrapper.find('.compact-resource-network').exists()).toBe(false)
     expect(wrapper.find('.compact-resource-disk strong').text()).toBe('磁盘')
-    expect(wrapper.find('.compact-resource-network strong').text()).toBe('网络')
     expect(wrapper.get('.monitor-details-toggle').text()).toContain('详细监控')
     expect(wrapper.get('.process-panel').attributes('style')).toContain('display: none')
     expect(wrapper.get('.network-compact').attributes('style')).toContain('display: none')
@@ -223,7 +222,7 @@ describe('CompactMonitorSidebar', () => {
       swapFree: 25,
     })
     const resources = wrapper.findAll('.compact-resource')
-    expect(resources.length).toBeGreaterThanOrEqual(5)
+    expect(resources).toHaveLength(4)
     expect(resources[0].get('.metric-progress i').attributes('style')).toContain('100%')
     expect(resources[1].get('.metric-progress i').attributes('style')).toContain('0%')
     expect(resources[2].get('.metric-progress i').attributes('style')).toContain('75%')

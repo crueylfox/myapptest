@@ -333,6 +333,27 @@ UPDATE app_settings
 SET backup_import_options='{"importSettings":true,"importGroups":true,"importServers":true,"importKeyVault":true,"importHostTrust":true}',
     settings_version=15
 WHERE singleton=1;`},
+		{version: 25, sql: `
+UPDATE terminal_profiles
+SET font_size=13,
+    foreground='#d7dde5',
+    background='#15171a',
+    selection_background='#5b8cff47',
+    cursor_color='#dce6f2',
+    updated_at=CURRENT_TIMESTAMP
+WHERE id='default'
+  AND font_family='Consolas, Cascadia Mono, monospace'
+  AND font_size=15
+  AND line_height=1.2
+  AND letter_spacing=0
+  AND cursor_style='block'
+  AND cursor_blink=1
+  AND scrollback=10000
+  AND theme_name='serverpilot-dark'
+  AND foreground='#dbeafe'
+  AND background='#07111f'
+  AND selection_background='#2563eb66'
+  AND cursor_color='#ffffff';`},
 	}
 	for _, migration := range migrations {
 		var exists int
