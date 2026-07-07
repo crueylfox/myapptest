@@ -35,6 +35,13 @@ function rgbaAlpha(value: string) {
   return Number(match[1])
 }
 
+function backdropAlpha(cssBlock: string) {
+  const background = declaration(cssBlock, 'background')
+  return background === 'var(--glass-backdrop-bg)'
+    ? rgbaAlpha(declaration(block(':root'), '--glass-backdrop-bg'))
+    : rgbaAlpha(background)
+}
+
 describe('first-batch UI regression contracts', () => {
   it('keeps catalog and fixture surfaces aligned for the current fallback test layer', () => {
     const catalogIds = uiRegressionCatalog.map((surface) => surface.id)
@@ -201,10 +208,10 @@ describe('first-batch UI regression contracts', () => {
     const radioDarkChecked = block(':root:not([data-theme="light"]) input[type="radio"]:checked')
     const checkboxChecked = block('input[type="checkbox"]:checked')
     const checkboxDarkChecked = block(':root:not([data-theme="light"]) input[type="checkbox"]:checked')
-    expect(rgbaAlpha(declaration(block('.modal-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
-    expect(rgbaAlpha(declaration(block('.settings-overlay-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
-    expect(rgbaAlpha(declaration(block('.multi-server-dashboard-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
-    expect(rgbaAlpha(declaration(block('.alert-center-backdrop'), 'background'))).toBeLessThanOrEqual(0.18)
+    expect(backdropAlpha(block('.modal-backdrop'))).toBeLessThanOrEqual(0.18)
+    expect(backdropAlpha(block('.settings-overlay-backdrop'))).toBeLessThanOrEqual(0.18)
+    expect(backdropAlpha(block('.multi-server-dashboard-backdrop'))).toBeLessThanOrEqual(0.18)
+    expect(backdropAlpha(block('.alert-center-backdrop'))).toBeLessThanOrEqual(0.18)
     expect(block('.modal-backdrop')).not.toContain('backdrop-filter')
     expect(block('.settings-overlay-backdrop')).not.toContain('backdrop-filter')
     expect(block('.multi-server-dashboard-backdrop')).not.toContain('backdrop-filter')
