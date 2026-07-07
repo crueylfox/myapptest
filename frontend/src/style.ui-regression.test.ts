@@ -212,11 +212,15 @@ describe('first-batch UI regression contracts', () => {
     const visualBlurRule = block('body:has(.modal-backdrop) .app-visual-root,\nbody:has(.settings-overlay-backdrop) .app-visual-root,\nbody:has(.multi-server-dashboard-backdrop) .app-visual-root,\nbody:has(.alert-center-backdrop) .app-visual-root,\nbody:has(.docker-dialog-backdrop) .app-visual-root,\nbody:has(.tunnel-dialog-backdrop) .app-visual-root,\nbody:has(.process-dialog-backdrop) .app-visual-root,\nbody:has(.service-dialog-backdrop) .app-visual-root')
     expect(visualBlurRule).toContain('filter: blur(10px) brightness(.72)')
 
-    for (const selector of ['.settings-page-overlay', '.topbar-menu', '.server-picker']) {
+    for (const [selector, backgroundToken] of [
+      ['.settings-page-overlay', '--surface-modal-bg'],
+      ['.topbar-menu', '--surface-card-bg'],
+      ['.server-picker', '--surface-card-bg'],
+    ] as const) {
       const source = block(selector)
-      expect(source).toContain('background: rgba(')
-      expect(source).toContain('backdrop-filter: blur(')
-      expect(source).toContain('-webkit-backdrop-filter: blur(')
+      expect(source).toContain(`background: var(${backgroundToken})`)
+      expect(source).toContain('backdrop-filter: var(--surface-blur)')
+      expect(source).toContain('-webkit-backdrop-filter: var(--surface-blur)')
     }
 
     const radioChecked = block('input[type="radio"]:checked')

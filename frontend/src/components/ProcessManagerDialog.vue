@@ -853,7 +853,7 @@ function safeStringList(value: unknown): string[] {
 
 .table-sort-arrow {
   flex: 0 0 auto;
-  color: var(--material-accent-text);
+  color: var(--accent-text);
   font-size: 11px;
 }
 

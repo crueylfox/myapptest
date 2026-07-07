@@ -118,8 +118,22 @@ describe('theme and overlay tokens', () => {
       expect(tokens['material-blur']).toBeTruthy()
       expect(tokens['material-highlight']).toBeTruthy()
       expect(tokens['material-specular']).toBeTruthy()
+      expect(tokens.accent).toBeTruthy()
+      expect(tokens['accent-hover']).toBeTruthy()
+      expect(tokens['accent-soft-bg']).toBeTruthy()
+      expect(tokens['accent-muted-bg']).toBeTruthy()
+      expect(tokens['accent-border']).toBeTruthy()
+      expect(tokens['accent-focus']).toBeTruthy()
+      expect(tokens['accent-text']).toBeTruthy()
       expect(tokens['material-accent']).toBeTruthy()
-      expect(tokens.primary).toBe('var(--material-accent)')
+      expect(tokens['material-accent']).toBe('var(--accent)')
+      expect(tokens['material-accent-hover']).toBe('var(--accent-hover)')
+      expect(tokens['material-accent-soft-bg']).toBe('var(--accent-soft-bg)')
+      expect(tokens['material-accent-muted-bg']).toBe('var(--accent-muted-bg)')
+      expect(tokens['material-accent-border']).toBe('var(--accent-border)')
+      expect(tokens['material-accent-focus']).toBe('var(--accent-focus)')
+      expect(tokens['material-accent-text']).toBe('var(--accent-text)')
+      expect(tokens.primary).toBe('var(--accent)')
       expect(tokens['glass-backdrop-bg']).toBeTruthy()
       expect(tokens['glass-surface-bg']).toBeTruthy()
       expect(tokens['glass-panel-bg']).toBeTruthy()
@@ -183,9 +197,18 @@ describe('theme and overlay tokens', () => {
       'state-neutral-text',
       'state-console-bg',
     ]
+    const requiredAccentTokens = [
+      'accent',
+      'accent-hover',
+      'accent-soft-bg',
+      'accent-muted-bg',
+      'accent-border',
+      'accent-focus',
+      'accent-text',
+    ]
 
     for (const tokens of [dark, macosGrayDark, light]) {
-      for (const token of [...requiredSurfaceTokens, ...requiredStateTokens]) expect(tokens[token]).toBeTruthy()
+      for (const token of [...requiredSurfaceTokens, ...requiredStateTokens, ...requiredAccentTokens]) expect(tokens[token]).toBeTruthy()
       expect(tokens['material-surface-bg']).toBe('var(--surface-modal-bg)')
       expect(tokens['material-panel-bg']).toBe('var(--surface-panel-bg)')
       expect(tokens['material-card-bg']).toBe('var(--surface-card-bg)')
@@ -199,6 +222,8 @@ describe('theme and overlay tokens', () => {
       expect(tokens['material-danger-bg']).toBe('var(--state-danger-bg)')
       expect(tokens['material-success-bg']).toBe('var(--state-success-bg)')
       expect(tokens['material-console-bg']).toBe('var(--state-console-bg)')
+      expect(tokens['material-accent']).toBe('var(--accent)')
+      expect(tokens['material-accent-focus']).toBe('var(--accent-focus)')
       expect(tokens['glass-surface-bg']).toBe('var(--surface-modal-bg)')
     }
 
@@ -337,6 +362,26 @@ describe('theme and overlay tokens', () => {
     expect(serviceJournalSource).toContain('var(--state-danger-bg)')
   })
 
+  it('keeps material accent aliases out of runtime CSS consumers', () => {
+    const cssWithoutMaterialAccentDefinitions = css.replace(/--material-accent[\w-]*:\s*[^;]+;/g, '')
+    expect(cssWithoutMaterialAccentDefinitions).not.toContain('var(--material-accent')
+
+    for (const source of [
+      dockerManagerSource,
+      processManagerSource,
+      tunnelManagerSource,
+      serviceListSource,
+      serviceDetailsSource,
+      serviceJournalSource,
+    ]) {
+      expect(source).not.toContain('var(--material-accent')
+    }
+
+    expect(css).toContain('--material-accent: var(--accent);')
+    expect(css).toContain('--material-accent-focus: var(--accent-focus);')
+    expect(css).toContain('--primary: var(--accent);')
+  })
+
   it('uses semantic material state tokens for shared navigation, SFTP, and transfer controls', () => {
     const settingsHover = block('.settings-category-nav button:hover')
     const settingsActive = block('.settings-category-nav button.active')
@@ -373,7 +418,7 @@ describe('theme and overlay tokens', () => {
     expect(sftpToolbarActive).toContain('color: var(--state-info-text)')
     expect(sftpSeparator).toContain('color: var(--surface-divider)')
     expect(sftpRowState).toContain('background: var(--state-selected-soft-bg)')
-    expect(sftpDirectoryIcon).toContain('color: var(--material-accent)')
+    expect(sftpDirectoryIcon).toContain('color: var(--accent)')
     expect(sftpDirectoryIconActive).toContain('color: var(--state-info-text)')
     expect(sftpFilterMatch).toContain('background: var(--state-warning-bg)')
     expect(sftpFilterSelectedMatch).toContain('background: var(--state-warning-border)')
@@ -383,7 +428,7 @@ describe('theme and overlay tokens', () => {
     expect(commandHover).toContain('background: var(--state-hover-bg)')
     expect(networkEndpointHover).toContain('background: var(--state-hover-bg)')
     expect(tableResizer).toContain('background: var(--surface-divider)')
-    expect(tableResizerHover).toContain('background: var(--material-accent)')
+    expect(tableResizerHover).toContain('background: var(--accent)')
   })
 
   it('provides shared viewport popover classes with fixed positioning and internal scrolling', () => {
@@ -422,27 +467,35 @@ describe('theme and overlay tokens', () => {
     expect(modal).toContain('background: var(--surface-modal-bg)')
     expect(modal).toContain('box-shadow: var(--surface-shadow)')
 
-    for (const selector of [
-      '.topbar-menu',
-      '.server-picker',
-      '.context-menu',
-      '.sftp-more-menu',
-      '.sftp-bookmarks-menu',
-      '.split-mode-menu',
-      '.terminal-pane-menu',
-      '.terminal-pane-selector',
-      '.transfer-popover',
-      '.settings-page-overlay',
-      '.settings-page-overlay .settings-page-header',
-      '.settings-page-overlay .settings-category-nav',
-    ]) {
+    for (const [selector, backgroundToken] of [
+      ['.topbar-menu', '--surface-card-bg'],
+      ['.server-picker', '--surface-card-bg'],
+      ['.context-menu', '--surface-card-bg'],
+      ['.sftp-more-menu', '--surface-card-bg'],
+      ['.sftp-bookmarks-menu', '--surface-card-bg'],
+      ['.split-mode-menu', '--surface-card-bg'],
+      ['.terminal-pane-menu', '--surface-card-bg'],
+      ['.terminal-pane-selector', '--surface-card-bg'],
+      ['.terminal-completion', '--surface-card-bg'],
+      ['.command-palette', '--surface-card-bg'],
+      ['.transfer-popover', '--surface-card-bg'],
+      ['.settings-page-overlay', '--surface-modal-bg'],
+      ['.settings-page-overlay .settings-page-header', '--surface-toolbar-bg'],
+      ['.settings-page-overlay .settings-category-nav', '--surface-card-bg'],
+    ] as const) {
       const styles = block(selector)
-      expect(styles).toContain('background: rgba(')
-      expect(styles).toContain('backdrop-filter: blur(')
-      expect(styles).toContain('-webkit-backdrop-filter: blur(')
+      expect(styles).toContain(`background: var(${backgroundToken})`)
+      expect(styles).toContain('backdrop-filter: var(--surface-blur)')
+      expect(styles).toContain('-webkit-backdrop-filter: var(--surface-blur)')
+      expect(styles).not.toContain('background: rgba(')
+      expect(styles).not.toContain('backdrop-filter: blur(')
+      expect(styles).not.toContain('-webkit-backdrop-filter: blur(')
       expect(styles).not.toContain('background: var(--panel)')
       expect(styles).not.toContain('background: var(--sidebar)')
     }
+
+    expect(css).not.toContain(':root[data-theme="light"] .settings-page-overlay')
+    expect(css).not.toContain(':root[data-theme="light"] .terminal-pane-selector')
   })
 
   it('uses the macOS gray palette as the production dark theme', () => {
@@ -451,7 +504,7 @@ describe('theme and overlay tokens', () => {
     expect(dark.panel).toBe('#26292e')
     expect(dark['panel-2']).toBe('#2a2d32')
     expect(dark.border).toBe('rgba(255, 255, 255, .10)')
-    expect(dark.primary).toBe('var(--material-accent)')
+    expect(dark.primary).toBe('var(--accent)')
     expect(resolveToken(dark, 'primary')).toBe('#2f6df2')
     expect(dark['sftp-surface']).toBe('#24272c')
     expect(resolveToken(dark, 'docker-console-bg')).toBe('#1f2023')
@@ -954,7 +1007,7 @@ describe('theme and overlay tokens', () => {
     const directoryActiveIcon = block('.sftp-row.selected .sftp-entry-icon-directory, .sftp-row:not(.sftp-head):hover .sftp-entry-icon-directory')
     const fileIcon = block('.sftp-entry-icon-file')
 
-    expect(directoryIcon).toContain('color: var(--material-accent)')
+    expect(directoryIcon).toContain('color: var(--accent)')
     expect(directoryActiveIcon).toContain('color: var(--state-info-text)')
     expect(fileIcon).toContain('color: #9fb0c6')
     expect(fileIcon).not.toContain('#3f7dff')
@@ -976,7 +1029,7 @@ describe('theme and overlay tokens', () => {
     expect(closeButton).toContain('display: inline-flex')
     expect(closeButton).toContain('white-space: nowrap')
     expect(closeHover).toContain('border-color: var(--primary)')
-    expect(closeFocus).toContain('box-shadow: 0 0 0 3px var(--material-accent-focus)')
+    expect(closeFocus).toContain('box-shadow: 0 0 0 3px var(--state-focus-ring)')
     expect(settingsClose).toContain('flex: 0 0 auto')
     expect(settingsClose).toContain('height: auto')
     expect(settingsClose).toContain('padding: 8px 13px')
@@ -1829,7 +1882,7 @@ describe('theme and overlay tokens', () => {
     expect(textarea).toContain('resize: vertical')
     expect(textareaPlaceholder).toContain('color: var(--muted)')
     expect(textareaFocus).toContain('border-color: var(--primary)')
-    expect(textareaFocus).toContain('box-shadow: 0 0 0 3px var(--material-accent-focus)')
+    expect(textareaFocus).toContain('box-shadow: 0 0 0 3px var(--state-focus-ring)')
     expect(keyRemark).toContain('min-height: 88px')
     expect(keyRemark).toContain('max-height: 180px')
     expect(keyRemark).toContain('resize: vertical')

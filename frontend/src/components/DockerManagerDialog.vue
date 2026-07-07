@@ -1581,7 +1581,7 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-container-card.selected {
   border-color: var(--state-selected-border);
-  box-shadow: 0 0 0 1px var(--material-accent-focus) inset;
+  box-shadow: 0 0 0 1px var(--state-focus-ring) inset;
 }
 
 .container-main,

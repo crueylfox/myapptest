@@ -949,7 +949,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .tunnel-profile-card.active {
   border-color: var(--state-selected-border);
   background: var(--state-selected-bg);
-  box-shadow: 0 0 0 1px var(--material-accent-focus) inset;
+  box-shadow: 0 0 0 1px var(--state-focus-ring) inset;
 }
 
 .tunnel-profile-card strong,
