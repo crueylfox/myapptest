@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TunnelManagerDialog from './TunnelManagerDialog.vue'
+import componentSource from './TunnelManagerDialog.vue?raw'
 import { useTunnelStore } from '../stores/tunnels'
 import type { Connection, SaveTunnelProfileRequest, TunnelProfile, TunnelRuntime } from '../types'
 
@@ -111,6 +112,18 @@ async function flush() {
 }
 
 describe('TunnelManagerDialog', () => {
+  it('uses shared glass tokens for the dialog shell and card surfaces', () => {
+    expect(componentSource).toContain('background: var(--glass-backdrop-bg)')
+    expect(componentSource).toContain('background: var(--glass-surface-bg)')
+    expect(componentSource).toContain('border: 1px solid var(--glass-border')
+    expect(componentSource).toContain('box-shadow: var(--glass-shadow)')
+    expect(componentSource).toContain('backdrop-filter: var(--glass-blur)')
+    expect(componentSource).toContain('-webkit-backdrop-filter: var(--glass-blur)')
+    expect(componentSource).toContain('background: var(--glass-header-bg)')
+    expect(componentSource).toContain('background: var(--glass-card-bg)')
+    expect(componentSource).not.toContain('background: var(--panel, #101827)')
+  })
+
   beforeEach(() => {
     dialog.confirmDialog.mockReset()
     dialog.confirmDialog.mockResolvedValue(true)

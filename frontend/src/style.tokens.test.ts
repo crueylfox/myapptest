@@ -86,6 +86,21 @@ describe('theme and overlay tokens', () => {
     expect(editorMore).not.toContain('z-index: var(--z-popover)')
   })
 
+  it('defines shared glass surface tokens for dark and light themes', () => {
+    for (const tokens of [dark, macosGrayDark, light]) {
+      expect(tokens['glass-backdrop-bg']).toBeTruthy()
+      expect(tokens['glass-surface-bg']).toBeTruthy()
+      expect(tokens['glass-panel-bg']).toBeTruthy()
+      expect(tokens['glass-card-bg']).toBeTruthy()
+      expect(tokens['glass-border']).toBeTruthy()
+      expect(tokens['glass-shadow']).toBeTruthy()
+      expect(tokens['glass-blur']).toBeTruthy()
+      expect(tokens['glass-header-bg']).toBeTruthy()
+    }
+    expect(dark['glass-blur']).toBe('blur(16px)')
+    expect(light['glass-blur']).toBe('blur(16px)')
+  })
+
   it('provides shared viewport popover classes with fixed positioning and internal scrolling', () => {
     const popover = block('.viewport-popover')
     const scroll = block('.viewport-popover-scroll')
@@ -107,6 +122,17 @@ describe('theme and overlay tokens', () => {
   })
 
   it('uses translucent blur surfaces for macOS WebView popovers and settings surfaces', () => {
+    const appGlassBackdrop = block('.app-glass-backdrop')
+    const appGlassSurface = block('.app-glass-surface')
+    const modal = block('.modal')
+
+    expect(appGlassBackdrop).toContain('background: var(--glass-backdrop-bg)')
+    expect(appGlassSurface).toContain('background: var(--glass-surface-bg)')
+    expect(appGlassSurface).toContain('backdrop-filter: var(--glass-blur)')
+    expect(appGlassSurface).toContain('-webkit-backdrop-filter: var(--glass-blur)')
+    expect(modal).toContain('background: var(--glass-surface-bg)')
+    expect(modal).toContain('box-shadow: var(--glass-shadow)')
+
     for (const selector of [
       '.topbar-menu',
       '.server-picker',

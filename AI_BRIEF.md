@@ -6,12 +6,11 @@ Updated: 2026-07-07
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.38`.
-- Recommended delivery version: `0.5.0-beta.38` user-smoke-required.
-- Current round: beta38 macOS monitor sidebar titlebar safe-zone hotfix after beta31 cross-platform Key Vault backup and beta36/beta37 macOS native chrome/tab alignment fixes.
-- Version bump this hotfix: yes; `0.5.0-beta.37` -> `0.5.0-beta.38` before repackaging.
+- Current VERSION: `0.5.0-beta.39`.
+- Recommended delivery version: `0.5.0-beta.39` user-smoke-required.
+- Current round: beta39 glass visual token V1 + manager dialog V2 adaptation after beta31 cross-platform Key Vault backup and beta38 macOS monitor sidebar titlebar safe-zone hotfix.
+- Version bump this hotfix: yes; `0.5.0-beta.38` -> `0.5.0-beta.39` before repackaging.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
-- Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
 - Beta31 handoff commit: `09fa695` (`chore: finalize beta31 handoff and generated bindings`).
 
 ## 1. Beta28 Pass Lock
@@ -83,6 +82,10 @@ Updated: 2026-07-07
 - Beta38 macOS monitor sidebar titlebar safe-zone hotfix:
   - macOS terminal-layout left monitor sidebars reserve the native titlebar height at the container level.
   - Remote/local monitor scroll content no longer scrolls underneath the native red/yellow/green window buttons.
+- Beta39 glass visual V1/V2 hotfix:
+  - `style.css` defines shared glass backdrop, surface, panel, card, border, shadow, blur, and header tokens for dark/light themes.
+  - Tunnel, Docker, Process, and Service manager dialog CSS consumes shared glass tokens for shell, header/toolbar, panels, and cards.
+  - This round only changes UI surface CSS and tests; no event, store, API, data-flow, polling, connection, or filtering logic changed.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.
@@ -107,8 +110,8 @@ Updated: 2026-07-07
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local focused beta38 regression tests for macOS monitor sidebar titlebar safe-zone: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1674 tests, 89 Playwright tests, and frontend build.
+- Local focused beta39 regression tests for glass tokens and manager dialog CSS adoption: passed.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1678 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 - GitHub Actions `Build macOS` run `28856250391`: success for commit `24f6ad52a951f7c5f3b0d806bbd81af3c5c009bb`.

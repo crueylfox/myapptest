@@ -34,6 +34,14 @@
   --toast-info-border: rgba(122, 162, 216, .48);
   --toast-error-text: #ffb0b8;
   --toast-error-border: rgba(255, 123, 134, .48);
+  --glass-backdrop-bg: rgba(3, 7, 18, .08);
+  --glass-surface-bg: rgba(45, 49, 56, .88);
+  --glass-panel-bg: rgba(42, 45, 50, .62);
+  --glass-card-bg: rgba(38, 41, 46, .74);
+  --glass-border: rgba(255, 255, 255, .10);
+  --glass-shadow: 0 24px 80px var(--shadow-strong);
+  --glass-blur: blur(16px);
+  --glass-header-bg: rgba(36, 39, 44, .66);
   --docker-dialog-backdrop: rgba(10, 10, 12, 0.10);
   --docker-dialog-bg: var(--panel);
   --docker-panel-bg: rgba(42, 45, 50, 0.52);
@@ -89,6 +97,14 @@
   --toast-info-border: rgba(122, 162, 216, .48);
   --toast-error-text: #ffb0b8;
   --toast-error-border: rgba(255, 123, 134, .48);
+  --glass-backdrop-bg: rgba(3, 7, 18, .08);
+  --glass-surface-bg: rgba(45, 49, 56, .88);
+  --glass-panel-bg: rgba(42, 45, 50, .62);
+  --glass-card-bg: rgba(38, 41, 46, .74);
+  --glass-border: rgba(255, 255, 255, .10);
+  --glass-shadow: 0 24px 80px var(--shadow-strong);
+  --glass-blur: blur(16px);
+  --glass-header-bg: rgba(36, 39, 44, .66);
   --docker-dialog-backdrop: rgba(10, 10, 12, 0.10);
   --docker-dialog-bg: var(--panel);
   --docker-panel-bg: rgba(42, 45, 50, 0.52);
@@ -132,6 +148,14 @@
   --toast-info-border: #326fde77;
   --toast-error-text: #b4232f;
   --toast-error-border: #d83f4d77;
+  --glass-backdrop-bg: rgba(226, 232, 240, .08);
+  --glass-surface-bg: rgba(255, 255, 255, .86);
+  --glass-panel-bg: rgba(255, 255, 255, .72);
+  --glass-card-bg: rgba(248, 250, 252, .86);
+  --glass-border: rgba(100, 116, 139, .24);
+  --glass-shadow: 0 24px 80px var(--shadow-strong);
+  --glass-blur: blur(16px);
+  --glass-header-bg: rgba(255, 255, 255, .66);
   --docker-dialog-backdrop: rgba(226, 232, 240, 0.08);
   --docker-dialog-bg: rgba(255, 255, 255, 0.9);
   --docker-panel-bg: rgba(255, 255, 255, 0.72);
@@ -276,13 +300,13 @@ button { border: 0; cursor: pointer; background: transparent; }
 .welcome { height: 100%; display: grid; place-content: center; justify-items: center; text-align: center; }
 .welcome h1 { margin: 20px 0 4px; }
 .welcome p { color: var(--muted); margin: 0 0 20px; }
-.app-glass-backdrop { background: rgba(3, 7, 18, .08); transform: translateZ(0); }
-.app-glass-surface { background: rgba(45, 49, 56, .88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.app-glass-backdrop { background: var(--glass-backdrop-bg); transform: translateZ(0); }
+.app-glass-surface { background: var(--glass-surface-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
 .modal-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; background: rgba(3, 7, 18, .08); transform: translateZ(0); }
 .modal-backdrop.danger-modal { z-index: var(--z-danger-modal); }
 .app-dialog-backdrop,
 .app-dialog-backdrop.danger-modal { z-index: var(--z-app-dialog); }
-.modal { width: min(540px, calc(100vw - 40px)); border: 1px solid var(--border); border-radius: 13px; background: rgba(45, 49, 56, .88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 24px 80px var(--shadow-strong); padding: 20px; }
+.modal { width: min(540px, calc(100vw - 40px)); border: 1px solid var(--glass-border); border-radius: 13px; background: var(--glass-surface-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); padding: 20px; }
 .modal header, .modal footer { display: flex; justify-content: space-between; align-items: center; }
 .modal h2 { margin: 0 0 18px; font-size: 19px; }
 .modal footer { justify-content: flex-end; gap: 8px; margin-top: 20px; }
@@ -1225,9 +1249,9 @@ button { border: 0; cursor: pointer; background: transparent; }
 }
 
 :root[data-theme="light"] .modal {
-  background: rgba(255, 255, 255, .86);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--glass-surface-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 :root[data-theme="light"] .settings-overlay-backdrop {

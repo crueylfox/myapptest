@@ -670,12 +670,19 @@ describe('DockerManagerDialog', () => {
     expect(app().DockerListContainers).toHaveBeenLastCalledWith({ serverID: 7, executionMode: 'sudo' })
   })
 
-  it('uses theme tokens for Docker dialog and Compose surfaces in light mode', () => {
+  it('uses shared glass tokens for Docker dialog and Compose surfaces', () => {
     for (const forbidden of ['#0f172a', '#111827', '#020617', 'rgba(15, 23, 42', 'rgba(2, 6, 23']) {
       expect(componentSource).not.toContain(forbidden)
     }
-    expect(componentSource).toContain('var(--docker-dialog-backdrop)')
-    expect(componentSource).toContain('var(--docker-panel-bg)')
+    expect(componentSource).toContain('background: var(--glass-backdrop-bg)')
+    expect(componentSource).toContain('background: var(--glass-surface-bg)')
+    expect(componentSource).toContain('border: 1px solid var(--glass-border)')
+    expect(componentSource).toContain('box-shadow: var(--glass-shadow)')
+    expect(componentSource).toContain('backdrop-filter: var(--glass-blur)')
+    expect(componentSource).toContain('-webkit-backdrop-filter: var(--glass-blur)')
+    expect(componentSource).toContain('background: var(--glass-header-bg)')
+    expect(componentSource).toContain('background: var(--glass-panel-bg)')
+    expect(componentSource).toContain('background: var(--glass-card-bg)')
     expect(componentSource).toContain('var(--docker-console-bg)')
   })
 

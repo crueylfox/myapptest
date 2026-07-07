@@ -323,6 +323,19 @@ async function flush() {
 }
 
 describe('ServiceManagerDialog', () => {
+  it('uses shared glass tokens for the dialog shell and service surfaces', () => {
+    expect(componentSourceText).toContain('background: var(--glass-backdrop-bg)')
+    expect(componentSourceText).toContain('background: var(--glass-surface-bg)')
+    expect(componentSourceText).toContain('border: 1px solid var(--glass-border')
+    expect(componentSourceText).toContain('box-shadow: var(--glass-shadow)')
+    expect(componentSourceText).toContain('backdrop-filter: var(--glass-blur)')
+    expect(componentSourceText).toContain('-webkit-backdrop-filter: var(--glass-blur)')
+    expect(componentSourceText).toContain('background: var(--glass-header-bg)')
+    expect(componentSourceText).toContain('background: var(--glass-panel-bg)')
+    expect(componentSourceText).toContain('background: var(--glass-card-bg)')
+    expect(componentSourceText).not.toContain('background: var(--panel, #101827)')
+  })
+
   beforeEach(() => {
     dialog.confirmDialog.mockReset()
     dialog.confirmDialog.mockResolvedValue(true)

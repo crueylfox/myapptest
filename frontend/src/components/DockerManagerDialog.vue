@@ -1142,7 +1142,7 @@ function errorMessage(reason: unknown, fallback: string) {
   display: grid;
   place-items: center;
   padding: 28px;
-  background: var(--docker-dialog-backdrop);
+  background: var(--glass-backdrop-bg);
 }
 
 .docker-dialog {
@@ -1151,11 +1151,13 @@ function errorMessage(reason: unknown, fallback: string) {
   overflow: hidden;
   display: grid;
   grid-template-rows: auto auto auto auto minmax(0, auto) minmax(0, 1fr);
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
   border-radius: 18px;
-  background: var(--docker-dialog-bg);
+  background: var(--glass-surface-bg);
   color: var(--text);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .docker-dialog-header,
@@ -1176,7 +1178,8 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-dialog-header {
   justify-content: space-between;
   padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-header-bg);
 }
 
 .docker-dialog-header h2 {
@@ -1192,7 +1195,8 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-toolbar {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-header-bg);
   flex-wrap: nowrap;
   align-items: end;
   gap: 12px;
@@ -1240,7 +1244,8 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-status-line {
   padding: 9px 20px;
   color: var(--muted);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-header-bg);
   font-size: 13px;
 }
 
@@ -1265,7 +1270,8 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-mode-tabs {
   padding: 10px 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-header-bg);
 }
 
 .docker-mode-tabs .command-light-action { min-height: 30px; font-size: 14px; padding: 3px 8px; }
@@ -1280,6 +1286,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 14px 20px 16px;
   padding-bottom: 16px;
   overflow: hidden;
+  background: var(--glass-panel-bg);
 }
 
 .docker-compose-sidebar,
@@ -1287,9 +1294,9 @@ function errorMessage(reason: unknown, fallback: string) {
   min-width: 0;
   min-height: 0;
   overflow: auto;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
-  background: var(--docker-panel-bg);
+  background: var(--glass-card-bg);
   padding: 10px;
 }
 
@@ -1438,9 +1445,9 @@ function errorMessage(reason: unknown, fallback: string) {
   gap: 8px;
   align-items: center;
   padding: 8px 9px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--glass-border);
   border-radius: 10px;
-  background: var(--docker-row-bg);
+  background: var(--glass-card-bg);
 }
 
 .docker-compose-service-detail {
@@ -1452,7 +1459,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 8px 9px;
   border: 1px solid rgba(96, 165, 250, 0.24);
   border-radius: 10px;
-  background: var(--docker-row-strong-bg);
+  background: var(--glass-panel-bg);
 }
 
 .docker-compose-service-detail span,
@@ -1495,6 +1502,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 16px 20px 20px;
   overflow: hidden;
   min-width: 0;
+  background: var(--glass-panel-bg);
 }
 
 .docker-list-panel,
@@ -1502,9 +1510,9 @@ function errorMessage(reason: unknown, fallback: string) {
   min-width: 0;
   min-height: 0;
   overflow: auto;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
-  background: var(--docker-panel-strong-bg);
+  background: var(--glass-card-bg);
   padding: 12px;
 }
 
@@ -1564,9 +1572,9 @@ function errorMessage(reason: unknown, fallback: string) {
   min-width: 0;
   min-height: 74px;
   padding: 8px 10px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
-  background: var(--docker-row-bg);
+  background: var(--glass-card-bg);
   cursor: pointer;
   overflow: hidden;
 }

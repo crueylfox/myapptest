@@ -813,7 +813,7 @@ function errorMessage(reason: unknown, fallback: string) {
   display: grid;
   place-items: center;
   padding: 28px;
-  background: rgba(2, 6, 23, 0.08);
+  background: var(--glass-backdrop-bg);
   transform: translateZ(0);
 }
 
@@ -823,11 +823,13 @@ function errorMessage(reason: unknown, fallback: string) {
   overflow: hidden;
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  border: 1px solid var(--border, rgba(148, 163, 184, 0.22));
+  border: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.22)));
   border-radius: 18px;
-  background: var(--panel, #101827);
+  background: var(--glass-surface-bg);
   color: var(--text, #e5edf8);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .tunnel-dialog-header,
@@ -842,7 +844,8 @@ function errorMessage(reason: unknown, fallback: string) {
 .tunnel-dialog-header {
   justify-content: space-between;
   padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--border, rgba(148, 163, 184, 0.18));
+  border-bottom: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.18)));
+  background: var(--glass-header-bg);
 }
 
 .tunnel-dialog-header h2 {
@@ -858,7 +861,8 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .tunnel-dialog-toolbar {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--border, rgba(148, 163, 184, 0.16));
+  border-bottom: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.16)));
+  background: var(--glass-header-bg);
   flex-wrap: wrap;
   align-items: end;
 }
@@ -879,6 +883,7 @@ function errorMessage(reason: unknown, fallback: string) {
   gap: 16px;
   padding: 16px 20px 20px;
   overflow: auto;
+  background: var(--glass-panel-bg);
 }
 
 .tunnel-profile-form {
@@ -906,9 +911,9 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .tunnel-profile-card,
 .tunnel-profile-form {
-  border: 1px solid var(--border, rgba(148, 163, 184, 0.16));
+  border: 1px solid var(--glass-border, var(--border, rgba(148, 163, 184, 0.16)));
   border-radius: 14px;
-  background: var(--panel-2, rgba(15, 23, 42, 0.72));
+  background: var(--glass-card-bg);
   padding: 12px;
 }
 

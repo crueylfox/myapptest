@@ -632,7 +632,7 @@ function safeStringList(value: unknown): string[] {
   align-items: center;
   justify-content: center;
   padding: 28px;
-  background: rgba(3, 7, 18, 0.08);
+  background: var(--glass-backdrop-bg);
   transform: translateZ(0);
 }
 
@@ -641,10 +641,12 @@ function safeStringList(value: unknown): string[] {
   height: min(760px, calc(100vh - 56px));
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  border: 1px solid rgba(148, 163, 184, 0.22);
+  border: 1px solid var(--glass-border);
   border-radius: 22px;
-  background: var(--panel, #101827);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  background: var(--glass-surface-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   overflow: hidden;
 }
 
@@ -653,7 +655,8 @@ function safeStringList(value: unknown): string[] {
   display: flex;
   gap: 12px;
   padding: 16px 18px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-header-bg);
 }
 
 .process-dialog-header {
@@ -732,6 +735,7 @@ function safeStringList(value: unknown): string[] {
   display: grid;
   grid-template-columns: minmax(460px, 1.2fr) minmax(320px, 0.8fr);
   min-height: 0;
+  background: var(--glass-panel-bg);
 }
 
 .process-list-panel,
@@ -742,7 +746,7 @@ function safeStringList(value: unknown): string[] {
 }
 
 .process-detail-panel {
-  border-left: 1px solid rgba(148, 163, 184, 0.16);
+  border-left: 1px solid var(--glass-border);
   padding: 12px;
 }
 
@@ -790,7 +794,7 @@ function safeStringList(value: unknown): string[] {
   box-sizing: border-box;
   border-radius: 10px;
   overflow: hidden;
-  background: var(--panel-2, rgba(15, 23, 42, 0.72));
+  background: var(--glass-card-bg);
 }
 
 .process-table-head {
@@ -880,10 +884,10 @@ function safeStringList(value: unknown): string[] {
   width: 100%;
   min-height: 36px;
   padding: 8px 12px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
   color: inherit;
-  background: rgba(15, 23, 42, 0.68);
+  background: var(--glass-card-bg);
   text-align: left;
 }
 

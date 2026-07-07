@@ -136,6 +136,19 @@ function app() {
 }
 
 describe('ProcessManagerDialog', () => {
+  it('uses shared glass tokens for the dialog shell and process surfaces', () => {
+    expect(processDialogSource).toContain('background: var(--glass-backdrop-bg)')
+    expect(processDialogSource).toContain('background: var(--glass-surface-bg)')
+    expect(processDialogSource).toContain('border: 1px solid var(--glass-border')
+    expect(processDialogSource).toContain('box-shadow: var(--glass-shadow)')
+    expect(processDialogSource).toContain('backdrop-filter: var(--glass-blur)')
+    expect(processDialogSource).toContain('-webkit-backdrop-filter: var(--glass-blur)')
+    expect(processDialogSource).toContain('background: var(--glass-header-bg)')
+    expect(processDialogSource).toContain('background: var(--glass-panel-bg)')
+    expect(processDialogSource).toContain('background: var(--glass-card-bg)')
+    expect(processDialogSource).not.toContain('background: var(--panel, #101827)')
+  })
+
   beforeEach(() => {
     confirmDialogMock.mockClear()
     window.go = {
@@ -253,7 +266,7 @@ describe('ProcessManagerDialog', () => {
     expect(processDialogSource).not.toContain('max-width: calc(100% - 18px);')
     expect(processDialogSource).toContain('width: 100%;')
     expect(processDialogSource).toContain('overflow: hidden;')
-    expect(processDialogSource).toContain('background: var(--panel-2, rgba(15, 23, 42, 0.72));')
+    expect(processDialogSource).toContain('background: var(--glass-card-bg);')
     expect(processDialogSource).toContain('.process-table-head button {')
     expect(processDialogSource).toContain('justify-content: center;')
     expect(processDialogSource).toContain('text-align: center;')
@@ -545,7 +558,7 @@ describe('ProcessManagerDialog', () => {
     expect(processDialogSource).toContain('class="process-detail-header"')
     expect(processDialogSource).toContain('process-detail-actions')
     expect(processDialogSource).not.toContain('process-actions-top')
-    expect(processDialogSource).toContain('.process-detail-panel {\n  border-left: 1px solid rgba(148, 163, 184, 0.16);\n  padding: 12px;')
+    expect(processDialogSource).toContain('.process-detail-panel {\n  border-left: 1px solid var(--glass-border);\n  padding: 12px;')
     expect(processDialogSource).toContain('gap: 6px')
     expect(processDialogSource).toContain('margin: 10px 0')
     expect(processDialogSource).toContain('padding: 8px 10px')
