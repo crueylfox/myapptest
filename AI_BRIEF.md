@@ -8,7 +8,7 @@ Updated: 2026-07-07
 - Previous delivery version: `0.5.0-beta.28` PASS.
 - Current VERSION: `0.5.0-beta.31`.
 - Recommended delivery version: `0.5.0-beta.31` user-smoke-required.
-- Current round: beta31 same-version macOS gray dark theme/SFTP/local-terminal hotfix after beta31 cross-platform Key Vault backup.
+- Current round: beta31 same-version macOS terminal/theme/transfer-queue UI hotfix after beta31 cross-platform Key Vault backup.
 - Version bump this hotfix: no; baseline already `0.5.0-beta.31`.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Previous hotfix commit: `d86fd0e` (`fix: address beta30 macos smoke issues`).
@@ -19,7 +19,7 @@ Updated: 2026-07-07
 - Current settings/dialog/local-terminal hotfix commit: `7dce440` (`fix: polish beta31 macos settings dialogs and local terminal`).
 - Current SFTP/local-terminal/macOS theme hotfix commit: `a7ba5c2` (`fix: polish beta31 sftp local terminal and macos theme ui`).
 - Current macOS gray dark theme completion commit: `a0fde0e` (`fix: polish beta31 macos theme sftp and local terminal ui`).
-- Current SFTP/terminal theme UI blocker commit: `33d7185` (`fix: polish beta31 sftp terminal theme ui blockers`).
+- Current SFTP/terminal theme/queue UI hotfix commit: `a1fd256` (`fix: polish beta31 macos terminal theme and queue ui`).
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -69,6 +69,7 @@ Updated: 2026-07-07
   - Transfer queue `|` separators are independent DOM elements, so active tab backgrounds no longer cover the separator.
   - Settings radio policy options use full-surface checked styling, not a left-marker-only active state.
   - macOS local terminal initial `%` stripping handles split output chunks without changing SSH terminal behavior.
+- Beta31 same-version terminal/theme/queue follow-up keeps the transfer queue above the status bar, strengthens the Codex-like blue accent on graphite surfaces, fixes command-completion keyboard auto-scroll, aligns font-size slider ticks with the track, and handles ANSI-prefixed stray macOS `%` prompts.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.
@@ -93,18 +94,13 @@ Updated: 2026-07-07
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local focused frontend tests for SFTP transfer overlay, SFTP toolbar, local terminal, terminal profile, theme tokens, and workspace transfer popover: passed, 6 files / 167 tests.
-- Local focused `go test ./internal/localterminal`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 182 Vitest files / 1660 tests, 88 Playwright tests, and frontend build.
+- Local focused frontend regression tests for transfer overlay, local terminal, command completion, theme tokens, and terminal profile: passed, 7 files / 163 tests.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1664 tests, 88 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build -platform darwin/universal`: not run for this hotfix; Windows local builds do not produce the macOS app.
-- GitHub Actions `Build macOS` run `28815004825`: success for commit `33d7185939c60ba916b07900e24ec00cfab90e76`.
+- GitHub Actions `Build macOS` run `28839378200`: success for commit `a1fd256928a924a05390b62e1208ca2bc377666a`.
 - Artifact: `ServerPilot-macos-unsigned`.
 - Artifact contains `ServerPilot-macos-universal-unsigned.zip` and `ServerPilot-macos-universal-unsigned.dmg`.
-- Artifact archive `ServerPilot-macos-unsigned.zip` was downloaded from GitHub Actions to a temporary local directory for hash extraction.
-- GitHub artifact archive `ServerPilot-macos-unsigned.zip` SHA-256: `4C356C598261A6B4CB71EA471FF2AE4CB2C4045D4EE82ABA44024074AA5BC756`.
-- `ServerPilot-macos-universal-unsigned.zip` SHA-256: `739602EE610A77538C6DD0F0A00721560C7D7EE1A2662A92AC6F17D6330AC778`.
-- `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `C46C46E90FD39888F6E31A4576CE6592EA62225A30BB93BD1B14BA58FAC1FB72`.
 - macOS artifact came from the GitHub Actions macOS runner.
 - Windows local `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 
