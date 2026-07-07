@@ -103,16 +103,16 @@ Updated: 2026-07-08
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1679 tests, 89 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1682 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
 - Beta42 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.42.exe`.
 - Beta42 Windows EXE SHA-256: `28D7EA1B54540FC31AAE4D2FB0DC7E0A4E33E374A671BE91A098C7973CACAC40`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions `Build macOS` run `28881318752`: success for commit `d5f72df7abb749769e9ca9b96c76f2b9dfb61d17`.
-- Artifact: `ServerPilot-macos-unsigned`.
-- Artifact API digest: `sha256:672feadd6568d2f013793877d5f9e13362a87125347e9e94cc4b941c2060c667`.
-- Artifact contains `ServerPilot-macos-universal-unsigned.zip`, `ServerPilot-macos-universal-unsigned.dmg`, and their `.sha256` files.
+- GitHub Actions `Build macOS` run `28886603359`: success for commit `368f5743be5c1501d9b308654b9604e56dbe6b18`.
+- Artifact: `ServerPilot-macos-unsigned`; API digest/artifact zip SHA-256: `31BDE84F394DD86B70C97AB3DB6B8C1EB4E96233759A55ACF16454FA30D5CAFC`.
+- Desktop artifact zip: `D:\Users\Administrator\Desktop\ServerPilot-macos-unsigned.zip`.
+- Artifact contents: `ServerPilot-macos-universal-unsigned.zip` SHA-256 `05679AE6BE53079898FA24E190AB8B750FE273BA4A8CA031304C9A710E6C924B`; `ServerPilot-macos-universal-unsigned.dmg` SHA-256 `BC99A0F8EF658163FB07DFC95DADA1CC0F6F53E60630D8C3F78284F92BCF8C22`.
 - macOS artifact came from the GitHub Actions macOS runner.
 
 ## 5. Next
