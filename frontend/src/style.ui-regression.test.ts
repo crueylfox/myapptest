@@ -234,11 +234,11 @@ describe('first-batch UI regression contracts', () => {
     expect(radioChecked).toContain('background-image: radial-gradient')
     expect(radioChecked).toContain('background-color: var(--primary)')
     expect(radioDarkChecked).toContain('border-color: #9fc3ff')
-    expect(radioDarkChecked).toContain('background-color: #3f7dff')
+    expect(radioDarkChecked).toContain('background-color: #2f6df2')
     expect(checkboxChecked).toContain('background-image: url("data:image/svg+xml')
     expect(checkboxChecked).toContain('background-color: var(--primary)')
     expect(checkboxDarkChecked).toContain('border-color: #9fc3ff')
-    expect(checkboxDarkChecked).toContain('background-color: #3f7dff')
+    expect(checkboxDarkChecked).toContain('background-color: #2f6df2')
   })
 
   it('keeps workspace tab titles ellipsized and close clicks isolated', () => {

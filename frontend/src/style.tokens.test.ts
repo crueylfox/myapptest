@@ -139,9 +139,9 @@ describe('theme and overlay tokens', () => {
     }
     expect(resolveToken(dark, 'material-blur')).toBe('blur(16px)')
     expect(resolveToken(light, 'material-blur')).toBe('blur(16px)')
-    expect(resolveToken(dark, 'primary')).toBe('#3f7dff')
-    expect(resolveToken(macosGrayDark, 'primary')).toBe('#3f7dff')
-    expect(resolveToken(light, 'primary')).toBe('#245fca')
+    expect(resolveToken(dark, 'primary')).toBe('#2f6df2')
+    expect(resolveToken(macosGrayDark, 'primary')).toBe('#2f6df2')
+    expect(resolveToken(light, 'primary')).toBe('#1f5fd8')
   })
 
   it('defines canonical surface and state tokens for future liquid material profiles', () => {
@@ -203,9 +203,9 @@ describe('theme and overlay tokens', () => {
     }
 
     expect(resolveToken(dark, 'surface-modal-bg')).toBe('rgba(45, 49, 56, .88)')
-    expect(resolveToken(dark, 'state-selected-bg')).toBe('rgba(63, 125, 255, .20)')
+    expect(resolveToken(dark, 'state-selected-bg')).toBe('rgba(47, 109, 242, .22)')
     expect(resolveToken(light, 'surface-modal-bg')).toBe('rgba(255, 255, 255, .86)')
-    expect(resolveToken(light, 'state-selected-bg')).toBe('rgba(36, 95, 202, .16)')
+    expect(resolveToken(light, 'state-selected-bg')).toBe('rgba(31, 95, 216, .16)')
 
     const appMaterialBackdrop = block('.app-material-backdrop')
     const appMaterialSurface = block('.app-material-surface')
@@ -221,28 +221,27 @@ describe('theme and overlay tokens', () => {
     expect(appMaterialToolbar).toContain('background: var(--surface-toolbar-bg)')
   })
 
-  it('defines semantic material state tokens and uses them in inner management panels', () => {
+  it('defines semantic state tokens and uses canonical surface/state tokens in inner management panels', () => {
     const requiredStateTokens = [
-      'material-hover-bg',
-      'material-selected-bg',
-      'material-selected-soft-bg',
-      'material-selected-border',
-      'material-info-bg',
-      'material-info-border',
-      'material-info-text',
-      'material-warning-bg',
-      'material-warning-border',
-      'material-warning-text',
-      'material-danger-bg',
-      'material-danger-border',
-      'material-danger-text',
-      'material-success-bg',
-      'material-success-border',
-      'material-success-text',
-      'material-neutral-bg',
-      'material-neutral-text',
-      'material-console-bg',
-      'material-table-divider',
+      'state-hover-bg',
+      'state-selected-bg',
+      'state-selected-soft-bg',
+      'state-selected-border',
+      'state-info-bg',
+      'state-info-border',
+      'state-info-text',
+      'state-warning-bg',
+      'state-warning-border',
+      'state-warning-text',
+      'state-danger-bg',
+      'state-danger-border',
+      'state-danger-text',
+      'state-success-bg',
+      'state-success-border',
+      'state-success-text',
+      'state-neutral-bg',
+      'state-neutral-text',
+      'state-console-bg',
     ]
 
     for (const tokens of [dark, macosGrayDark, light]) {
@@ -252,41 +251,90 @@ describe('theme and overlay tokens', () => {
       expect(tokens['docker-selected-soft-bg']).toBe('var(--state-selected-soft-bg)')
     }
 
-    expect(resolveToken(dark, 'material-selected-bg')).toBe('rgba(63, 125, 255, .20)')
-    expect(resolveToken(light, 'material-selected-bg')).toBe('rgba(36, 95, 202, .16)')
-    expect(resolveToken(dark, 'material-hover-bg')).toBe('rgba(255, 255, 255, .07)')
-    expect(resolveToken(light, 'material-hover-bg')).toBe('rgba(30, 41, 59, .06)')
+    expect(resolveToken(dark, 'state-selected-bg')).toBe('rgba(47, 109, 242, .22)')
+    expect(resolveToken(light, 'state-selected-bg')).toBe('rgba(31, 95, 216, .16)')
+    expect(resolveToken(dark, 'state-hover-bg')).toBe('rgba(255, 255, 255, .07)')
+    expect(resolveToken(light, 'state-hover-bg')).toBe('rgba(30, 41, 59, .06)')
 
-    for (const source of [
+    const managerSources = [
       dockerManagerSource,
       processManagerSource,
       tunnelManagerSource,
       serviceListSource,
       serviceDetailsSource,
       serviceJournalSource,
-    ]) {
+    ]
+
+    for (const source of managerSources) {
       expect(source).not.toContain('rgba(37, 99, 235')
       expect(source).not.toContain('rgba(59, 130, 246')
       expect(source).not.toContain('rgba(96, 165, 250')
       expect(source).not.toContain('rgba(15, 23, 42')
       expect(source).not.toContain('rgba(30, 41, 59')
+      for (const legacyToken of [
+        'var(--material-backdrop-bg)',
+        'var(--material-surface-bg)',
+        'var(--material-panel-bg)',
+        'var(--material-card-bg)',
+        'var(--material-toolbar-bg)',
+        'var(--material-control-bg)',
+        'var(--material-hover-bg)',
+        'var(--material-selected-bg)',
+        'var(--material-selected-soft-bg)',
+        'var(--material-selected-border)',
+        'var(--material-info-bg)',
+        'var(--material-info-border)',
+        'var(--material-info-text)',
+        'var(--material-warning-bg)',
+        'var(--material-warning-border)',
+        'var(--material-warning-text)',
+        'var(--material-danger-bg)',
+        'var(--material-danger-border)',
+        'var(--material-danger-text)',
+        'var(--material-success-bg)',
+        'var(--material-success-border)',
+        'var(--material-success-text)',
+        'var(--material-neutral-bg)',
+        'var(--material-neutral-text)',
+        'var(--material-console-bg)',
+        'var(--material-table-divider)',
+      ]) {
+        expect(source).not.toContain(legacyToken)
+      }
     }
 
-    expect(dockerManagerSource).toContain('var(--material-selected-bg)')
-    expect(dockerManagerSource).toContain('var(--material-info-border)')
-    expect(dockerManagerSource).toContain('var(--material-warning-bg)')
-    expect(processManagerSource).toContain('var(--material-hover-bg)')
-    expect(processManagerSource).toContain('var(--material-selected-bg)')
-    expect(processManagerSource).toContain('var(--material-card-bg)')
-    expect(tunnelManagerSource).toContain('var(--material-selected-bg)')
-    expect(tunnelManagerSource).toContain('var(--material-info-border)')
-    expect(serviceListSource).toContain('var(--material-selected-bg)')
-    expect(serviceListSource).toContain('var(--material-success-bg)')
-    expect(serviceDetailsSource).toContain('var(--material-card-bg)')
-    expect(serviceDetailsSource).toContain('var(--material-warning-text)')
-    expect(serviceJournalSource).toContain('var(--material-console-bg)')
-    expect(serviceJournalSource).toContain('var(--material-info-bg)')
-    expect(serviceJournalSource).toContain('var(--material-danger-bg)')
+    expect(dockerManagerSource).toContain('var(--surface-backdrop-bg)')
+    expect(dockerManagerSource).toContain('var(--surface-modal-bg)')
+    expect(dockerManagerSource).toContain('var(--surface-toolbar-bg)')
+    expect(dockerManagerSource).toContain('var(--surface-panel-bg)')
+    expect(dockerManagerSource).toContain('var(--surface-card-bg)')
+    expect(dockerManagerSource).toContain('var(--state-selected-bg)')
+    expect(dockerManagerSource).toContain('var(--state-info-border)')
+    expect(dockerManagerSource).toContain('var(--state-warning-bg)')
+    expect(processManagerSource).toContain('var(--surface-backdrop-bg)')
+    expect(processManagerSource).toContain('var(--surface-modal-bg)')
+    expect(processManagerSource).toContain('var(--surface-toolbar-bg)')
+    expect(processManagerSource).toContain('var(--surface-panel-bg)')
+    expect(processManagerSource).toContain('var(--surface-card-bg)')
+    expect(processManagerSource).toContain('var(--state-hover-bg)')
+    expect(processManagerSource).toContain('var(--state-selected-bg)')
+    expect(processManagerSource).toContain('var(--state-console-bg)')
+    expect(tunnelManagerSource).toContain('var(--surface-backdrop-bg)')
+    expect(tunnelManagerSource).toContain('var(--surface-modal-bg)')
+    expect(tunnelManagerSource).toContain('var(--surface-toolbar-bg)')
+    expect(tunnelManagerSource).toContain('var(--surface-panel-bg)')
+    expect(tunnelManagerSource).toContain('var(--surface-card-bg)')
+    expect(tunnelManagerSource).toContain('var(--state-selected-bg)')
+    expect(tunnelManagerSource).toContain('var(--state-info-border)')
+    expect(serviceListSource).toContain('var(--surface-card-bg)')
+    expect(serviceListSource).toContain('var(--state-selected-bg)')
+    expect(serviceListSource).toContain('var(--state-success-bg)')
+    expect(serviceDetailsSource).toContain('var(--surface-card-bg)')
+    expect(serviceDetailsSource).toContain('var(--surface-panel-bg)')
+    expect(serviceDetailsSource).toContain('var(--state-warning-text)')
+    expect(serviceJournalSource).toContain('var(--state-console-bg)')
+    expect(serviceJournalSource).toContain('var(--state-info-bg)')
+    expect(serviceJournalSource).toContain('var(--state-danger-bg)')
   })
 
   it('uses semantic material state tokens for shared navigation, SFTP, and transfer controls', () => {
@@ -404,7 +452,7 @@ describe('theme and overlay tokens', () => {
     expect(dark['panel-2']).toBe('#2a2d32')
     expect(dark.border).toBe('rgba(255, 255, 255, .10)')
     expect(dark.primary).toBe('var(--material-accent)')
-    expect(resolveToken(dark, 'primary')).toBe('#3f7dff')
+    expect(resolveToken(dark, 'primary')).toBe('#2f6df2')
     expect(dark['sftp-surface']).toBe('#24272c')
     expect(resolveToken(dark, 'docker-console-bg')).toBe('#1f2023')
     expect(macosGrayDark).toMatchObject({
@@ -462,7 +510,7 @@ describe('theme and overlay tokens', () => {
     expect(checked).toContain('background-color: var(--primary)')
     expect(checked).toContain('border-color: var(--primary)')
     expect(darkChecked).toContain('border-color: #9fc3ff')
-    expect(darkChecked).toContain('background-color: #3f7dff')
+    expect(darkChecked).toContain('background-color: #2f6df2')
     expect(darkChecked).toContain('background-image: radial-gradient')
   })
 
@@ -477,7 +525,7 @@ describe('theme and overlay tokens', () => {
     expect(checked).toContain('background-color: var(--primary)')
     expect(checked).toContain('background-image: url("data:image/svg+xml')
     expect(darkChecked).toContain('border-color: #9fc3ff')
-    expect(darkChecked).toContain('background-color: #3f7dff')
+    expect(darkChecked).toContain('background-color: #2f6df2')
     expect(darkChecked).toContain('background-image: url("data:image/svg+xml')
   })
 
@@ -1339,7 +1387,7 @@ describe('theme and overlay tokens', () => {
     expect(card).toContain('flex-direction: column')
     expect(card).toContain('padding: 8px 9px')
     expect(css).toContain('.dashboard-server-card:hover, .dashboard-server-card.active, .dashboard-server-card.selected')
-    expect(css).toContain('.dashboard-server-card.selected { box-shadow: inset 0 0 0 1px rgba(63, 125, 255, .42); }')
+    expect(css).toContain('.dashboard-server-card.selected { box-shadow: inset 0 0 0 1px rgba(47, 109, 242, .44); }')
     expect(cardTop).toContain('display: grid')
     expect(cardTop).toContain('grid-template-columns: auto minmax(0, 1fr) auto')
     expect(cardTop).toContain('align-items: center')

@@ -1142,7 +1142,7 @@ function errorMessage(reason: unknown, fallback: string) {
   display: grid;
   place-items: center;
   padding: 28px;
-  background: var(--material-backdrop-bg);
+  background: var(--surface-backdrop-bg);
 }
 
 .docker-dialog {
@@ -1151,13 +1151,13 @@ function errorMessage(reason: unknown, fallback: string) {
   overflow: hidden;
   display: grid;
   grid-template-rows: auto auto auto auto minmax(0, auto) minmax(0, 1fr);
-  border: 1px solid var(--material-border);
+  border: 1px solid var(--surface-border);
   border-radius: 18px;
-  background: var(--material-surface-bg);
+  background: var(--surface-modal-bg);
   color: var(--text);
-  box-shadow: var(--material-shadow);
-  backdrop-filter: var(--material-blur);
-  -webkit-backdrop-filter: var(--material-blur);
+  box-shadow: var(--surface-shadow);
+  backdrop-filter: var(--surface-blur);
+  -webkit-backdrop-filter: var(--surface-blur);
 }
 
 .docker-dialog-header,
@@ -1178,8 +1178,8 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-dialog-header {
   justify-content: space-between;
   padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--material-border);
-  background: var(--material-toolbar-bg);
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-toolbar-bg);
 }
 
 .docker-dialog-header h2 {
@@ -1195,8 +1195,8 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-toolbar {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--material-border);
-  background: var(--material-toolbar-bg);
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-toolbar-bg);
   flex-wrap: nowrap;
   align-items: end;
   gap: 12px;
@@ -1244,8 +1244,8 @@ function errorMessage(reason: unknown, fallback: string) {
 .docker-status-line {
   padding: 9px 20px;
   color: var(--muted);
-  border-bottom: 1px solid var(--material-border);
-  background: var(--material-toolbar-bg);
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-toolbar-bg);
   font-size: 13px;
 }
 
@@ -1270,8 +1270,8 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .docker-mode-tabs {
   padding: 10px 20px;
-  border-bottom: 1px solid var(--material-border);
-  background: var(--material-toolbar-bg);
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-toolbar-bg);
 }
 
 .docker-mode-tabs .command-light-action { min-height: 30px; font-size: 14px; padding: 3px 8px; }
@@ -1286,7 +1286,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 14px 20px 16px;
   padding-bottom: 16px;
   overflow: hidden;
-  background: var(--material-panel-bg);
+  background: var(--surface-panel-bg);
 }
 
 .docker-compose-sidebar,
@@ -1294,9 +1294,9 @@ function errorMessage(reason: unknown, fallback: string) {
   min-width: 0;
   min-height: 0;
   overflow: auto;
-  border: 1px solid var(--material-border);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
   padding: 10px;
 }
 
@@ -1420,13 +1420,13 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .docker-compose-project-row.selected {
-  border-color: var(--material-selected-border);
-  background: var(--material-selected-bg);
+  border-color: var(--state-selected-border);
+  background: var(--state-selected-bg);
 }
 
 .docker-compose-service-row.selected {
-  border-color: var(--material-selected-border);
-  background: var(--material-selected-soft-bg);
+  border-color: var(--state-selected-border);
+  background: var(--state-selected-soft-bg);
 }
 
 .docker-compose-services {
@@ -1445,9 +1445,9 @@ function errorMessage(reason: unknown, fallback: string) {
   gap: 8px;
   align-items: center;
   padding: 8px 9px;
-  border: 1px solid var(--material-border);
+  border: 1px solid var(--surface-border);
   border-radius: 10px;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
 }
 
 .docker-compose-service-detail {
@@ -1457,9 +1457,9 @@ function errorMessage(reason: unknown, fallback: string) {
   gap: 8px;
   align-items: center;
   padding: 8px 9px;
-  border: 1px solid var(--material-info-border);
+  border: 1px solid var(--state-info-border);
   border-radius: 10px;
-  background: var(--material-panel-bg);
+  background: var(--surface-panel-bg);
 }
 
 .docker-compose-service-detail span,
@@ -1502,7 +1502,7 @@ function errorMessage(reason: unknown, fallback: string) {
   padding: 16px 20px 20px;
   overflow: hidden;
   min-width: 0;
-  background: var(--material-panel-bg);
+  background: var(--surface-panel-bg);
 }
 
 .docker-list-panel,
@@ -1510,9 +1510,9 @@ function errorMessage(reason: unknown, fallback: string) {
   min-width: 0;
   min-height: 0;
   overflow: auto;
-  border: 1px solid var(--material-border);
+  border: 1px solid var(--surface-border);
   border-radius: 14px;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
   padding: 12px;
 }
 
@@ -1545,9 +1545,9 @@ function errorMessage(reason: unknown, fallback: string) {
   flex-wrap: wrap;
   gap: 8px;
   padding: 7px 8px;
-  border: 1px solid var(--material-info-border);
+  border: 1px solid var(--state-info-border);
   border-radius: 10px;
-  background: var(--material-info-bg);
+  background: var(--state-info-bg);
 }
 
 .docker-batch-bar span {
@@ -1572,15 +1572,15 @@ function errorMessage(reason: unknown, fallback: string) {
   min-width: 0;
   min-height: 74px;
   padding: 8px 10px;
-  border: 1px solid var(--material-border);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
   cursor: pointer;
   overflow: hidden;
 }
 
 .docker-container-card.selected {
-  border-color: var(--material-selected-border);
+  border-color: var(--state-selected-border);
   box-shadow: 0 0 0 1px var(--material-accent-focus) inset;
 }
 
@@ -1648,7 +1648,7 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .container-main code {
-  color: var(--material-info-text);
+  color: var(--state-info-text);
   font-family: var(--mono-font, 'Cascadia Mono', Consolas, monospace);
   font-size: 12px;
 }
@@ -1657,29 +1657,29 @@ function errorMessage(reason: unknown, fallback: string) {
   justify-self: start;
   border-radius: 999px;
   padding: 2px 7px;
-  background: var(--material-neutral-bg);
+  background: var(--state-neutral-bg);
 }
 
 .container-state.running {
-  color: var(--material-success-text);
+  color: var(--state-success-text);
 }
 
 .container-state.stopped {
-  color: var(--material-neutral-text);
+  color: var(--state-neutral-text);
 }
 
 .container-state.warning {
-  color: var(--material-warning-text);
+  color: var(--state-warning-text);
 }
 
 .container-state.failed {
-  color: var(--material-danger-text);
+  color: var(--state-danger-text);
 }
 
 .container-state.pending {
-  color: var(--material-warning-text);
-  background: var(--material-warning-bg);
-  border: 1px solid var(--material-warning-border);
+  color: var(--state-warning-text);
+  background: var(--state-warning-bg);
+  border: 1px solid var(--state-warning-border);
 }
 
 .container-actions {
@@ -1733,7 +1733,7 @@ function errorMessage(reason: unknown, fallback: string) {
 .detail-tabs button.active {
   color: var(--text);
   border-color: transparent;
-  background: var(--material-selected-bg);
+  background: var(--state-selected-bg);
   box-shadow: inset 0 -2px 0 var(--primary, #3f7dff);
 }
 

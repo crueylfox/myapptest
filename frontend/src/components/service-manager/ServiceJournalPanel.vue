@@ -294,8 +294,8 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
 }
 
 .service-detail-tabs button.active {
-  background: var(--material-selected-bg);
-  color: var(--material-info-text);
+  background: var(--state-selected-bg);
+  color: var(--state-info-text);
   box-shadow: inset 0 -2px 0 var(--primary, #3f7dff);
 }
 
@@ -314,7 +314,7 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
   padding: 6px 8px;
   border: 1px solid var(--border, rgba(148, 163, 184, 0.16));
   border-radius: 8px;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
 }
 
 .service-journal-commandbar__row {
@@ -397,9 +397,9 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
 }
 
 .service-journal-small-button.is-active {
-  border-color: var(--material-selected-border);
-  background: var(--material-selected-bg);
-  color: var(--material-info-text);
+  border-color: var(--state-selected-border);
+  background: var(--state-selected-bg);
+  color: var(--state-info-text);
 }
 
 .service-journal-source-badge,
@@ -419,10 +419,10 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
   display: inline-flex;
   align-items: center;
   padding: 1px 7px;
-  border: 1px solid var(--material-info-border);
+  border: 1px solid var(--state-info-border);
   border-radius: 999px;
-  background: var(--material-info-bg);
-  color: var(--material-info-text);
+  background: var(--state-info-bg);
+  color: var(--state-info-text);
 }
 
 .service-journal-follow-reason {
@@ -438,7 +438,7 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
 }
 
 .service-journal-count.error {
-  color: var(--material-danger-text);
+  color: var(--state-danger-text);
 }
 
 .service-journal-panel {
@@ -460,7 +460,7 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
   padding: 9px;
   border: 1px solid var(--border, rgba(148, 163, 184, 0.16));
   border-radius: 8px;
-  background: var(--material-console-bg);
+  background: var(--state-console-bg);
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   font-size: 12px;
   line-height: 1.45;
@@ -516,8 +516,8 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
   min-height: 19px;
   padding: 1px 6px;
   border-radius: 999px;
-  background: var(--material-info-bg);
-  color: var(--material-info-text);
+  background: var(--state-info-bg);
+  color: var(--state-info-text);
 }
 
 .service-journal-source {
@@ -529,7 +529,7 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
 
 .service-journal-pid,
 .service-journal-truncated {
-  color: var(--material-neutral-text);
+  color: var(--state-neutral-text);
 }
 
 .service-journal-message {
@@ -560,21 +560,21 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
 }
 
 .service-journal-row.error .service-journal-level {
-  background: var(--material-danger-bg);
-  color: var(--material-danger-text);
+  background: var(--state-danger-bg);
+  color: var(--state-danger-text);
 }
 
 .service-journal-row.error .service-journal-message {
-  color: var(--material-danger-text);
+  color: var(--state-danger-text);
 }
 
 .service-journal-row.warning .service-journal-level {
-  background: var(--material-warning-bg);
-  color: var(--material-warning-text);
+  background: var(--state-warning-bg);
+  color: var(--state-warning-text);
 }
 
 .service-journal-row.warning .service-journal-message {
-  color: var(--material-warning-text);
+  color: var(--state-warning-text);
 }
 
 .service-journal-row.notice .service-journal-level {
@@ -583,12 +583,12 @@ function updateChecked(event: Event, name: 'autoScroll' | 'currentBootOnly' | 'w
 }
 
 .service-journal-row.debug .service-journal-level {
-  background: var(--material-info-bg);
-  color: var(--material-info-text);
+  background: var(--state-info-bg);
+  color: var(--state-info-text);
 }
 
 .service-journal-row.debug .service-journal-message {
-  color: var(--material-info-text);
+  color: var(--state-info-text);
 }
 
 .empty {

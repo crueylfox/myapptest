@@ -113,14 +113,14 @@ async function flush() {
 
 describe('TunnelManagerDialog', () => {
   it('uses shared glass tokens for the dialog shell and card surfaces', () => {
-    expect(componentSource).toContain('background: var(--material-backdrop-bg)')
-    expect(componentSource).toContain('background: var(--material-surface-bg)')
-    expect(componentSource).toContain('border: 1px solid var(--material-border')
-    expect(componentSource).toContain('box-shadow: var(--material-shadow)')
-    expect(componentSource).toContain('backdrop-filter: var(--material-blur)')
-    expect(componentSource).toContain('-webkit-backdrop-filter: var(--material-blur)')
-    expect(componentSource).toContain('background: var(--material-toolbar-bg)')
-    expect(componentSource).toContain('background: var(--material-card-bg)')
+    expect(componentSource).toContain('background: var(--surface-backdrop-bg)')
+    expect(componentSource).toContain('background: var(--surface-modal-bg)')
+    expect(componentSource).toContain('border: 1px solid var(--surface-border')
+    expect(componentSource).toContain('box-shadow: var(--surface-shadow)')
+    expect(componentSource).toContain('backdrop-filter: var(--surface-blur)')
+    expect(componentSource).toContain('-webkit-backdrop-filter: var(--surface-blur)')
+    expect(componentSource).toContain('background: var(--surface-toolbar-bg)')
+    expect(componentSource).toContain('background: var(--surface-card-bg)')
     expect(componentSource).not.toContain('background: var(--panel, #101827)')
   })
 

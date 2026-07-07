@@ -56,9 +56,9 @@ const emit = defineEmits<{
   overflow-x: hidden;
   overflow-y: auto;
   padding: 10px;
-  border: 1px solid var(--material-border);
+  border: 1px solid var(--surface-border);
   border-radius: 10px;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
 }
 
 .service-list-header,
@@ -91,13 +91,13 @@ const emit = defineEmits<{
 }
 
 .service-row:hover {
-  border-color: var(--material-selected-border);
-  background: var(--material-hover-bg);
+  border-color: var(--state-selected-border);
+  background: var(--state-hover-bg);
 }
 
 .service-row.selected {
-  border-color: var(--material-selected-border);
-  background: var(--material-selected-bg);
+  border-color: var(--state-selected-border);
+  background: var(--state-selected-bg);
 }
 
 .service-row-main {
@@ -127,32 +127,32 @@ const emit = defineEmits<{
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: var(--material-neutral-text);
+  background: var(--state-neutral-text);
 }
 
 .service-dot.running,
 .service-badge.running {
-  background: var(--material-success-bg);
-  color: var(--material-success-text);
+  background: var(--state-success-bg);
+  color: var(--state-success-text);
 }
 
 .service-dot.failed,
 .service-badge.failed {
-  background: var(--material-danger-bg);
-  color: var(--material-danger-text);
+  background: var(--state-danger-bg);
+  color: var(--state-danger-text);
 }
 
 .service-dot.pending,
 .service-badge.pending {
-  background: var(--material-warning-bg);
-  color: var(--material-warning-text);
+  background: var(--state-warning-bg);
+  color: var(--state-warning-text);
 }
 
 .service-dot.stopped,
 .service-badge.stopped,
 .service-badge.disabled {
-  background: var(--material-neutral-bg);
-  color: var(--material-neutral-text);
+  background: var(--state-neutral-bg);
+  color: var(--state-neutral-text);
 }
 
 .service-badges {
@@ -172,13 +172,13 @@ const emit = defineEmits<{
 }
 
 .service-badge.enabled {
-  background: var(--material-info-bg);
-  color: var(--material-info-text);
+  background: var(--state-info-bg);
+  color: var(--state-info-text);
 }
 
 .service-badge.other {
-  background: var(--material-neutral-bg);
-  color: var(--material-neutral-text);
+  background: var(--state-neutral-bg);
+  color: var(--state-neutral-text);
 }
 
 .empty {

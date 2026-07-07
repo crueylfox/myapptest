@@ -813,7 +813,7 @@ function errorMessage(reason: unknown, fallback: string) {
   display: grid;
   place-items: center;
   padding: 28px;
-  background: var(--material-backdrop-bg);
+  background: var(--surface-backdrop-bg);
   transform: translateZ(0);
 }
 
@@ -823,13 +823,13 @@ function errorMessage(reason: unknown, fallback: string) {
   overflow: hidden;
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  border: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.22)));
+  border: 1px solid var(--surface-border, var(--border, rgba(148, 163, 184, 0.22)));
   border-radius: 18px;
-  background: var(--material-surface-bg);
+  background: var(--surface-modal-bg);
   color: var(--text, #e5edf8);
-  box-shadow: var(--material-shadow);
-  backdrop-filter: var(--material-blur);
-  -webkit-backdrop-filter: var(--material-blur);
+  box-shadow: var(--surface-shadow);
+  backdrop-filter: var(--surface-blur);
+  -webkit-backdrop-filter: var(--surface-blur);
 }
 
 .tunnel-dialog-header,
@@ -844,8 +844,8 @@ function errorMessage(reason: unknown, fallback: string) {
 .tunnel-dialog-header {
   justify-content: space-between;
   padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--material-border, var(--border, rgba(148, 163, 184, 0.18)));
-  background: var(--material-toolbar-bg);
+  border-bottom: 1px solid var(--surface-border, var(--border, rgba(148, 163, 184, 0.18)));
+  background: var(--surface-toolbar-bg);
 }
 
 .tunnel-dialog-header h2 {
@@ -861,8 +861,8 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .tunnel-dialog-toolbar {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--material-border, var(--border, var(--material-border)));
-  background: var(--material-toolbar-bg);
+  border-bottom: 1px solid var(--surface-border, var(--border, var(--surface-border)));
+  background: var(--surface-toolbar-bg);
   flex-wrap: wrap;
   align-items: end;
 }
@@ -883,7 +883,7 @@ function errorMessage(reason: unknown, fallback: string) {
   gap: 16px;
   padding: 16px 20px 20px;
   overflow: auto;
-  background: var(--material-panel-bg);
+  background: var(--surface-panel-bg);
 }
 
 .tunnel-profile-form {
@@ -911,9 +911,9 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .tunnel-profile-card,
 .tunnel-profile-form {
-  border: 1px solid var(--material-border, var(--border, var(--material-border)));
+  border: 1px solid var(--surface-border, var(--border, var(--surface-border)));
   border-radius: 14px;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
   padding: 12px;
 }
 
@@ -947,8 +947,8 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .tunnel-profile-card.active {
-  border-color: var(--material-selected-border);
-  background: var(--material-selected-bg);
+  border-color: var(--state-selected-border);
+  background: var(--state-selected-bg);
   box-shadow: 0 0 0 1px var(--material-accent-focus) inset;
 }
 
@@ -972,27 +972,27 @@ function errorMessage(reason: unknown, fallback: string) {
   display: inline-flex;
   border-radius: 999px;
   padding: 2px 7px;
-  background: var(--material-neutral-bg);
+  background: var(--state-neutral-bg);
 }
 
 .tunnel-status.running {
-  color: var(--material-success-text);
+  color: var(--state-success-text);
 }
 
 .tunnel-status.warning {
-  color: var(--material-warning-text);
+  color: var(--state-warning-text);
 }
 
 .tunnel-status.failed {
-  color: var(--material-danger-text);
+  color: var(--state-danger-text);
 }
 
 .remote-listen-diagnostics {
   display: grid;
   gap: 6px;
   border-radius: 12px;
-  border: 1px solid var(--material-info-border);
-  background: var(--material-card-bg);
+  border: 1px solid var(--state-info-border);
+  background: var(--surface-card-bg);
   padding: 10px;
 }
 
@@ -1036,13 +1036,13 @@ function errorMessage(reason: unknown, fallback: string) {
 
 .remote-listen-diagnostics em {
   font-style: normal;
-  color: var(--material-warning-text);
+  color: var(--state-warning-text);
   font-size: 12px;
 }
 
 .remote-listen-warning {
   margin: 2px 0 0;
-  color: var(--material-warning-text);
+  color: var(--state-warning-text);
   font-size: 12px;
   line-height: 1.45;
 }
@@ -1059,7 +1059,7 @@ function errorMessage(reason: unknown, fallback: string) {
   margin: 0 3px;
   padding: 1px 5px;
   border-radius: 6px;
-  background: var(--material-neutral-bg);
+  background: var(--state-neutral-bg);
   color: var(--text, #e5edf8);
 }
 
@@ -1068,7 +1068,7 @@ function errorMessage(reason: unknown, fallback: string) {
   min-height: 30px;
   border-color: rgba(251, 191, 36, 0.38);
   background: rgba(251, 191, 36, 0.12);
-  color: var(--material-warning-text);
+  color: var(--state-warning-text);
 }
 
 .remote-access-button:hover:not(:disabled) {
@@ -1090,7 +1090,7 @@ function errorMessage(reason: unknown, fallback: string) {
   text-align: left;
   border: 1px solid var(--border, rgba(148, 163, 184, 0.18));
   border-radius: 12px;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
   color: var(--text, #e5edf8);
 }
 
@@ -1106,8 +1106,8 @@ function errorMessage(reason: unknown, fallback: string) {
 }
 
 .tunnel-type-card.selected {
-  border-color: var(--material-selected-border);
-  background: var(--material-selected-soft-bg);
+  border-color: var(--state-selected-border);
+  background: var(--state-selected-soft-bg);
 }
 
 .form-hint {

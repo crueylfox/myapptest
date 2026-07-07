@@ -632,7 +632,7 @@ function safeStringList(value: unknown): string[] {
   align-items: center;
   justify-content: center;
   padding: 28px;
-  background: var(--material-backdrop-bg);
+  background: var(--surface-backdrop-bg);
   transform: translateZ(0);
 }
 
@@ -641,12 +641,12 @@ function safeStringList(value: unknown): string[] {
   height: min(760px, calc(100vh - 56px));
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  border: 1px solid var(--material-border);
+  border: 1px solid var(--surface-border);
   border-radius: 22px;
-  background: var(--material-surface-bg);
-  box-shadow: var(--material-shadow);
-  backdrop-filter: var(--material-blur);
-  -webkit-backdrop-filter: var(--material-blur);
+  background: var(--surface-modal-bg);
+  box-shadow: var(--surface-shadow);
+  backdrop-filter: var(--surface-blur);
+  -webkit-backdrop-filter: var(--surface-blur);
   overflow: hidden;
 }
 
@@ -655,8 +655,8 @@ function safeStringList(value: unknown): string[] {
   display: flex;
   gap: 12px;
   padding: 16px 18px;
-  border-bottom: 1px solid var(--material-border);
-  background: var(--material-toolbar-bg);
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-toolbar-bg);
 }
 
 .process-dialog-header {
@@ -735,7 +735,7 @@ function safeStringList(value: unknown): string[] {
   display: grid;
   grid-template-columns: minmax(460px, 1.2fr) minmax(320px, 0.8fr);
   min-height: 0;
-  background: var(--material-panel-bg);
+  background: var(--surface-panel-bg);
 }
 
 .process-list-panel,
@@ -746,7 +746,7 @@ function safeStringList(value: unknown): string[] {
 }
 
 .process-detail-panel {
-  border-left: 1px solid var(--material-border);
+  border-left: 1px solid var(--surface-border);
   padding: 12px;
 }
 
@@ -794,7 +794,7 @@ function safeStringList(value: unknown): string[] {
   box-sizing: border-box;
   border-radius: 10px;
   overflow: hidden;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
 }
 
 .process-table-head {
@@ -848,7 +848,7 @@ function safeStringList(value: unknown): string[] {
 
 .process-table-head button:hover {
   color: var(--text);
-  background: var(--material-hover-bg);
+  background: var(--state-hover-bg);
 }
 
 .table-sort-arrow {
@@ -873,7 +873,7 @@ function safeStringList(value: unknown): string[] {
   width: 1px;
   height: 100%;
   margin: 0 auto;
-  background: var(--material-table-divider);
+  background: var(--surface-divider);
 }
 
 .table-column-resizer:hover::before {
@@ -884,17 +884,17 @@ function safeStringList(value: unknown): string[] {
   width: 100%;
   min-height: 36px;
   padding: 8px 12px;
-  border: 1px solid var(--material-border);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
   color: inherit;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
   text-align: left;
 }
 
 .process-table-row:hover,
 .process-table-row.selected {
-  border-color: var(--material-selected-border);
-  background: var(--material-selected-bg);
+  border-color: var(--state-selected-border);
+  background: var(--state-selected-bg);
 }
 
 .process-table-row strong {
@@ -954,8 +954,8 @@ function safeStringList(value: unknown): string[] {
   flex: 0 0 auto;
   padding: 4px 10px;
   border-radius: 999px;
-  background: var(--material-info-bg);
-  color: var(--material-info-text);
+  background: var(--state-info-bg);
+  color: var(--state-info-text);
   font-size: 12px;
 }
 
@@ -972,7 +972,7 @@ function safeStringList(value: unknown): string[] {
   margin: 0;
   padding: 8px 10px;
   border-radius: 10px;
-  background: var(--material-card-bg);
+  background: var(--surface-card-bg);
 }
 
 .process-facts dt {
@@ -1008,7 +1008,7 @@ function safeStringList(value: unknown): string[] {
   margin: 6px 0 0;
   padding: 8px 10px;
   border-radius: 10px;
-  background: var(--material-console-bg);
+  background: var(--state-console-bg);
   white-space: pre-wrap;
   word-break: break-word;
 }
