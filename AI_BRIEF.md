@@ -6,17 +6,14 @@ Updated: 2026-07-08
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.41`.
-- Recommended delivery version: `0.5.0-beta.41` user-smoke-required.
-- Current round: beta41 material token package after beta40 glass visual V3/V4 and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.40` -> `0.5.0-beta.41` before repackaging.
-- Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
-- Beta31 handoff commit: `09fa695` (`chore: finalize beta31 handoff and generated bindings`).
+- Current VERSION: `0.5.0-beta.42`.
+- Recommended delivery version: `0.5.0-beta.42` user-smoke-required.
+- Current round: beta42 canonical surface token package after beta41 material token package and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.41` -> `0.5.0-beta.42` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
 - Beta28 is recorded as multi-view UI unification + table interaction fix, including same-version Docker container terminal connect hotfix.
-- Beta28 EXE SHA-256: `8319638EA80E622CFC6115D38E6D4394B733F0D1D9FA31E5395E0D961B32641F`.
 
 ## 2. Beta30 macOS Scope
 - macOS SecretStore uses Keychain for server passwords.
@@ -37,7 +34,6 @@ Updated: 2026-07-08
 - Native notification copy is platform-neutral `系统原生通知`.
 - Docker/Compose logs now fill available detail space without overflowing the dialog, and Docker toolbar refresh remains on the first row.
 - Settings category active state now uses a visible light blue/gray active background plus highlighted icon/text.
-- Duplicate header close buttons are removed from dialogs that already have footer cancel/discard actions; the main Settings page still keeps its header close action.
 - macOS alert notification copy/capability is fixed: the settings UI uses macOS system notification copy, disables the unavailable native notification switch/button, and no longer exposes Windows native notification text on macOS.
 - Settings active nav state is stronger and uses a full-row lightweight background rather than relying on a left indicator only.
 - macOS shortcut defaults are platform-specific: copy `⌘C`, paste `⌘V`, command completion `⌘K`, history `⇧⌘H`, and common commands `⇧⌘P`.
@@ -83,12 +79,12 @@ Updated: 2026-07-08
   - Shared material tokens and `.app-material-*` classes are the primary UI surface contract; `.app-glass-*` remains as a compatibility alias.
   - Alert Center, Multi-server Dashboard, Network Details, SFTP properties/editor, editor More menu, Network Diagnostics, manager dialogs, Settings, connection dialogs, and app dialog surfaces consume the material/glass-compatible stack.
   - The global blue accent and terminal default blue are deepened to `#3f7dff`; this round remains UI surface CSS/tests only.
+- Beta42 canonical surface token package:
+  - Docker, Tunnel, Process, and Service manager inner panel CSS now consumes canonical `--surface-*` and `--state-*` tokens directly instead of legacy `--material-*` compatibility aliases.
+  - The global blue accent is deepened from `#3f7dff` to `#2f6df2` for dark/macOS-gray themes and to `#1f5fd8` for light mode.
+  - This round remains UI surface CSS/tests only; no event, store, API, data-flow, polling, connection, filtering, schema, SSH/SFTP runtime, or KeyVault logic changed.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
-- AI_BRIEF current handoff structure test is fixed.
-- Docker Manager permission failures now explain that manager commands run through independent SSH exec and do not inherit terminal `su/root` state; the UI exposes current-user and non-interactive `sudo -n` retry modes.
-- Light mode Docker/Settings/ServerPicker/dialog/menu surfaces now use theme tokens instead of hardcoded dark surfaces.
-- Compose no longer renders the visible empty text `No Compose projects`.
 - macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `ServerPilot-macos-unsigned`.
 
 ## 3. Explicit Non-Goals
@@ -107,12 +103,11 @@ Updated: 2026-07-08
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local focused beta39 regression tests for glass tokens and manager dialog CSS adoption: passed.
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1679 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta41 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.41.exe`.
-- Beta41 Windows EXE SHA-256: `D0C6DB9B2F6EE372FB469ABB6ECC96FAF4790711F31582E0880A445730C5D769`.
+- Beta42 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.42.exe`.
+- Beta42 Windows EXE SHA-256: `28D7EA1B54540FC31AAE4D2FB0DC7E0A4E33E374A671BE91A098C7973CACAC40`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 - GitHub Actions `Build macOS` run `28881318752`: success for commit `d5f72df7abb749769e9ca9b96c76f2b9dfb61d17`.
 - Artifact: `ServerPilot-macos-unsigned`.
