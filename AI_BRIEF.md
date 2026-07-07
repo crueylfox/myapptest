@@ -101,19 +101,14 @@ Updated: 2026-07-07
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local focused beta35 regression tests for persistence migration and compact monitor: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1671 tests, 89 Playwright tests, and frontend build.
+- Local focused beta36 regression tests for macOS native font/titlebar chrome: passed.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1674 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
-- Local Windows `wails build`: passed for beta35; EXE `build\bin\ServerPilot.exe`; SHA-256 `458759D87E8A469A33E5B33FDF8AC12B25F2823165AFF4C6F01482FAE7E96441`; Windows local `wails build -platform darwin/universal` was not run and does not produce a macOS app.
-- GitHub Actions `Build macOS` run `28839378200`: success for commit `a1fd256928a924a05390b62e1208ca2bc377666a`.
-- GitHub Actions `Build macOS` run `28842976967`: success for commit `77516e620d64cbac9497c873edc47277ec9cc480`.
+- Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
+- GitHub Actions `Build macOS` run `28853035534`: success for commit `102ee45f8ccc1c7e669f0db3159af440f3ea3bcf`.
 - Artifact: `ServerPilot-macos-unsigned`.
-- Artifact contains `ServerPilot-macos-universal-unsigned.zip` and `ServerPilot-macos-universal-unsigned.dmg`.
-- Desktop artifact archive `ServerPilot-macos-unsigned.zip` SHA-256: `d3db96d35b59f4e5085838239853abbd7ef6c5e62a31975a8e12ad79327525ec`.
-- Inner app zip `ServerPilot-macos-universal-unsigned.zip` SHA-256: `dc5016899f089843b7d95f4641dc6b5c467eba8e34a14a3782c901171dbd3f16`.
-- DMG `ServerPilot-macos-universal-unsigned.dmg` SHA-256: `b245be7d9a330e00bdbb519535d3b21e95fc555aea9fd500708a608b4376a0d2`.
+- Artifact contains `ServerPilot-macos-universal-unsigned.zip`, `ServerPilot-macos-universal-unsigned.dmg`, and their `.sha256` files.
 - macOS artifact came from the GitHub Actions macOS runner.
-- Windows local `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 
 ## 5. Next
 - For any future user-deliverable repackaging, bump the version first; do not create another same-version package.
