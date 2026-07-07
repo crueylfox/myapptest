@@ -1,15 +1,15 @@
 # AI_BRIEF - ServerPilot Current Handoff
 
-Updated: 2026-07-07
+Updated: 2026-07-08
 
 ## 0. Entry
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.40`.
-- Recommended delivery version: `0.5.0-beta.40` user-smoke-required.
-- Current round: beta40 glass visual V3/V4 packaging after beta31 cross-platform Key Vault backup and beta39 glass token rollout.
-- Version bump this packaging round: yes; `0.5.0-beta.39` -> `0.5.0-beta.40` before repackaging.
+- Current VERSION: `0.5.0-beta.41`.
+- Recommended delivery version: `0.5.0-beta.41` user-smoke-required.
+- Current round: beta41 material token package after beta40 glass visual V3/V4 and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.40` -> `0.5.0-beta.41` before repackaging.
 - Previous beta30 macOS usability commit: `efbeae2` (`fix: polish macos dialogs backup import and compose layout`).
 - Beta31 handoff commit: `09fa695` (`chore: finalize beta31 handoff and generated bindings`).
 
@@ -79,10 +79,10 @@ Updated: 2026-07-07
   - `style.css` defines shared glass backdrop, surface, panel, card, border, shadow, blur, and header tokens for dark/light themes.
   - Tunnel, Docker, Process, and Service manager dialog CSS consumes shared glass tokens for shell, header/toolbar, panels, and cards.
   - This round only changes UI surface CSS and tests; no event, store, API, data-flow, polling, connection, or filtering logic changed.
-- Beta40 glass visual V3/V4 packaging:
-  - Alert Center, Multi-server Dashboard, Network Details, SFTP properties/editor, editor More menu, and Network Diagnostics surfaces consume shared glass tokens.
-  - macOS collapsed local/SSH workspace topbar restores the traffic-light safe-left padding so tabs do not sit under native window buttons.
-  - This round remains UI surface CSS/tests only; no event, store, API, data-flow, polling, connection, or filtering logic changed.
+- Beta41 material visual package:
+  - Shared material tokens and `.app-material-*` classes are the primary UI surface contract; `.app-glass-*` remains as a compatibility alias.
+  - Alert Center, Multi-server Dashboard, Network Details, SFTP properties/editor, editor More menu, Network Diagnostics, manager dialogs, Settings, connection dialogs, and app dialog surfaces consume the material/glass-compatible stack.
+  - The global blue accent and terminal default blue are deepened to `#3f7dff`; this round remains UI surface CSS/tests only.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - AI_BRIEF current handoff structure test is fixed.
@@ -111,8 +111,8 @@ Updated: 2026-07-07
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1679 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta40 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.40.exe`.
-- Beta40 Windows EXE SHA-256: `F8A092C93F4E21CBBB878135D83B8683CE6CB313367CE1B595632819E7848AC9`.
+- Beta41 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.41.exe`.
+- Beta41 Windows EXE SHA-256: `D0C6DB9B2F6EE372FB469ABB6ECC96FAF4790711F31582E0880A445730C5D769`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 - GitHub Actions `Build macOS` run `28856250391`: success for commit `24f6ad52a951f7c5f3b0d806bbd81af3c5c009bb`.
 - Artifact: `ServerPilot-macos-unsigned`.
