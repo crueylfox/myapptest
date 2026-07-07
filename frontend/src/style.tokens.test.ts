@@ -137,11 +137,88 @@ describe('theme and overlay tokens', () => {
       expect(tokens['glass-blur']).toBe('var(--material-blur)')
       expect(tokens['glass-header-bg']).toBe('var(--material-toolbar-bg)')
     }
-    expect(dark['material-blur']).toBe('blur(16px)')
-    expect(light['material-blur']).toBe('blur(16px)')
+    expect(resolveToken(dark, 'material-blur')).toBe('blur(16px)')
+    expect(resolveToken(light, 'material-blur')).toBe('blur(16px)')
     expect(resolveToken(dark, 'primary')).toBe('#3f7dff')
     expect(resolveToken(macosGrayDark, 'primary')).toBe('#3f7dff')
     expect(resolveToken(light, 'primary')).toBe('#245fca')
+  })
+
+  it('defines canonical surface and state tokens for future liquid material profiles', () => {
+    const requiredSurfaceTokens = [
+      'surface-backdrop-bg',
+      'surface-window-bg',
+      'surface-modal-bg',
+      'surface-panel-bg',
+      'surface-card-bg',
+      'surface-toolbar-bg',
+      'surface-control-bg',
+      'surface-border',
+      'surface-shadow',
+      'surface-blur',
+      'surface-highlight',
+      'surface-specular',
+      'surface-divider',
+    ]
+    const requiredStateTokens = [
+      'state-hover-bg',
+      'state-active-bg',
+      'state-selected-bg',
+      'state-selected-soft-bg',
+      'state-selected-border',
+      'state-focus-ring',
+      'state-info-bg',
+      'state-info-border',
+      'state-info-text',
+      'state-warning-bg',
+      'state-warning-border',
+      'state-warning-text',
+      'state-danger-bg',
+      'state-danger-border',
+      'state-danger-text',
+      'state-success-bg',
+      'state-success-border',
+      'state-success-text',
+      'state-neutral-bg',
+      'state-neutral-text',
+      'state-console-bg',
+    ]
+
+    for (const tokens of [dark, macosGrayDark, light]) {
+      for (const token of [...requiredSurfaceTokens, ...requiredStateTokens]) expect(tokens[token]).toBeTruthy()
+      expect(tokens['material-surface-bg']).toBe('var(--surface-modal-bg)')
+      expect(tokens['material-panel-bg']).toBe('var(--surface-panel-bg)')
+      expect(tokens['material-card-bg']).toBe('var(--surface-card-bg)')
+      expect(tokens['material-toolbar-bg']).toBe('var(--surface-toolbar-bg)')
+      expect(tokens['material-hover-bg']).toBe('var(--state-hover-bg)')
+      expect(tokens['material-selected-bg']).toBe('var(--state-selected-bg)')
+      expect(tokens['material-selected-soft-bg']).toBe('var(--state-selected-soft-bg)')
+      expect(tokens['material-selected-border']).toBe('var(--state-selected-border)')
+      expect(tokens['material-info-bg']).toBe('var(--state-info-bg)')
+      expect(tokens['material-warning-bg']).toBe('var(--state-warning-bg)')
+      expect(tokens['material-danger-bg']).toBe('var(--state-danger-bg)')
+      expect(tokens['material-success-bg']).toBe('var(--state-success-bg)')
+      expect(tokens['material-console-bg']).toBe('var(--state-console-bg)')
+      expect(tokens['glass-surface-bg']).toBe('var(--material-surface-bg)')
+    }
+
+    expect(resolveToken(dark, 'surface-modal-bg')).toBe('rgba(45, 49, 56, .88)')
+    expect(resolveToken(dark, 'state-selected-bg')).toBe('rgba(63, 125, 255, .20)')
+    expect(resolveToken(light, 'surface-modal-bg')).toBe('rgba(255, 255, 255, .86)')
+    expect(resolveToken(light, 'state-selected-bg')).toBe('rgba(36, 95, 202, .16)')
+
+    const appMaterialBackdrop = block('.app-material-backdrop')
+    const appMaterialSurface = block('.app-material-surface')
+    const appMaterialPanel = block('.app-material-panel')
+    const appMaterialCard = block('.app-material-card')
+    const appMaterialToolbar = block('.app-material-toolbar')
+
+    expect(appMaterialBackdrop).toContain('background: var(--surface-backdrop-bg)')
+    expect(appMaterialSurface).toContain('background: var(--surface-modal-bg)')
+    expect(appMaterialSurface).toContain('backdrop-filter: var(--surface-blur)')
+    expect(appMaterialPanel).toContain('background: var(--surface-panel-bg)')
+    expect(appMaterialCard).toContain('background: var(--surface-card-bg)')
+    expect(appMaterialToolbar).toContain('background: var(--surface-toolbar-bg)')
   })
 
   it('defines semantic material state tokens and uses them in inner management panels', () => {
@@ -170,9 +247,9 @@ describe('theme and overlay tokens', () => {
 
     for (const tokens of [dark, macosGrayDark, light]) {
       for (const token of requiredStateTokens) expect(tokens[token]).toBeTruthy()
-      expect(tokens['docker-console-bg']).toBe('var(--material-console-bg)')
-      expect(tokens['docker-selected-bg']).toBe('var(--material-selected-bg)')
-      expect(tokens['docker-selected-soft-bg']).toBe('var(--material-selected-soft-bg)')
+      expect(tokens['docker-console-bg']).toBe('var(--state-console-bg)')
+      expect(tokens['docker-selected-bg']).toBe('var(--state-selected-bg)')
+      expect(tokens['docker-selected-soft-bg']).toBe('var(--state-selected-soft-bg)')
     }
 
     expect(resolveToken(dark, 'material-selected-bg')).toBe('rgba(63, 125, 255, .20)')
@@ -234,30 +311,30 @@ describe('theme and overlay tokens', () => {
     const tableResizer = block('.table-column-resizer::before')
     const tableResizerHover = block('.table-column-resizer:hover::before')
 
-    expect(settingsHover).toContain('background: var(--material-hover-bg)')
-    expect(settingsActive).toContain('background: var(--material-selected-bg)')
-    expect(settingsActive).toContain('box-shadow: 0 0 0 1px var(--material-selected-border)')
-    expect(settingsActiveIcon).toContain('color: var(--material-info-text)')
-    expect(settingsWarning).toContain('border: 1px solid var(--material-warning-border)')
-    expect(settingsWarning).toContain('background: var(--material-warning-bg)')
-    expect(settingsDangerWarning).toContain('border-color: var(--material-danger-border)')
-    expect(settingsDangerWarning).toContain('background: var(--material-danger-bg)')
-    expect(topbarHover).toContain('background: var(--material-hover-bg)')
-    expect(topbarActive).toContain('background: var(--material-selected-bg)')
-    expect(sftpToolbarActive).toContain('background: var(--material-selected-bg)')
-    expect(sftpToolbarActive).toContain('color: var(--material-info-text)')
-    expect(sftpSeparator).toContain('color: var(--material-table-divider)')
-    expect(sftpRowState).toContain('background: var(--material-selected-soft-bg)')
+    expect(settingsHover).toContain('background: var(--state-hover-bg)')
+    expect(settingsActive).toContain('background: var(--state-selected-bg)')
+    expect(settingsActive).toContain('box-shadow: 0 0 0 1px var(--state-selected-border)')
+    expect(settingsActiveIcon).toContain('color: var(--state-info-text)')
+    expect(settingsWarning).toContain('border: 1px solid var(--state-warning-border)')
+    expect(settingsWarning).toContain('background: var(--state-warning-bg)')
+    expect(settingsDangerWarning).toContain('border-color: var(--state-danger-border)')
+    expect(settingsDangerWarning).toContain('background: var(--state-danger-bg)')
+    expect(topbarHover).toContain('background: var(--state-hover-bg)')
+    expect(topbarActive).toContain('background: var(--state-selected-bg)')
+    expect(sftpToolbarActive).toContain('background: var(--state-selected-bg)')
+    expect(sftpToolbarActive).toContain('color: var(--state-info-text)')
+    expect(sftpSeparator).toContain('color: var(--surface-divider)')
+    expect(sftpRowState).toContain('background: var(--state-selected-soft-bg)')
     expect(sftpDirectoryIcon).toContain('color: var(--material-accent)')
-    expect(sftpDirectoryIconActive).toContain('color: var(--material-info-text)')
-    expect(sftpFilterMatch).toContain('background: var(--material-warning-bg)')
-    expect(sftpFilterSelectedMatch).toContain('background: var(--material-warning-border)')
-    expect(transferHover).toContain('background: var(--material-hover-bg)')
-    expect(transferActive).toContain('background: var(--material-selected-bg)')
-    expect(transferActive).toContain('color: var(--material-info-text)')
-    expect(commandHover).toContain('background: var(--material-hover-bg)')
-    expect(networkEndpointHover).toContain('background: var(--material-hover-bg)')
-    expect(tableResizer).toContain('background: var(--material-table-divider)')
+    expect(sftpDirectoryIconActive).toContain('color: var(--state-info-text)')
+    expect(sftpFilterMatch).toContain('background: var(--state-warning-bg)')
+    expect(sftpFilterSelectedMatch).toContain('background: var(--state-warning-border)')
+    expect(transferHover).toContain('background: var(--state-hover-bg)')
+    expect(transferActive).toContain('background: var(--state-selected-bg)')
+    expect(transferActive).toContain('color: var(--state-info-text)')
+    expect(commandHover).toContain('background: var(--state-hover-bg)')
+    expect(networkEndpointHover).toContain('background: var(--state-hover-bg)')
+    expect(tableResizer).toContain('background: var(--surface-divider)')
     expect(tableResizerHover).toContain('background: var(--material-accent)')
   })
 
@@ -288,12 +365,12 @@ describe('theme and overlay tokens', () => {
     const appGlassSurface = block('.app-glass-surface')
     const modal = block('.modal')
 
-    expect(appMaterialBackdrop).toContain('background: var(--material-backdrop-bg)')
-    expect(appMaterialSurface).toContain('background: var(--material-surface-bg)')
-    expect(appMaterialSurface).toContain('backdrop-filter: var(--material-blur)')
-    expect(appMaterialSurface).toContain('-webkit-backdrop-filter: var(--material-blur)')
-    expect(appGlassBackdrop).toContain('background: var(--material-backdrop-bg)')
-    expect(appGlassSurface).toContain('background: var(--material-surface-bg)')
+    expect(appMaterialBackdrop).toContain('background: var(--surface-backdrop-bg)')
+    expect(appMaterialSurface).toContain('background: var(--surface-modal-bg)')
+    expect(appMaterialSurface).toContain('backdrop-filter: var(--surface-blur)')
+    expect(appMaterialSurface).toContain('-webkit-backdrop-filter: var(--surface-blur)')
+    expect(appGlassBackdrop).toContain('background: var(--surface-backdrop-bg)')
+    expect(appGlassSurface).toContain('background: var(--surface-modal-bg)')
     expect(modal).toContain('background: var(--material-surface-bg)')
     expect(modal).toContain('box-shadow: var(--material-shadow)')
 
@@ -407,7 +484,9 @@ describe('theme and overlay tokens', () => {
   it('uses app content blur instead of full-screen gray modal scrims', () => {
     const backdropAlpha = (cssBlock: string) => {
       const background = declaration(cssBlock, 'background')
-      return background === 'var(--material-backdrop-bg)' ? rgbaAlpha(dark['material-backdrop-bg']) : rgbaAlpha(background)
+      if (background === 'var(--material-backdrop-bg)') return rgbaAlpha(resolveToken(dark, 'material-backdrop-bg'))
+      if (background === 'var(--surface-backdrop-bg)') return rgbaAlpha(resolveToken(dark, 'surface-backdrop-bg'))
+      return rgbaAlpha(background)
     }
     const visualRoot = block('.app-visual-root')
     const modalOpenRule = block('body:has(.modal-backdrop) .app-visual-root,\nbody:has(.settings-overlay-backdrop) .app-visual-root,\nbody:has(.multi-server-dashboard-backdrop) .app-visual-root,\nbody:has(.alert-center-backdrop) .app-visual-root,\nbody:has(.docker-dialog-backdrop) .app-visual-root,\nbody:has(.tunnel-dialog-backdrop) .app-visual-root,\nbody:has(.process-dialog-backdrop) .app-visual-root,\nbody:has(.service-dialog-backdrop) .app-visual-root')
@@ -828,7 +907,7 @@ describe('theme and overlay tokens', () => {
     const fileIcon = block('.sftp-entry-icon-file')
 
     expect(directoryIcon).toContain('color: var(--material-accent)')
-    expect(directoryActiveIcon).toContain('color: var(--material-info-text)')
+    expect(directoryActiveIcon).toContain('color: var(--state-info-text)')
     expect(fileIcon).toContain('color: #9fb0c6')
     expect(fileIcon).not.toContain('#3f7dff')
     expect(fileIcon).not.toContain('#93c5fd')

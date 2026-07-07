@@ -35,11 +35,26 @@ function rgbaAlpha(value: string) {
   return Number(match[1])
 }
 
+function rootToken(name: string) {
+  return declaration(block(':root'), `--${name}`)
+}
+
+function resolveRootToken(name: string) {
+  let value = rootToken(name)
+  const seen = new Set<string>()
+  while (value.startsWith('var(--')) {
+    const match = value.match(/^var\(--([\w-]+)\)$/)
+    if (!match || seen.has(match[1])) break
+    seen.add(match[1])
+    value = rootToken(match[1])
+  }
+  return value
+}
+
 function backdropAlpha(cssBlock: string) {
   const background = declaration(cssBlock, 'background')
-  return background === 'var(--material-backdrop-bg)'
-    ? rgbaAlpha(declaration(block(':root'), '--material-backdrop-bg'))
-    : rgbaAlpha(background)
+  const variable = background.match(/^var\(--([\w-]+)\)$/)
+  return variable ? rgbaAlpha(resolveRootToken(variable[1])) : rgbaAlpha(background)
 }
 
 describe('first-batch UI regression contracts', () => {
