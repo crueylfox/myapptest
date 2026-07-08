@@ -25,4 +25,36 @@ describe('release automation scripts', () => {
     expect(script).not.toContain('wails build')
     expect(script).not.toContain('gh workflow run')
   })
+
+  it('keeps the macOS workflow on GitHub Actions with the expected unsigned artifact contract', () => {
+    const workflow = readFileSync(new URL('../../.github/workflows/build-macos.yml', import.meta.url), 'utf8')
+
+    expect(workflow).toContain('runs-on: macos-14')
+    expect(workflow).toContain('wails build -platform darwin/universal')
+    expect(workflow).toContain('name: ServerPilot-macos-unsigned')
+    expect(workflow).toContain('ServerPilot-macos-universal-unsigned.zip')
+    expect(workflow).toContain('ServerPilot-macos-universal-unsigned.dmg')
+    expect(workflow).toContain('ServerPilot-macos-universal-unsigned.zip.sha256')
+    expect(workflow).toContain('ServerPilot-macos-universal-unsigned.dmg.sha256')
+    expect(workflow).not.toContain('codesign')
+    expect(workflow).not.toContain('notarytool')
+  })
+
+  it('provides an offline artifact verifier without downloading or triggering builds', () => {
+    const script = readFileSync(new URL('../../scripts/verify-release-artifacts.ps1', import.meta.url), 'utf8')
+
+    expect(script).toContain('[string]$ArtifactDirectory')
+    expect(script).toContain('ServerPilot-macos-unsigned')
+    expect(script).toContain('ServerPilot-macos-universal-unsigned.zip')
+    expect(script).toContain('ServerPilot-macos-universal-unsigned.dmg')
+    expect(script).toContain('Get-FileHash')
+    expect(script).toContain('SHA256')
+    expect(script).toContain('if-no-files-found')
+
+    expect(script).not.toContain('Invoke-WebRequest')
+    expect(script).not.toContain('gh run download')
+    expect(script).not.toContain('gh workflow run')
+    expect(script).not.toContain('wails build')
+    expect(script).not.toContain('git push')
+  })
 })
