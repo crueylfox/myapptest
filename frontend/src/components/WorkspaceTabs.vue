@@ -748,7 +748,7 @@ onBeforeUnmount(() => {
           <span>分屏</span>
         </span>
       </button>
-      <div v-if="splitMenuOpen" class="split-mode-menu">
+      <AppPopover v-if="splitMenuOpen" :viewport="false" class="split-mode-menu">
         <button
           type="button"
           data-split-mode="single"
@@ -789,7 +789,7 @@ onBeforeUnmount(() => {
           data-split-action="clear-panes"
           @click="clearTopbarSplitPanes"
         >清空所有窗格</button>
-      </div>
+      </AppPopover>
     </div>
     <span class="topbar-action-separator" aria-hidden="true"></span>
     <div ref="navigation" class="topbar-navigation">

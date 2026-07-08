@@ -9,6 +9,7 @@ const { readFileSync } = await import('node:fs') as { readFileSync: (path: strin
 import AppBackdrop from './AppBackdrop.vue'
 import AppPopover from './AppPopover.vue'
 import AppSurface from './AppSurface.vue'
+import AppToolbar from './AppToolbar.vue'
 
 describe('UI surface primitives', () => {
   it('renders modal surfaces through canonical surface and material classes while preserving native element attrs', () => {
@@ -144,6 +145,35 @@ describe('UI surface primitives', () => {
     expect(contextMenuCount).toBe(1)
   })
 
+  it('renders toolbars through the canonical surface primitive with toolbar semantics and attr fallthrough', () => {
+    const wrapper = mount(AppToolbar, {
+      props: {
+        as: 'nav',
+      },
+      attrs: {
+        id: 'primary-toolbar',
+        'aria-label': 'Primary actions',
+        class: 'serverpilot-toolbar',
+      },
+      slots: {
+        default: '<button type="button">Refresh</button>',
+      },
+    })
+
+    expect(wrapper.element.tagName).toBe('NAV')
+    expect(wrapper.attributes('role')).toBe('toolbar')
+    expect(wrapper.attributes('id')).toBe('primary-toolbar')
+    expect(wrapper.attributes('aria-label')).toBe('Primary actions')
+    expect(wrapper.classes()).toEqual(expect.arrayContaining([
+      'app-toolbar',
+      'app-surface',
+      'app-surface--toolbar',
+      'app-material-toolbar',
+      'serverpilot-toolbar',
+    ]))
+    expect(wrapper.find('button').text()).toBe('Refresh')
+  })
+
   it('migrates AppDialogHost to primitives without removing existing public selector classes', () => {
     const source = readFileSync('src/components/AppDialogHost.vue', 'utf8')
     expect(source).toContain("import AppBackdrop from './primitives/AppBackdrop.vue'")
@@ -179,5 +209,16 @@ describe('UI surface primitives', () => {
     expect(source).not.toContain('<div v-if="navigationOpen" class="topbar-menu">')
     expect(source).toContain('class="topbar-menu-item active"')
     expect(source).toContain('class="topbar-menu-item topbar-menu-badge-row"')
+  })
+
+  it('migrates the split mode menu to AppPopover without changing split controls', () => {
+    const source = readFileSync('src/components/WorkspaceTabs.vue', 'utf8')
+    expect(source).toContain("import AppPopover from './primitives/AppPopover.vue'")
+    expect(source).toContain('<AppPopover v-if="splitMenuOpen" :viewport="false" class="split-mode-menu">')
+    expect(source).not.toContain('<div v-if="splitMenuOpen" class="split-mode-menu">')
+    expect(source).toContain('data-split-mode="single"')
+    expect(source).toContain('data-split-mode="quad"')
+    expect(source).toContain('@click="resetTopbarSplitRatios"')
+    expect(source).toContain('@click="clearTopbarSplitPanes"')
   })
 })
