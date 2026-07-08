@@ -7,6 +7,7 @@ import type {
   NetworkDiagnosticStatus,
   NetworkDiagnosticType,
 } from '../types'
+import AppToolbar from './primitives/AppToolbar.vue'
 
 type NetworkDiagnosticDisplayStatus = NetworkDiagnosticStatus | 'idle'
 
@@ -285,7 +286,7 @@ function errorMessage(reason: unknown, fallback: string) {
         <button type="button" class="dialog-close-button" @click="closeDialog">关闭</button>
       </header>
 
-      <div class="network-diagnostics-toolbar">
+      <AppToolbar class="network-diagnostics-toolbar">
         <label class="network-diag-select-field network-diag-server-select-field">
           <span>服务器</span>
           <select
@@ -330,7 +331,7 @@ function errorMessage(reason: unknown, fallback: string) {
         >
           刷新
         </button>
-      </div>
+      </AppToolbar>
 
       <div class="network-diagnostics-body">
         <nav class="network-diagnostics-types" aria-label="诊断类型">

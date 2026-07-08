@@ -4,6 +4,7 @@ import { confirmDialog } from '../composables/useAppDialog'
 import { useProcessStore } from '../stores/processes'
 import type { Connection, ProcessDetail, ProcessEntry, ProcessSignal, ProcessSortBy, ProcessSortDir } from '../types'
 import { formatBytes } from '../utils/format'
+import AppToolbar from './primitives/AppToolbar.vue'
 
 type ProcessTableColumn = {
   key: ProcessSortBy | 'state'
@@ -472,7 +473,7 @@ function safeStringList(value: unknown): string[] {
 
       <p v-if="renderError" class="process-error-state">{{ renderError }}</p>
 
-      <div v-else class="process-toolbar">
+      <AppToolbar v-else class="process-toolbar">
         <label class="process-server-select">
           当前服务器
           <select v-model.number="selectedServerID" aria-label="选择服务器">
@@ -495,7 +496,7 @@ function safeStringList(value: unknown): string[] {
           </button>
           <span v-if="refreshStatusText" class="process-refresh-status">{{ refreshStatusText }}</span>
         </div>
-      </div>
+      </AppToolbar>
 
       <p v-if="!renderError && !selectedConnection" class="process-empty">请先连接并选择一个服务器。</p>
       <div v-else-if="!renderError" class="process-body">

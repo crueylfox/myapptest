@@ -221,4 +221,34 @@ describe('UI surface primitives', () => {
     expect(source).toContain('@click="resetTopbarSplitRatios"')
     expect(source).toContain('@click="clearTopbarSplitPanes"')
   })
+
+  it('routes manager filter toolbars through AppToolbar without changing public selector classes', () => {
+    const migrations = [
+      {
+        path: 'src/components/ProcessManagerDialog.vue',
+        importPath: './primitives/AppToolbar.vue',
+        migratedTag: '<AppToolbar v-else class="process-toolbar">',
+        legacyTag: '<div v-else class="process-toolbar">',
+      },
+      {
+        path: 'src/components/ServiceManagerDialog.vue',
+        importPath: './primitives/AppToolbar.vue',
+        migratedTag: '<AppToolbar class="service-filter-toolbar">',
+        legacyTag: '<div class="service-filter-toolbar">',
+      },
+      {
+        path: 'src/components/NetworkDiagnosticsDialog.vue',
+        importPath: './primitives/AppToolbar.vue',
+        migratedTag: '<AppToolbar class="network-diagnostics-toolbar">',
+        legacyTag: '<div class="network-diagnostics-toolbar">',
+      },
+    ]
+
+    for (const migration of migrations) {
+      const source = readFileSync(migration.path, 'utf8')
+      expect(source).toContain(`import AppToolbar from '${migration.importPath}'`)
+      expect(source).toContain(migration.migratedTag)
+      expect(source).not.toContain(migration.legacyTag)
+    }
+  })
 })

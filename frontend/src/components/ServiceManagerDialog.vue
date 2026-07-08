@@ -24,6 +24,7 @@ import { useServiceActionFlow } from '../composables/useServiceActionFlow'
 import { useServiceJournalFlow } from '../composables/useServiceJournalFlow'
 import { useServiceManagerStore } from '../stores/services'
 import type { Connection, ConnectionRuntimeState, SystemServiceSummary } from '../types'
+import AppToolbar from './primitives/AppToolbar.vue'
 import ServiceManagerDetails from './service-manager/ServiceManagerDetails.vue'
 import ServiceManagerList from './service-manager/ServiceManagerList.vue'
 
@@ -375,7 +376,7 @@ function isOnline(serverID: number) {
         <button class="dialog-close-button" type="button" @click="closeDialog">关闭</button>
       </header>
 
-      <div class="service-filter-toolbar">
+      <AppToolbar class="service-filter-toolbar">
         <label class="service-filter-inline service-filter-server">
           <span>当前服务器</span>
           <select v-model.number="selectedServerID" data-testid="service-server-select" :disabled="onlineConnections.length === 0">
@@ -419,7 +420,7 @@ function isOnline(serverID: number) {
         >
           {{ statusText }}
         </span>
-      </div>
+      </AppToolbar>
 
       <div v-if="onlineConnections.length === 0" class="service-empty">请先连接一台服务器。</div>
       <div v-else class="service-body">
