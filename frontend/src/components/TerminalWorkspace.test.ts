@@ -591,7 +591,7 @@ describe('TerminalWorkspace server states', () => {
     const { wrapper } = mountWorkspace(state())
 
     expect(wrapper.find('.workspace-shell').classes()).toContain('sidebar-collapsed')
-    expect(wrapper.find('.workspace-shell').attributes('style')).toContain('0 1px minmax(0, 1fr)')
+    expect(wrapper.find('.workspace-shell').attributes('style')).toContain('0 0 minmax(0, 1fr)')
     const restore = wrapper.get('.sidebar-restore-button')
     expect(restore.attributes('aria-label')).toBe('显示监控侧栏')
     expect(restore.find('.app-icon--gauge').exists()).toBe(true)
@@ -642,6 +642,20 @@ describe('TerminalWorkspace server states', () => {
     store.workspaces[connection.id].status = 'connected'
     expect(wrapper.get('.terminal-statusbar').text()).toContain('已连接')
     expect(wrapper.get('.terminal-statusbar').text()).not.toMatch(/\d+\s*脳\s*\d+/)
+  })
+
+  it('hides remote status details in the default no-server workspace state', async () => {
+    const { wrapper, store } = mountWorkspace(state())
+    store.clearActiveWorkspace()
+    await wrapper.setProps({ connection: null, state: null, snapshot: null })
+    await wrapper.vm.$nextTick()
+
+    const statusbar = wrapper.get('.terminal-statusbar')
+    expect(statusbar.text()).toContain('未连接服务器')
+    expect(statusbar.text()).not.toContain('离线')
+    expect(statusbar.text()).not.toContain('延迟')
+    expect(statusbar.text()).not.toContain('↓')
+    expect(statusbar.text()).not.toContain('↑')
   })
 
   it('seeds the active TerminalView draft before executing command palette commands', async () => {
@@ -1154,7 +1168,7 @@ describe('TerminalWorkspace server states', () => {
     expect(paneSessionIds(wrapper)).toEqual([null, null, null, null])
   })
 
-  it('selects SSH and Local terminals from empty panes without duplicating or restarting sessions', async () => {
+  it('does not offer the connected-terminal selector from empty panes', async () => {
     const { wrapper, store, localStore } = mountWorkspace(state({
       status: 'online',
       terminalActive: true,
@@ -1181,22 +1195,10 @@ describe('TerminalWorkspace server states', () => {
 
     const emptyPane = wrapper.get('[data-pane-id="pane-3"]')
     expect(emptyPane.text()).toContain('将标签拖到这里')
-    await emptyPane.get('.terminal-pane-select-trigger').trigger('click')
-    expect(wrapper.get('.terminal-pane-selector').text()).toContain('SSH')
-    expect(wrapper.get('.terminal-pane-selector').text()).toContain('server #2')
-    expect(wrapper.get('.terminal-pane-selector').text()).toContain('CMD')
-
-    await wrapper.get('.terminal-pane-selector [data-assignment-key="ssh:term-2"]').trigger('click')
-    await wrapper.vm.$nextTick()
-    expect(paneSessionIds(wrapper)).toEqual(['term-1', null, 'term-2', null])
-    expect(store.activeSessionId).toBe('term-2')
-
-    await wrapper.get('[data-pane-id="pane-2"] .terminal-pane-select-trigger').trigger('click')
-    await wrapper.get('.terminal-pane-selector [data-assignment-key="local:local-cmd"]').trigger('click')
-    await wrapper.vm.$nextTick()
-    expect(paneLocalSessionIds(wrapper)).toEqual([null, 'local-cmd', null, null])
-    expect(localStore.activeSessionId).toBe('local-cmd')
-    expect(store.activeSessionId).toBeNull()
+    expect(emptyPane.find('.terminal-pane-select-trigger').exists()).toBe(false)
+    expect(emptyPane.text()).not.toContain('选择已连接')
+    expect(paneSessionIds(wrapper)).toEqual(['term-1', null, null, null])
+    expect(paneLocalSessionIds(wrapper)).toEqual([null, null, null, null])
     expect(window.go?.main?.App?.OpenTerminal).not.toHaveBeenCalled()
     expect(window.go?.main?.App?.OpenLocalTerminal).not.toHaveBeenCalled()
   })
@@ -1214,7 +1216,7 @@ describe('TerminalWorkspace server states', () => {
     const emptyPane = wrapper.get('[data-pane-id="pane-2"]')
     expect(emptyPane.text()).toContain('新建服务器')
     expect(emptyPane.text()).toContain('连接已保存')
-    expect(emptyPane.text()).toContain('选择已连接')
+    expect(emptyPane.text()).not.toContain('选择已连接')
     expect(emptyPane.find('.terminal-pane-empty-message').text()).toBe('将标签拖到这里')
     expect(emptyPane.find('.terminal-pane-empty-actions').classes()).toContain('centered')
     expect(emptyPane.find('.terminal-pane-empty-actions').classes()).not.toContain('inline')
@@ -1225,30 +1227,28 @@ describe('TerminalWorkspace server states', () => {
     expect(emptyPane.findAll('.terminal-pane-empty-actions button').map((button) => button.text())).toEqual([
       '新建服务器',
       '连接已保存',
-      '选择已连接',
     ])
 
     await emptyPane.get('.terminal-pane-add-server-trigger').trigger('click')
     await emptyPane.get('.terminal-pane-connect-saved-trigger').trigger('click')
-    await emptyPane.get('.terminal-pane-select-trigger').trigger('click')
 
     expect(wrapper.emitted('paneAddServer')).toEqual([['pane-2']])
     expect(wrapper.emitted('paneConnectSaved')).toEqual([['pane-2']])
     expect(wrapper.emitted('paneOpenLocalTerminal')).toBeUndefined()
-    expect(wrapper.find('.terminal-pane-selector').exists()).toBe(true)
+    expect(wrapper.find('.terminal-pane-selector').exists()).toBe(false)
   })
 
-  it('uses a toast instead of an empty selector when no connected terminals are available for a split pane', async () => {
+  it('keeps split empty panes quiet when no connected terminals are available', async () => {
     const { wrapper } = mountWorkspace(state())
     await setSplitMode(wrapper, 'quad')
     await wrapper.vm.$nextTick()
 
     const emptyPane = wrapper.get('[data-pane-id="pane-2"]')
     const beforeAssignments = paneSessionIds(wrapper)
-    await emptyPane.get('.terminal-pane-select-trigger').trigger('click')
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.emitted('notify')).toEqual([['没有可用终端。', 'info']])
+    expect(emptyPane.find('.terminal-pane-select-trigger').exists()).toBe(false)
+    expect(wrapper.emitted('notify')).toBeUndefined()
     expect(wrapper.find('.terminal-pane-selector').exists()).toBe(false)
     expect(wrapper.find('.terminal-pane-selector-empty').exists()).toBe(false)
     expect(paneSessionIds(wrapper)).toEqual(beforeAssignments)
@@ -1275,32 +1275,29 @@ describe('TerminalWorkspace server states', () => {
     expect(empty.classes()).not.toContain('inline')
     expect(empty.text()).toContain('新建服务器')
     expect(empty.text()).toContain('连接已保存')
-    expect(empty.text()).toContain('选择已连接')
+    expect(empty.text()).not.toContain('选择已连接')
     expect(empty.text()).not.toContain('CMD')
     expect(empty.text()).not.toContain('PowerShell')
 
     await empty.get('.terminal-pane-add-server-trigger').trigger('click')
     await empty.get('.terminal-pane-connect-saved-trigger').trigger('click')
-    await empty.get('.terminal-pane-select-trigger').trigger('click')
     await wrapper.vm.$nextTick()
 
     expect(wrapper.emitted('paneAddServer')).toEqual([['pane-1']])
     expect(wrapper.emitted('paneConnectSaved')).toEqual([['pane-1']])
-    expect(wrapper.find('.terminal-pane-selector').exists()).toBe(true)
-    expect(wrapper.get('.terminal-pane-selector').text()).toContain('server #1')
-    expect(wrapper.get('.terminal-pane-selector').text()).toContain('PowerShell')
+    expect(wrapper.find('.terminal-pane-selector').exists()).toBe(false)
   })
 
-  it('uses a toast instead of an empty selector from the single-pane empty state', async () => {
+  it('keeps the single-pane empty state quiet when no connected terminals are available', async () => {
     const { wrapper, store } = mountWorkspace(state())
     store.clearActiveWorkspace()
     await wrapper.vm.$nextTick()
     const beforeLayout = splitLayout()
 
-    await wrapper.get('.terminal-empty .terminal-pane-select-trigger').trigger('click')
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.emitted('notify')).toEqual([['没有可用终端。', 'info']])
+    expect(wrapper.find('.terminal-empty .terminal-pane-select-trigger').exists()).toBe(false)
+    expect(wrapper.emitted('notify')).toBeUndefined()
     expect(wrapper.find('.terminal-pane-selector').exists()).toBe(false)
     expect(wrapper.find('.terminal-pane-selector-empty').exists()).toBe(false)
     expect(splitLayout().activePaneId).toBe(beforeLayout.activePaneId)

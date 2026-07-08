@@ -113,6 +113,24 @@ describe('CompactMonitorSidebar', () => {
     expect(wrapper.find('.system-info-summary').exists()).toBe(true)
   })
 
+  it('keeps the default no-server monitor state quiet without placeholder metrics', () => {
+    const wrapper = mount(CompactMonitorSidebar, {
+      props: {
+        connection: null,
+        snapshot: null,
+        history: [],
+        state: null,
+      },
+    })
+
+    expect(wrapper.get('.compact-server-header').text()).toContain('未连接服务器')
+    expect(wrapper.find('.system-info').exists()).toBe(false)
+    expect(wrapper.find('.compact-resource').exists()).toBe(false)
+    expect(wrapper.find('.metric-progress').exists()).toBe(false)
+    expect(wrapper.find('.monitor-details-toggle').exists()).toBe(false)
+    expect(wrapper.find('.mount-panel').isVisible()).toBe(false)
+  })
+
   it('defaults to a lightweight summary and expands detailed monitor sections on demand', async () => {
     const wrapper = render({ details: false })
 

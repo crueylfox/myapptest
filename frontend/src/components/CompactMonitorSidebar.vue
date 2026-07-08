@@ -68,6 +68,7 @@ const status = computed(() => {
 const live = computed(() =>
   props.snapshot?.status === 'online' && props.snapshot.monitorActive)
 const stale = computed(() => Boolean(props.snapshot) && !live.value)
+const hasMonitorData = computed(() => Boolean(props.connection || props.snapshot))
 const rawProcesses = computed(() => props.snapshot?.processes ?? [])
 const processCpuAvailable = computed(() =>
   rawProcesses.value.some((process) =>
@@ -340,8 +341,8 @@ onBeforeUnmount(() => {
           <AppIcon name="gauge" :size="14" />
         </button>
       </header>
-      <p v-if="stale" class="last-update">非实时数据 · 最后更新 {{ lastUpdated }}</p>
-      <section class="system-info">
+      <p v-if="hasMonitorData && stale" class="last-update">非实时数据 · 最后更新 {{ lastUpdated }}</p>
+      <section v-if="hasMonitorData" class="system-info">
         <button class="system-info-summary" @pointerdown.prevent @click="toggleSystemInfo">
           <span class="system-info-summary-text">
             <strong>系统信息</strong>
@@ -363,14 +364,14 @@ onBeforeUnmount(() => {
         </dl>
       </section>
 
-      <section class="compact-resource">
+      <section v-if="hasMonitorData" class="compact-resource">
         <div class="resource-line">
           <strong>CPU</strong>
           <span>{{ formatPercent(snapshot?.cpuPercent ?? null) }}</span>
         </div>
         <div class="metric-progress"><i :style="{ width: `${clampPercent(snapshot?.cpuPercent)}%` }"></i></div>
       </section>
-      <section class="compact-resource">
+      <section v-if="hasMonitorData" class="compact-resource">
         <div class="resource-line">
           <strong>内存</strong>
           <span>{{ formatPercent(snapshot?.memoryUsedPercent ?? null) }}</span>
@@ -378,7 +379,7 @@ onBeforeUnmount(() => {
         </div>
         <div class="metric-progress memory"><i :style="{ width: `${clampPercent(snapshot?.memoryUsedPercent)}%` }"></i></div>
       </section>
-      <section class="compact-resource swap-resource">
+      <section v-if="hasMonitorData" class="compact-resource swap-resource">
         <div class="resource-line">
           <strong>Swap</strong>
           <span>{{ formatPercent(swapPercent) }}</span>
@@ -386,7 +387,7 @@ onBeforeUnmount(() => {
         </div>
         <div class="metric-progress swap"><i :style="{ width: `${clampPercent(swapPercent)}%` }"></i></div>
       </section>
-      <section class="compact-resource compact-resource-disk">
+      <section v-if="hasMonitorData" class="compact-resource compact-resource-disk">
         <div class="resource-line">
           <strong>磁盘</strong>
           <span>{{ formatPercent(diskPercent) }}</span>
@@ -394,11 +395,11 @@ onBeforeUnmount(() => {
         </div>
         <div class="metric-progress disk"><i :style="{ width: `${clampPercent(diskPercent)}%` }"></i></div>
       </section>
-      <button type="button" class="monitor-details-toggle" @click="toggleMonitorDetails">
+      <button v-if="hasMonitorData" type="button" class="monitor-details-toggle" @click="toggleMonitorDetails">
         {{ monitorDetailsExpanded ? '收起详细监控' : '展开详细监控' }}
       </button>
 
-      <section v-show="monitorDetailsExpanded" class="process-panel">
+      <section v-if="hasMonitorData" v-show="monitorDetailsExpanded" class="process-panel">
         <header>
           <strong>TOP</strong>
           <div class="process-sort-options">
@@ -422,7 +423,7 @@ onBeforeUnmount(() => {
         <p v-else class="compact-empty" :data-process-status="processStatus">{{ processEmptyText }}</p>
       </section>
 
-      <section v-show="monitorDetailsExpanded" class="network-compact">
+      <section v-if="hasMonitorData" v-show="monitorDetailsExpanded" class="network-compact">
         <header>
           <div class="network-title-cluster">
             <strong>网络</strong>
@@ -496,7 +497,7 @@ onBeforeUnmount(() => {
     </section>
 
     <div
-      v-show="monitorDetailsExpanded"
+      v-show="hasMonitorData && monitorDetailsExpanded"
       v-if="splitMode === 'split' || splitMode === 'monitorCollapsed' || splitMode === 'mountsCollapsed'"
       class="horizontal-splitter monitor-pane-splitter"
       :class="{ 'restore-splitter': splitMode !== 'split' }"
@@ -504,7 +505,7 @@ onBeforeUnmount(() => {
       aria-label="Drag to resize or hide monitor and mounts panes"
       @pointerdown="startSplit($event)"
     ></div>
-    <section v-if="splitMode !== 'mountsCollapsed'" v-show="monitorDetailsExpanded" class="mount-panel">
+    <section v-if="splitMode !== 'mountsCollapsed'" v-show="hasMonitorData && monitorDetailsExpanded" class="mount-panel">
       <header>
         <strong>磁盘与挂载点</strong>
         <label><input v-model="showAllMounts" type="checkbox" />显示全部</label>

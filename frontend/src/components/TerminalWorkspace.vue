@@ -394,6 +394,8 @@ const activeWorkspaceConnection = computed(() =>
   activeCommandTab.value
     ? connectionForTab(activeCommandTab.value.connectionId)
     : (!localTerminalActive.value ? props.connection : null))
+const hasRemoteStatusSummary = computed(() =>
+  Boolean(activeWorkspaceConnection.value || store.activeWorkspace || props.snapshot))
 const activeServerId = computed(() => activeCommandTab.value?.connectionId ?? (!localTerminalActive.value ? props.connection?.id ?? null : null))
 const activeSftpTerminalSessionId = computed(() => activeCommandTab.value?.sessionId ?? '')
 const latestTransfer = computed(() => sftpStore.lastTransfer(activeServerId.value, activeSftpContextId.value))
@@ -906,7 +908,6 @@ onBeforeUnmount(() => {
             :show-drop-message="false"
             @add-server="addServerToPane('pane-1')"
             @connect-saved="connectSavedToPane('pane-1')"
-            @select-connected="openTerminalSelector('pane-1')"
            />
           <TerminalPaneSelector
             v-if="selectorPaneId === 'pane-1' && terminalSelectorOptions.length"
@@ -1010,10 +1011,10 @@ onBeforeUnmount(() => {
         </button>
         <button v-else class="status-monitor-region" @click="emit('monitor')">
           <span>{{ activeWorkspaceConnection?.name ?? '未连接服务器' }}</span>
-          <span>{{ statusLabel(store.activeWorkspace?.status) }}</span>
-          <span>延迟 {{ snapshot?.latencyAvailable ? `${snapshot.latencyMillis} ms` : '—' }}</span>
-          <span>↓ {{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
-          <span>↑ {{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</span>
+          <span v-if="hasRemoteStatusSummary">{{ statusLabel(store.activeWorkspace?.status) }}</span>
+          <span v-if="hasRemoteStatusSummary">延迟 {{ snapshot?.latencyAvailable ? `${snapshot.latencyMillis} ms` : '—' }}</span>
+          <span v-if="hasRemoteStatusSummary">↓ {{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
+          <span v-if="hasRemoteStatusSummary">↑ {{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</span>
         </button>
         <div class="status-transfer-wrap">
           <button ref="transferButton" class="status-transfer" :title="transferSummary(latestTransfer)" @click.stop="openTransferPopover">

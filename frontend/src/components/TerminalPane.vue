@@ -99,7 +99,6 @@ defineEmits<{
         :show-drop-message="true"
         @add-server="$emit('addServer', paneId)"
         @connect-saved="$emit('connectSaved', paneId)"
-        @select-connected="$emit('selectConnected', paneId)"
       />
       <slot name="selector"></slot>
     </div>

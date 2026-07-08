@@ -9,7 +9,6 @@ defineProps<{
 defineEmits<{
   addServer: []
   connectSaved: []
-  selectConnected: []
 }>()
 
 const root = ref<HTMLElement | null>(null)
@@ -62,13 +61,6 @@ onBeforeUnmount(() => {
         @pointerdown.stop
         @click.stop="$emit('connectSaved')"
       ><AppIcon name="link" :size="30" /><span>连接已保存</span></button>
-      <span class="action-separator" :class="separatorClass" aria-hidden="true"></span>
-      <button
-        type="button"
-        class="terminal-pane-select-trigger"
-        @pointerdown.stop
-        @click.stop="$emit('selectConnected')"
-      ><AppIcon name="terminal-check" :size="30" /><span>选择已连接</span></button>
     </div>
   </div>
 </template>

@@ -22,7 +22,7 @@ describe('TerminalEmptyPane', () => {
     resizeCallback = null
   })
 
-  it('renders split empty pane drop prompt and the three pane actions only', async () => {
+  it('renders split empty pane drop prompt and the two centered pane actions only', async () => {
     const wrapper = mount(TerminalEmptyPane, {
       props: { showDropMessage: true },
     })
@@ -34,12 +34,12 @@ describe('TerminalEmptyPane', () => {
     expect(wrapper.get('.terminal-pane-empty-actions').classes()).toContain('terminal-empty-actions--vertical')
     expect(wrapper.text()).toContain('新建服务器')
     expect(wrapper.text()).toContain('连接已保存')
-    expect(wrapper.text()).toContain('选择已连接')
+    expect(wrapper.text()).not.toContain('选择已连接')
     expect(wrapper.text()).not.toContain('CMD')
     expect(wrapper.text()).not.toContain('PowerShell')
-    expect(wrapper.findAll('.terminal-pane-empty-actions .app-icon')).toHaveLength(3)
+    expect(wrapper.findAll('.terminal-pane-empty-actions .app-icon')).toHaveLength(2)
     const separators = wrapper.findAll('.terminal-pane-empty-actions .action-separator')
-    expect(separators).toHaveLength(2)
+    expect(separators).toHaveLength(1)
     for (const separator of separators) {
       expect(separator.attributes('aria-hidden')).toBe('true')
       expect(separator.classes()).toContain('action-separator--horizontal-stack')
@@ -55,16 +55,14 @@ describe('TerminalEmptyPane', () => {
     expect(wrapper.findAll('.terminal-pane-empty-actions button').map((button) => button.text())).toEqual([
       '新建服务器',
       '连接已保存',
-      '选择已连接',
     ])
 
     await wrapper.get('.terminal-pane-add-server-trigger').trigger('click')
     await wrapper.get('.terminal-pane-connect-saved-trigger').trigger('click')
-    await wrapper.get('.terminal-pane-select-trigger').trigger('click')
 
     expect(wrapper.emitted('addServer')).toHaveLength(1)
     expect(wrapper.emitted('connectSaved')).toHaveLength(1)
-    expect(wrapper.emitted('selectConnected')).toHaveLength(1)
+    expect(wrapper.emitted('selectConnected')).toBeUndefined()
   })
 
   it('renders single empty state without the split-only drop prompt', () => {
@@ -75,7 +73,7 @@ describe('TerminalEmptyPane', () => {
     expect(wrapper.find('.terminal-pane-empty-message').exists()).toBe(false)
     expect(wrapper.text()).toContain('新建服务器')
     expect(wrapper.text()).toContain('连接已保存')
-    expect(wrapper.text()).toContain('选择已连接')
+    expect(wrapper.text()).not.toContain('选择已连接')
   })
 
   it('switches to horizontal actions with vertical separators when pane height is tight', async () => {
@@ -101,9 +99,9 @@ describe('TerminalEmptyPane', () => {
     const actions = wrapper.get('.terminal-pane-empty-actions')
     expect(actions.classes()).toContain('terminal-empty-actions--horizontal')
     expect(actions.classes()).not.toContain('terminal-empty-actions--vertical')
-    expect(actions.findAll('button')).toHaveLength(3)
+    expect(actions.findAll('button')).toHaveLength(2)
     const separators = actions.findAll('.action-separator')
-    expect(separators).toHaveLength(2)
+    expect(separators).toHaveLength(1)
     for (const separator of separators) {
       expect(separator.classes()).toContain('action-separator--vertical-stack')
       expect(separator.classes()).not.toContain('action-separator--horizontal-stack')

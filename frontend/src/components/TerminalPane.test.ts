@@ -60,11 +60,10 @@ describe('TerminalPane', () => {
     expect(empty.get('.terminal-pane-empty-message').text()).toBe('将标签拖到这里')
     await empty.get('.terminal-pane-add-server-trigger').trigger('click')
     await empty.get('.terminal-pane-connect-saved-trigger').trigger('click')
-    await empty.get('.terminal-pane-select-trigger').trigger('click')
 
     expect(empty.emitted('addServer')).toEqual([['pane-1']])
     expect(empty.emitted('connectSaved')).toEqual([['pane-1']])
-    expect(empty.emitted('selectConnected')).toEqual([['pane-1']])
+    expect(empty.emitted('selectConnected')).toBeUndefined()
   })
 
   it('marks empty pane bodies as full-height centered content instead of the top grid row', () => {
@@ -79,7 +78,6 @@ describe('TerminalPane', () => {
     expect(empty.findAll('.terminal-pane-empty-actions button').map((button) => button.text())).toEqual([
       '新建服务器',
       '连接已保存',
-      '选择已连接',
     ])
   })
 })
