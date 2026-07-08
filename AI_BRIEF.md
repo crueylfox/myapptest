@@ -110,7 +110,10 @@ Updated: 2026-07-08
 - Beta49 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.49.exe`.
 - Beta49 Windows EXE SHA-256: `97905D53548F10BA18E92C756C86F51DE9B5CFBB1760B50D1B344673D7C4D5C6`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions `Build macOS`: pending for the beta49 splitter gutter package after push.
+- GitHub Actions `Build macOS` run `28956304140`: success for commit `d3b4eceeb13f6bdea444004de1f881146630292e`.
+- Artifact: `ServerPilot-macos-unsigned`, size `31519136` bytes.
+- Artifact SHA-256: not calculated because the artifact was not downloaded in this run.
+- macOS artifact came from the GitHub Actions macOS runner.
 
 ## 5. Next
 - For any future user-deliverable repackaging, bump the version first; do not create another same-version package.
