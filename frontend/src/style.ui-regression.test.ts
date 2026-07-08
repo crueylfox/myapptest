@@ -214,8 +214,8 @@ describe('first-batch UI regression contracts', () => {
 
     for (const [selector, backgroundToken] of [
       ['.settings-page-overlay', '--surface-modal-bg'],
-      ['.topbar-menu', '--surface-card-bg'],
-      ['.server-picker', '--surface-card-bg'],
+      ['.topbar-menu', '--surface-popover-bg'],
+      ['.server-picker', '--surface-popover-bg'],
     ] as const) {
       const source = block(selector)
       expect(source).toContain(`background: var(${backgroundToken})`)

@@ -838,7 +838,7 @@ onBeforeUnmount(() => {
     <button v-if="collapsed" class="sidebar-restore-button" type="button" aria-label="显示监控侧栏" title="显示监控侧栏" @click="restoreMonitorSidebar">
       <AppIcon name="gauge" :size="15" />
     </button>
-    <section class="right-workspace" :style="rightStyle">
+    <section class="right-workspace" :class="{ 'bottom-panel-collapsed': !bottomPanelExpanded }" :style="rightStyle">
       <div ref="terminalStage" class="terminal-stage">
         <TerminalSplitWorkspace
           v-if="splitEnabled"

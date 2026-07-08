@@ -146,6 +146,7 @@ describe('theme and overlay tokens', () => {
       expect(tokens['glass-surface-bg']).toBe('var(--surface-modal-bg)')
       expect(tokens['glass-panel-bg']).toBe('var(--surface-panel-bg)')
       expect(tokens['glass-card-bg']).toBe('var(--surface-card-bg)')
+      expect(rgbaAlpha(tokens['surface-popover-bg'])).toBeGreaterThanOrEqual(0.98)
       expect(tokens['glass-border']).toBe('var(--surface-border)')
       expect(tokens['glass-shadow']).toBe('var(--surface-shadow)')
       expect(tokens['glass-blur']).toBe('var(--surface-blur)')
@@ -165,6 +166,7 @@ describe('theme and overlay tokens', () => {
       'surface-modal-bg',
       'surface-panel-bg',
       'surface-card-bg',
+      'surface-popover-bg',
       'surface-toolbar-bg',
       'surface-control-bg',
       'surface-border',
@@ -485,17 +487,17 @@ describe('theme and overlay tokens', () => {
     expect(modal).toContain('box-shadow: var(--surface-shadow)')
 
     for (const [selector, backgroundToken] of [
-      ['.topbar-menu', '--surface-card-bg'],
-      ['.server-picker', '--surface-card-bg'],
-      ['.context-menu', '--surface-card-bg'],
-      ['.sftp-more-menu', '--surface-card-bg'],
-      ['.sftp-bookmarks-menu', '--surface-card-bg'],
-      ['.split-mode-menu', '--surface-card-bg'],
-      ['.terminal-pane-menu', '--surface-card-bg'],
-      ['.terminal-pane-selector', '--surface-card-bg'],
-      ['.terminal-completion', '--surface-card-bg'],
-      ['.command-palette', '--surface-card-bg'],
-      ['.transfer-popover', '--surface-card-bg'],
+      ['.topbar-menu', '--surface-popover-bg'],
+      ['.server-picker', '--surface-popover-bg'],
+      ['.context-menu', '--surface-popover-bg'],
+      ['.sftp-more-menu', '--surface-popover-bg'],
+      ['.sftp-bookmarks-menu', '--surface-popover-bg'],
+      ['.split-mode-menu', '--surface-popover-bg'],
+      ['.terminal-pane-menu', '--surface-popover-bg'],
+      ['.terminal-pane-selector', '--surface-popover-bg'],
+      ['.terminal-completion', '--surface-popover-bg'],
+      ['.command-palette', '--surface-popover-bg'],
+      ['.transfer-popover', '--surface-popover-bg'],
       ['.settings-page-overlay', '--surface-modal-bg'],
       ['.settings-page-overlay .settings-page-header', '--surface-toolbar-bg'],
       ['.settings-page-overlay .settings-category-nav', '--surface-card-bg'],
@@ -585,7 +587,7 @@ describe('theme and overlay tokens', () => {
     expect(shell).toContain('grid-template-rows: var(--workspace-topbar-height) minmax(0, 1fr)')
     expect(topbar).toContain('height: var(--workspace-topbar-height)')
     expect(topbar).toContain('min-height: var(--workspace-topbar-height)')
-    expect(tabs).toContain('padding: 3px 5px 0')
+    expect(tabs).toContain('padding: 3px 0 0')
     expect(collapsedTabs).toContain('padding-left: calc(var(--workspace-sidebar-restore-size) + 10px)')
     expect(tab).toContain('padding: 4px 8px 4px 8px')
     expect(pxDeclaration(add, 'width')).toBeLessThanOrEqual(30)
@@ -686,7 +688,7 @@ describe('theme and overlay tokens', () => {
     }
 
     expect(editorMore).toContain('border: 1px solid var(--surface-border)')
-    expect(editorMore).toContain('background: var(--surface-card-bg)')
+    expect(editorMore).toContain('background: var(--surface-popover-bg)')
     expect(editorMore).toContain('box-shadow: var(--surface-shadow)')
     expect(editorMore).toContain('backdrop-filter: var(--surface-blur)')
     expect(editorMore).toContain('-webkit-backdrop-filter: var(--surface-blur)')
@@ -1654,6 +1656,9 @@ describe('theme and overlay tokens', () => {
     const horizontalLine = block('.horizontal-splitter::before')
     const verticalLine = block('.vertical-splitter::before')
     const collapsedSplitter = block('.workspace-shell.sidebar-collapsed .vertical-splitter')
+    const collapsedSplitterLine = block('.workspace-shell.sidebar-collapsed .vertical-splitter::before')
+    const collapsedRightSplitter = block('.right-workspace.bottom-panel-collapsed .horizontal-splitter::before')
+    const collapsedStatusbar = block('.right-workspace.bottom-panel-collapsed .terminal-statusbar')
     const localMonitor = block('.local-monitor-sidebar')
     const sftpPanel = block('.sftp-panel')
     const sftpToolbar = block('.sftp-toolbar')
@@ -1662,9 +1667,14 @@ describe('theme and overlay tokens', () => {
     expect(base).toContain('background: transparent')
     expect(base).toContain('isolation: isolate')
     expect(sharedLine).toContain('background: var(--splitter-line)')
+    expect(sharedLine).toContain('border-radius: 0')
     expect(horizontalLine).toContain('height: 1px')
     expect(verticalLine).toContain('width: 1px')
     expect(collapsedSplitter).toContain('min-width: 1px')
+    expect(collapsedSplitter).toContain('background: var(--splitter-line)')
+    expect(collapsedSplitterLine).toContain('display: none')
+    expect(collapsedRightSplitter).toContain('top: 100%')
+    expect(collapsedStatusbar).toContain('border-top: 0')
     expect(localMonitor).toContain('border-right: 0')
     expect(sftpPanel).toContain('border-top: 0')
     expect(sftpToolbar).toContain('border-top: 0')
