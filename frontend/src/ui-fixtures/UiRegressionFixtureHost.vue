@@ -251,6 +251,7 @@ onBeforeUnmount(() => {
   stopDockerComposeFixtureFollow()
   stopProcessFixtureColumnResize()
   stopNetworkEndpointFixtureColumnResize()
+  stopFixtureBottomPanelResize()
 })
 
 const compactNetworkConnection: Connection = {
@@ -478,6 +479,7 @@ const localNetworkInterface = ref('Wi-Fi')
 const localSystemExpanded = ref(false)
 const localWorkspaceMode = ref<'local' | 'ssh'>('local')
 const fixtureBottomPanelExpanded = ref(true)
+let fixtureBottomPanelResizeRoot: HTMLElement | null = null
 const localCommandPaletteOpen = ref(false)
 const localTerminalFixtureInput = ref('')
 const localCommandHistoryStorageKeys = {
@@ -1512,6 +1514,27 @@ function selectLocalExplorerFixtureMenu(id: string) {
   localExplorerContextMenu.value = null
 }
 
+function startFixtureBottomPanelResize(event: PointerEvent) {
+  event.preventDefault()
+  fixtureBottomPanelResizeRoot = (event.currentTarget as HTMLElement | null)?.closest('.right-workspace') as HTMLElement | null
+  if (event.currentTarget instanceof HTMLElement) event.currentTarget.setPointerCapture?.(event.pointerId)
+  window.addEventListener('pointermove', moveFixtureBottomPanelResize)
+  window.addEventListener('pointerup', stopFixtureBottomPanelResize, { once: true })
+}
+
+function moveFixtureBottomPanelResize(event: PointerEvent) {
+  if (!fixtureBottomPanelResizeRoot) return
+  const rect = fixtureBottomPanelResizeRoot.getBoundingClientRect()
+  const bottomPanelHeight = rect.bottom - event.clientY - 28
+  fixtureBottomPanelExpanded.value = bottomPanelHeight > 96
+}
+
+function stopFixtureBottomPanelResize() {
+  fixtureBottomPanelResizeRoot = null
+  window.removeEventListener('pointermove', moveFixtureBottomPanelResize)
+  window.removeEventListener('pointerup', stopFixtureBottomPanelResize)
+}
+
 function startLocalExplorerColumnResize(columnId: FileColumnId, event: PointerEvent) {
   event.preventDefault()
   localExplorerResizingColumn = {
@@ -1875,23 +1898,12 @@ const appBlurOverlayFixture = computed(() =>
               </div>
             </section>
           </div>
-          <div class="horizontal-splitter" aria-label="调整 bottom panel 高度">
-            <button
-              type="button"
-              class="bottom-panel-toggle-handle splitter-handle-inline"
-              style="width: 52px; height: 22px; line-height: 1;"
-              @click="fixtureBottomPanelExpanded = !fixtureBottomPanelExpanded"
-            >
-              <svg
-                class="splitter-chevron"
-                :class="fixtureBottomPanelExpanded ? 'chevron-down' : 'chevron-up'"
-                viewBox="0 0 12 12"
-                width="12"
-                height="12"
-                focusable="false"
-              ><path d="M3 4.25 6 7.25 9 4.25" /></svg>
-            </button>
-          </div>
+          <div
+            class="horizontal-splitter"
+            aria-label="Drag to resize or hide bottom panel"
+            @pointerdown="startFixtureBottomPanelResize"
+            @dblclick="fixtureBottomPanelExpanded = !fixtureBottomPanelExpanded"
+          ></div>
           <section
             v-show="localWorkspaceMode === 'local'"
             class="local-explorer-panel"

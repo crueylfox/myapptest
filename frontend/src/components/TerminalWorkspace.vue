@@ -58,7 +58,6 @@ import {
   transferTerminalToastType,
 } from '../composables/workspaceTransferOverlayModel'
 import AppActionBar from './primitives/AppActionBar.vue'
-import ChevronIcon from './ChevronIcon.vue'
 import CommandPalette from './CommandPalette.vue'
 import CompactMonitorSidebar from './CompactMonitorSidebar.vue'
 import LocalExplorerPanel from './LocalExplorerPanel.vue'
@@ -363,6 +362,8 @@ const panelResizeFlow = useWorkspacePaneResizeFlow({
   sftpHeight,
   persistSidebarWidth: (width) => localStorage.setItem('serverpilot.monitorSidebarWidth', String(width)),
   persistSftpHeight: (height) => localStorage.setItem('serverpilot.sftpHeight', String(height)),
+  setSidebarCollapsed: setSidebarCollapsedFromSplitter,
+  setSftpExpanded: setBottomPanelExpandedFromSplitter,
   bumpLayout,
   scheduleAfterStop: (callback) => { void nextTick(callback) },
 })
@@ -542,15 +543,18 @@ function bumpLayout() {
   internalRevision.value += 1
 }
 
-function toggleSidebar() {
-  const nextCollapsed = !collapsed.value
+function setSidebarCollapsedFromSplitter(nextCollapsed: boolean) {
   sidebarCollapsed.value = nextCollapsed
   if (!nextCollapsed) {
     autoCollapsed.value = false
     autoCollapseDismissed.value = true
   }
   localStorage.setItem('serverpilot.monitorSidebarCollapsed', String(sidebarCollapsed.value))
-  void nextTick(bumpLayout)
+}
+
+function setBottomPanelExpandedFromSplitter(nextExpanded: boolean) {
+  sftpExpanded.value = nextExpanded
+  localStorage.setItem('serverpilot.sftpExpanded', String(sftpExpanded.value))
 }
 
 function errorMessage(reason: unknown, fallback: string) {
@@ -818,16 +822,9 @@ onBeforeUnmount(() => {
     />
     <div
       class="vertical-splitter"
-      aria-label="调整监控栏宽度"
-      @pointerdown="!collapsed && startDrag('sidebar', $event)"
-    >
-      <button
-        class="sidebar-toggle splitter-handle-inline"
-        :title="collapsed ? '展开监控栏' : '折叠监控栏'"
-        @pointerdown.stop
-        @click.stop="toggleSidebar"
-      ><ChevronIcon :direction="collapsed ? 'right' : 'left'" /></button>
-    </div>
+      aria-label="Drag to resize or hide monitor sidebar"
+      @pointerdown="startDrag('sidebar', $event)"
+    ></div>
     <slot name="tabs"></slot>
     <section class="right-workspace" :style="rightStyle">
       <div ref="terminalStage" class="terminal-stage">
@@ -969,19 +966,9 @@ onBeforeUnmount(() => {
       </div>
       <div
         class="horizontal-splitter"
-        :aria-label="`调整 ${bottomPanelLabel} 高度`"
-        @pointerdown="bottomPanelExpanded && startDrag('sftp', $event)"
-      >
-        <button
-          type="button"
-          class="bottom-panel-toggle-handle splitter-handle-inline"
-          style="width: 52px; height: 22px; line-height: 1;"
-          :title="bottomPanelExpanded ? `折叠 ${bottomPanelLabel}` : `展开 ${bottomPanelLabel}`"
-          :aria-label="bottomPanelExpanded ? `Collapse ${bottomPanelLabel}` : `Expand ${bottomPanelLabel}`"
-          @pointerdown.stop.prevent
-          @click.stop="toggleBottomPanel"
-        ><ChevronIcon :direction="bottomPanelExpanded ? 'down' : 'up'" /></button>
-      </div>
+        :aria-label="`Drag to resize or hide ${bottomPanelLabel}`"
+        @pointerdown="startDrag('sftp', $event)"
+      ></div>
       <SftpPanel
         v-if="!localTerminalActive"
         :connection="activeWorkspaceConnection"

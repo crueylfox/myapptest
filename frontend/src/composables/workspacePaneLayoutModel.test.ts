@@ -5,6 +5,8 @@ import {
   clampMonitorSidebarWidth,
   clampSftpPanelHeight,
   deriveVisibleOutputSessionIds,
+  monitorSidebarResizeIntent,
+  sftpPanelResizeIntent,
 } from './workspacePaneLayoutModel'
 
 // @ts-expect-error The app tsconfig intentionally omits Node globals; this test reads local source files.
@@ -36,6 +38,14 @@ describe('workspacePaneLayoutModel', () => {
     expect(clampSftpPanelHeight(900, { bottom: 1000, height: 1000 })).toBe(140)
     expect(clampSftpPanelHeight(200, { bottom: 1000, height: 600 })).toBe(330)
     expect(clampSftpPanelHeight(700, { bottom: 1000, height: 1000 })).toBe(272)
+  })
+
+
+  it('derives auto-hide resize intents before applying the existing clamp formulas', () => {
+    expect(monitorSidebarResizeIntent(160, { left: 0, width: 1200 })).toEqual({ collapsed: true })
+    expect(monitorSidebarResizeIntent(360, { left: 0, width: 1200 })).toEqual({ collapsed: false, width: 360 })
+    expect(sftpPanelResizeIntent(900, { bottom: 1000, height: 800 })).toEqual({ expanded: false })
+    expect(sftpPanelResizeIntent(600, { bottom: 1000, height: 600 })).toEqual({ expanded: true, height: 330 })
   })
 
   it('derives visible SSH and Local output sessions without mixing pane kinds', () => {

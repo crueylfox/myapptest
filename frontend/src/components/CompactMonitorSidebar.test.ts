@@ -401,83 +401,16 @@ describe('CompactMonitorSidebar', () => {
     expect(Number(localStorage.getItem('serverpilot.monitorPaneHeight'))).toBe(350)
   })
 
-  it('shows inline controls for collapsing either monitor or mounts pane', () => {
+  it('renders a plain draggable monitor splitter without arrow controls', () => {
     const wrapper = render()
-    expect(wrapper.find('.monitor-pane-splitter .collapse-monitor').exists()).toBe(true)
-    expect(wrapper.find('.monitor-pane-splitter .collapse-mounts').exists()).toBe(true)
+    expect(wrapper.find('.monitor-pane-splitter .collapse-monitor').exists()).toBe(false)
+    expect(wrapper.find('.monitor-pane-splitter .collapse-mounts').exists()).toBe(false)
     expect(wrapper.find('.monitor-pane-splitter .restore-split').exists()).toBe(false)
-    expect(wrapper.findAll('.monitor-pane-splitter svg.splitter-chevron')).toHaveLength(2)
-    expect(wrapper.get('.collapse-monitor svg').attributes('viewBox')).toBe('0 0 12 12')
-    expect(wrapper.get('.collapse-mounts svg').attributes('viewBox')).toBe('0 0 12 12')
-    expect(wrapper.get('.collapse-monitor').text()).toBe('')
-    expect(wrapper.get('.collapse-mounts').text()).toBe('')
+    expect(wrapper.findAll('.monitor-pane-splitter svg.splitter-chevron')).toHaveLength(0)
   })
 
-  it('keeps monitor splitter SVG controls centered on the splitter', () => {
-    const wrapper = render()
-    const splitter = wrapper.get('.monitor-pane-splitter').element as HTMLElement
-    const upChevron = wrapper.get('.collapse-monitor svg').element as SVGElement
-    const downChevron = wrapper.get('.collapse-mounts svg').element as SVGElement
-    vi.spyOn(splitter, 'getBoundingClientRect').mockReturnValue({
-      top: 430, left: 0, right: 300, bottom: 440, width: 300, height: 10,
-      x: 0, y: 430, toJSON: () => ({}),
-    })
-    vi.spyOn(upChevron, 'getBoundingClientRect').mockReturnValue({
-      top: 429, left: 118, right: 130, bottom: 441, width: 12, height: 12,
-      x: 118, y: 429, toJSON: () => ({}),
-    })
-    vi.spyOn(downChevron, 'getBoundingClientRect').mockReturnValue({
-      top: 429, left: 170, right: 182, bottom: 441, width: 12, height: 12,
-      x: 170, y: 429, toJSON: () => ({}),
-    })
-
-    const splitterCenterY = splitter.getBoundingClientRect().top + splitter.getBoundingClientRect().height / 2
-    for (const chevron of [upChevron, downChevron]) {
-      const bounds = chevron.getBoundingClientRect()
-      expect(Math.abs((bounds.top + bounds.height / 2) - splitterCenterY)).toBeLessThanOrEqual(1)
-    }
-  })
-
-  it('collapses the monitor pane and restores the previous split height', async () => {
+  it('auto-collapses the monitor pane near the top and restores by dragging back into range', async () => {
     localStorage.setItem('serverpilot.monitorPaneHeight', '360')
-    const wrapper = render()
-
-    await wrapper.get('.collapse-monitor').trigger('click')
-    expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('monitorCollapsed')
-    expect(wrapper.attributes('style')).toContain('10px minmax(0, 1fr)')
-    expect(wrapper.find('.compact-monitor').exists()).toBe(false)
-    expect(wrapper.find('.monitor-pane-splitter').exists()).toBe(true)
-    expect(wrapper.find('.monitor-pane-splitter').classes()).toContain('restore-splitter')
-    expect(wrapper.find('.monitor-pane-splitter .restore-split').exists()).toBe(true)
-    expect(wrapper.find('.monitor-pane-splitter .restore-split svg.splitter-chevron').classes()).toContain('chevron-down')
-    expect(wrapper.find('.mount-panel').isVisible()).toBe(true)
-    expect(wrapper.classes()).toContain('split-monitorCollapsed')
-
-    await wrapper.get('.monitor-pane-splitter .restore-split').trigger('click')
-    expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('split')
-    expect(wrapper.attributes('style')).toContain('360px')
-  })
-
-  it('collapses the mounts pane without overwriting the stored split height', async () => {
-    localStorage.setItem('serverpilot.monitorPaneHeight', '390')
-    const wrapper = render()
-
-    await wrapper.get('.collapse-mounts').trigger('click')
-    expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('mountsCollapsed')
-    expect(localStorage.getItem('serverpilot.monitorPaneHeight')).toBe('390')
-    expect(wrapper.attributes('style')).toContain('minmax(0, 1fr) 10px')
-    expect(wrapper.find('.mount-panel').exists()).toBe(false)
-    expect(wrapper.find('.monitor-pane-splitter').exists()).toBe(true)
-    expect(wrapper.find('.monitor-pane-splitter').classes()).toContain('restore-splitter')
-    expect(wrapper.find('.monitor-pane-splitter .restore-split').exists()).toBe(true)
-    expect(wrapper.find('.monitor-pane-splitter .restore-split svg.splitter-chevron').classes()).toContain('chevron-up')
-    expect(wrapper.classes()).toContain('split-mountsCollapsed')
-
-    await wrapper.get('.monitor-pane-splitter .restore-split').trigger('click')
-    expect(wrapper.attributes('style')).toContain('390px')
-  })
-
-  it('does not resize the panes when clicking a splitter chevron', async () => {
     const wrapper = render()
     const root = wrapper.element as HTMLElement
     vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({
@@ -485,10 +418,45 @@ describe('CompactMonitorSidebar', () => {
       x: 0, y: 0, toJSON: () => ({}),
     })
 
-    await wrapper.get('.collapse-monitor').trigger('pointerdown')
-    window.dispatchEvent(new MouseEvent('pointermove', { clientY: 300 }))
-    window.dispatchEvent(new MouseEvent('pointerup'))
+    const down = new MouseEvent('pointerdown', { bubbles: true, clientY: 360 })
+    Object.defineProperty(down, 'pointerId', { value: 1 })
+    wrapper.get('.monitor-pane-splitter').element.dispatchEvent(down)
+    window.dispatchEvent(new MouseEvent('pointermove', { clientY: 60 }))
+    await wrapper.vm.$nextTick()
+    expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('monitorCollapsed')
+    expect(wrapper.attributes('style')).toContain('10px minmax(0, 1fr)')
+    expect(wrapper.find('.compact-monitor').exists()).toBe(false)
+    expect(wrapper.classes()).toContain('split-monitorCollapsed')
 
-    expect(localStorage.getItem('serverpilot.monitorPaneHeight')).toBeNull()
+    const restore = new MouseEvent('pointerdown', { bubbles: true, clientY: 60 })
+    Object.defineProperty(restore, 'pointerId', { value: 2 })
+    wrapper.get('.monitor-pane-splitter').element.dispatchEvent(restore)
+    window.dispatchEvent(new MouseEvent('pointermove', { clientY: 360 }))
+    window.dispatchEvent(new MouseEvent('pointerup'))
+    await wrapper.vm.$nextTick()
+    expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('split')
+    expect(wrapper.attributes('style')).toContain('360px')
+  })
+
+  it('auto-collapses the mounts pane near the bottom without overwriting the stored split height', async () => {
+    localStorage.setItem('serverpilot.monitorPaneHeight', '390')
+    const wrapper = render()
+    const root = wrapper.element as HTMLElement
+    vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({
+      top: 0, left: 0, right: 300, bottom: 700, width: 300, height: 700,
+      x: 0, y: 0, toJSON: () => ({}),
+    })
+
+    const down = new MouseEvent('pointerdown', { bubbles: true, clientY: 390 })
+    Object.defineProperty(down, 'pointerId', { value: 3 })
+    wrapper.get('.monitor-pane-splitter').element.dispatchEvent(down)
+    window.dispatchEvent(new MouseEvent('pointermove', { clientY: 660 }))
+    window.dispatchEvent(new MouseEvent('pointerup'))
+    await wrapper.vm.$nextTick()
+    expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('mountsCollapsed')
+    expect(localStorage.getItem('serverpilot.monitorPaneHeight')).toBe('390')
+    expect(wrapper.attributes('style')).toContain('minmax(0, 1fr) 10px')
+    expect(wrapper.find('.mount-panel').exists()).toBe(false)
+    expect(wrapper.classes()).toContain('split-mountsCollapsed')
   })
 })

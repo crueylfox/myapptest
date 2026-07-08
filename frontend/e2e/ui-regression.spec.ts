@@ -31,6 +31,16 @@ function expectNoOverlap(first: Box, second: Box) {
   expect(separated).toBe(true)
 }
 
+async function dragLocator(page: Page, locator: Locator, deltaX: number, deltaY: number) {
+  const bounds = await box(locator)
+  const x = bounds.x + bounds.width / 2
+  const y = bounds.y + bounds.height / 2
+  await page.mouse.move(x, y)
+  await page.mouse.down()
+  await page.mouse.move(x + deltaX, y + deltaY, { steps: 6 })
+  await page.mouse.up()
+}
+
 function expectSubstantialOverlap(first: Box, second: Box) {
   const width = Math.max(0, Math.min(first.x + first.width, second.x + second.width) - Math.max(first.x, second.x))
   const height = Math.max(0, Math.min(first.y + first.height, second.y + second.height) - Math.max(first.y, second.y))
@@ -487,7 +497,10 @@ test('local CMD and PowerShell workspaces keep monitor and Local Explorer visibl
     await expect(monitor.locator('.local-network-compact .network-chart-body')).toBeVisible()
     await expect(shell.locator('.horizontal-splitter .sftp-toggle-handle')).toHaveCount(0)
     await expect(explorer.locator('.local-explorer-toolbar .sftp-toggle-handle')).toHaveCount(0)
-    await expect(shell.locator('.horizontal-splitter .bottom-panel-toggle-handle svg.splitter-chevron')).toBeVisible()
+    const bottomSplitter = shell.locator('.right-workspace > .horizontal-splitter')
+    await expect(bottomSplitter).toBeVisible()
+    await expect(bottomSplitter.locator('.bottom-panel-toggle-handle')).toHaveCount(0)
+    await expect(bottomSplitter.locator('svg.splitter-chevron')).toHaveCount(0)
     const commandButton = shell.locator('.terminal-command-button')
     await expect(commandButton).toBeVisible()
     await commandButton.click()
@@ -735,16 +748,17 @@ test('local and SSH workspaces share the bottom panel collapse state', async ({ 
   await openFixture(page, 'local-terminal-cmd-workspace', { width: 1180, height: 720 })
 
   const shell = page.locator('[data-testid="local-terminal-workspace"]')
-  const toggle = shell.locator('.horizontal-splitter .bottom-panel-toggle-handle')
-  await expect(toggle).toBeVisible()
+  const splitter = shell.locator('.right-workspace > .horizontal-splitter')
+  await expect(splitter).toBeVisible()
+  await expect(splitter.locator('.bottom-panel-toggle-handle')).toHaveCount(0)
   await expect(shell.locator('.local-explorer-panel')).toBeVisible()
-  await toggle.click()
+  await dragLocator(page, splitter, 0, 160)
   await expect(shell.locator('.local-explorer-panel')).toBeHidden()
 
   await shell.getByRole('tab', { name: 'SSH' }).click()
   await expect(shell.locator('.sftp-panel')).toBeHidden()
 
-  await toggle.click()
+  await dragLocator(page, splitter, 0, -220)
   await expect(shell.locator('.sftp-panel')).toBeVisible()
 
   await shell.getByRole('tab', { name: 'CMD' }).click()

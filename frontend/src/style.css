@@ -1244,23 +1244,14 @@ button { border: 0; cursor: pointer; background: transparent; }
 .command-completion-terminal input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: #050914; color: var(--text); font: inherit; }
 .command-completion-split-pane { min-width: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 8px; }
 .command-completion-split-pane > button { justify-self: start; border: 0; background: transparent; color: var(--muted); font-size: 12px; }
-.splitter-handle-inline { position: absolute; z-index: 7; left: 50%; top: 50%; display: block; padding: 0; transform: translate(-50%, -50%); border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--muted); cursor: pointer; line-height: 1; appearance: none; }
-.splitter-handle-inline:hover { color: var(--text); background: transparent; }
-.splitter-handle-inline:active { transform: translate(-50%, -50%); }
 .splitter-chevron { pointer-events: none; position: absolute; left: 50%; top: 50%; display: block; width: 12px; height: 12px; transform: translate(-50%, -50%); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .splitter-chevron.chevron-up { transform: translate(-50%, -50%) rotate(180deg); }
 .splitter-chevron.chevron-left { transform: translate(-50%, -50%) rotate(90deg); }
 .splitter-chevron.chevron-right { transform: translate(-50%, -50%) rotate(-90deg); }
-.sidebar-toggle { width: 18px; height: 44px; font-size: 14px; }
 .sftp-toggle-handle { width: 52px; height: 22px; line-height: 1; }
 .monitor-pane-splitter { overflow: visible; }
-.monitor-pane-splitter.restore-splitter { cursor: pointer; background: color-mix(in srgb, var(--border) 88%, var(--terminal-bg) 12%); }
+.monitor-pane-splitter.restore-splitter { cursor: row-resize; background: color-mix(in srgb, var(--border) 88%, var(--terminal-bg) 12%); }
 .monitor-pane-splitter.restore-splitter:hover { background: color-mix(in srgb, var(--border) 70%, var(--primary) 30%); }
-.monitor-splitter-controls { position: absolute; z-index: 6; left: 50%; top: 50%; width: 56px; height: 18px; transform: translate(-50%, -50%); pointer-events: none; }
-.monitor-splitter-toggle { width: 24px; height: 20px; pointer-events: auto; }
-.monitor-splitter-toggle.collapse-monitor { left: calc(50% - 13px); }
-.monitor-splitter-toggle.collapse-mounts { left: calc(50% + 13px); }
-.monitor-splitter-toggle.restore-split { width: 34px; height: 22px; }
 .sftp-panel { grid-row: 3; min-height: 0; overflow: hidden; border-top: 1px solid var(--border); background: var(--sidebar); }
 .sftp-panel { display: grid; grid-template-rows: 38px minmax(0, 1fr); color: var(--text); }
 .sftp-panel:not(.expanded) { grid-template-rows: 0; border-top: 0; background: var(--terminal-bg); }

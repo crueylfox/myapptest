@@ -15,6 +15,9 @@ type WorkspaceRightStyleInput = {
 type MonitorSidebarBounds = Pick<DOMRect, 'left' | 'width'>
 type SftpPanelBounds = Pick<DOMRect, 'bottom' | 'height'>
 
+const MONITOR_SIDEBAR_AUTO_COLLAPSE_WIDTH = 180
+const SFTP_PANEL_AUTO_COLLAPSE_HEIGHT = 96
+
 export type VisibleOutputSessionInput = {
   visible: boolean
   splitEnabled: boolean
@@ -48,6 +51,20 @@ export function clampMonitorSidebarWidth(clientX: number, bounds: MonitorSidebar
 export function clampSftpPanelHeight(clientY: number, bounds: SftpPanelBounds) {
   const next = bounds.bottom - clientY - 28
   return Math.min(Math.max(next, 140), bounds.height * 0.55)
+}
+
+export function monitorSidebarResizeIntent(clientX: number, bounds: MonitorSidebarBounds) {
+  const rawWidth = clientX - bounds.left
+  return rawWidth <= MONITOR_SIDEBAR_AUTO_COLLAPSE_WIDTH
+    ? { collapsed: true as const }
+    : { collapsed: false as const, width: clampMonitorSidebarWidth(clientX, bounds) }
+}
+
+export function sftpPanelResizeIntent(clientY: number, bounds: SftpPanelBounds) {
+  const rawHeight = bounds.bottom - clientY - 28
+  return rawHeight <= SFTP_PANEL_AUTO_COLLAPSE_HEIGHT
+    ? { expanded: false as const }
+    : { expanded: true as const, height: clampSftpPanelHeight(clientY, bounds) }
 }
 
 export function deriveVisibleOutputSessionIds(input: VisibleOutputSessionInput) {

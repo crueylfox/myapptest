@@ -1,7 +1,7 @@
 import { ref, type Ref } from 'vue'
 import {
-  clampMonitorSidebarWidth,
-  clampSftpPanelHeight,
+  monitorSidebarResizeIntent,
+  sftpPanelResizeIntent,
   type WorkspacePanelDragMode,
 } from './workspacePaneLayoutModel'
 
@@ -13,6 +13,8 @@ export type UseWorkspacePaneResizeFlowOptions = {
   sftpHeight: Ref<number>
   persistSidebarWidth: (width: number) => void
   persistSftpHeight: (height: number) => void
+  setSidebarCollapsed: (collapsed: boolean) => void
+  setSftpExpanded: (expanded: boolean) => void
   bumpLayout: () => void
   scheduleAfterStop: (callback: () => void) => void
   windowTarget?: ListenerTarget
@@ -48,9 +50,13 @@ export function useWorkspacePaneResizeFlow(options: UseWorkspacePaneResizeFlowOp
     if (!dragMode.value || !options.rootRef.value) return
     const rect = options.rootRef.value.getBoundingClientRect()
     if (dragMode.value === 'sidebar') {
-      options.sidebarWidth.value = clampMonitorSidebarWidth(event.clientX, rect)
+      const intent = monitorSidebarResizeIntent(event.clientX, rect)
+      options.setSidebarCollapsed(intent.collapsed)
+      if (!intent.collapsed) options.sidebarWidth.value = intent.width
     } else {
-      options.sftpHeight.value = clampSftpPanelHeight(event.clientY, rect)
+      const intent = sftpPanelResizeIntent(event.clientY, rect)
+      options.setSftpExpanded(intent.expanded)
+      if (intent.expanded) options.sftpHeight.value = intent.height
     }
     options.bumpLayout()
   }

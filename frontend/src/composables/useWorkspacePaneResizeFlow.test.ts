@@ -54,6 +54,8 @@ describe('useWorkspacePaneResizeFlow', () => {
       sftpHeight,
       persistSidebarWidth,
       persistSftpHeight: vi.fn(),
+      setSidebarCollapsed: vi.fn(),
+      setSftpExpanded: vi.fn(),
       bumpLayout,
       scheduleAfterStop: (callback) => afterStop.push(callback),
     })
@@ -87,6 +89,8 @@ describe('useWorkspacePaneResizeFlow', () => {
       sftpHeight,
       persistSidebarWidth: vi.fn(),
       persistSftpHeight,
+      setSidebarCollapsed: vi.fn(),
+      setSftpExpanded: vi.fn(),
       bumpLayout: vi.fn(),
       scheduleAfterStop: (callback) => callback(),
     })
@@ -112,6 +116,8 @@ describe('useWorkspacePaneResizeFlow', () => {
       sftpHeight: ref(240),
       persistSidebarWidth: vi.fn(),
       persistSftpHeight: vi.fn(),
+      setSidebarCollapsed: vi.fn(),
+      setSftpExpanded: vi.fn(),
       bumpLayout: vi.fn(),
       scheduleAfterStop: (callback) => callback(),
     })
@@ -120,6 +126,65 @@ describe('useWorkspacePaneResizeFlow', () => {
     flow.cancelDrag()
 
     expect(flow.dragMode.value).toBeNull()
+  })
+
+
+  it('auto-collapses and restores the monitor sidebar when dragging past the edge threshold', () => {
+    const sidebarWidth = ref(300)
+    const sftpHeight = ref(240)
+    const setSidebarCollapsed = vi.fn()
+    const persistSidebarWidth = vi.fn()
+    const flow = useWorkspacePaneResizeFlow({
+      rootRef: ref(rootWithBounds({ left: 100, width: 1000, bottom: 900, height: 700 })),
+      sidebarWidth,
+      sftpHeight,
+      persistSidebarWidth,
+      persistSftpHeight: vi.fn(),
+      setSidebarCollapsed,
+      setSftpExpanded: vi.fn(),
+      bumpLayout: vi.fn(),
+      scheduleAfterStop: (callback) => callback(),
+    })
+
+    flow.startDrag('sidebar', pointer('pointerdown', { x: 250 }))
+    window.dispatchEvent(pointer('pointermove', { x: 220 }))
+    expect(setSidebarCollapsed).toHaveBeenLastCalledWith(true)
+    expect(sidebarWidth.value).toBe(300)
+
+    window.dispatchEvent(pointer('pointermove', { x: 460 }))
+    expect(setSidebarCollapsed).toHaveBeenLastCalledWith(false)
+    expect(sidebarWidth.value).toBe(350)
+    window.dispatchEvent(pointer('pointerup', { x: 460 }))
+    expect(persistSidebarWidth).toHaveBeenCalledWith(350)
+  })
+
+  it('auto-collapses and restores the bottom panel when dragging past the bottom threshold', () => {
+    const sidebarWidth = ref(300)
+    const sftpHeight = ref(240)
+    const setSftpExpanded = vi.fn()
+    const persistSftpHeight = vi.fn()
+    const flow = useWorkspacePaneResizeFlow({
+      rootRef: ref(rootWithBounds({ bottom: 1000, height: 600 })),
+      sidebarWidth,
+      sftpHeight,
+      persistSidebarWidth: vi.fn(),
+      persistSftpHeight,
+      setSidebarCollapsed: vi.fn(),
+      setSftpExpanded,
+      bumpLayout: vi.fn(),
+      scheduleAfterStop: (callback) => callback(),
+    })
+
+    flow.startDrag('sftp', pointer('pointerdown', { y: 850 }))
+    window.dispatchEvent(pointer('pointermove', { y: 920 }))
+    expect(setSftpExpanded).toHaveBeenLastCalledWith(false)
+    expect(sftpHeight.value).toBe(240)
+
+    window.dispatchEvent(pointer('pointermove', { y: 600 }))
+    expect(setSftpExpanded).toHaveBeenLastCalledWith(true)
+    expect(sftpHeight.value).toBe(330)
+    window.dispatchEvent(pointer('pointerup', { y: 600 }))
+    expect(persistSftpHeight).toHaveBeenCalledWith(330)
   })
 
   it('does not own terminal runtime, backend APIs, or persistence state', () => {

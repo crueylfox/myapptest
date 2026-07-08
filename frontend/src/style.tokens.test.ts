@@ -1614,14 +1614,11 @@ describe('theme and overlay tokens', () => {
     expect(css).not.toContain('sp-visible-selection-overlay')
   })
 
-  it('styles splitter chevrons as centered SVG strokes instead of text glyphs', () => {
-    const splitterStyles = block('.splitter-chevron')
-    expect(splitterStyles).toContain('position: absolute')
-    expect(splitterStyles).toContain('left: 50%')
-    expect(splitterStyles).toContain('top: 50%')
-    expect(splitterStyles).toContain('stroke: currentColor')
-    expect(splitterStyles).not.toContain('font-size')
-    expect(splitterStyles).not.toContain('line-height')
+  it('keeps layout splitters as plain draggable rails without embedded arrow controls', () => {
+    expect(css).not.toContain('.splitter-handle-inline {')
+    expect(css).not.toContain('.sidebar-toggle {')
+    expect(css).not.toContain('.monitor-splitter-toggle')
+    expect(css).not.toContain('.monitor-splitter-controls')
   })
 
   it('renders workspace splitters as equal one-pixel hairlines inside larger hit areas', () => {
@@ -1851,7 +1848,7 @@ describe('theme and overlay tokens', () => {
 
   it('keeps collapsed monitor restore splitters visible as a real row', () => {
     const restoreStyles = block('.monitor-pane-splitter.restore-splitter')
-    expect(restoreStyles).toContain('cursor: pointer')
+    expect(restoreStyles).toContain('cursor: row-resize')
     expect(restoreStyles).toContain('background:')
   })
 

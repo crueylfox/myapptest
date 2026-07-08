@@ -29,7 +29,10 @@ describe('TerminalWorkspace pane layout orchestration structure', () => {
   it('keeps split pane UI wiring and line count inside this large-refactor target', () => {
     expect(terminalWorkspace).toContain('<TerminalSplitWorkspace')
     expect(terminalWorkspace).toContain('@splitter-drag-start="paneResizeBridge.startSplitResize"')
-    expect(terminalWorkspace).toContain("@pointerdown=\"!collapsed && startDrag('sidebar', $event)\"")
+    expect(terminalWorkspace).toContain(`@pointerdown="startDrag('sidebar', $event)"`)
+    expect(terminalWorkspace).toContain(`@pointerdown="startDrag('sftp', $event)"`)
+    expect(terminalWorkspace).not.toContain('bottom-panel-toggle-handle')
+    expect(terminalWorkspace).not.toContain('sidebar-toggle')
     expect(terminalWorkspace).not.toMatch(/terminal-split-workspace[\s\S]{0,600}margin:\s*-/)
     expect(terminalWorkspace).not.toMatch(/terminal-split-workspace[\s\S]{0,600}!important/)
 

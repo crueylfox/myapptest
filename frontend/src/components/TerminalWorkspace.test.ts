@@ -526,8 +526,8 @@ describe('TerminalWorkspace server states', () => {
     expect(right.find('.terminal-stage').exists()).toBe(true)
     expect(right.find('.terminal-stage .terminal-command-button').exists()).toBe(true)
     expect(right.find('.terminal-statusbar .terminal-command-button').exists()).toBe(false)
-    expect(right.find('.horizontal-splitter .bottom-panel-toggle-handle').exists()).toBe(true)
-    expect(right.find('.horizontal-splitter .bottom-panel-toggle-handle').classes()).toContain('splitter-handle-inline')
+    expect(right.find('.horizontal-splitter .bottom-panel-toggle-handle').exists()).toBe(false)
+    expect(right.find('.horizontal-splitter svg.splitter-chevron').exists()).toBe(false)
     expect(right.find('.sftp-panel').exists()).toBe(true)
     expect(right.find('.sftp-panel').text()).not.toContain('SFTP')
     expect(right.find('.terminal-statusbar').exists()).toBe(true)
@@ -543,71 +543,47 @@ describe('TerminalWorkspace server states', () => {
     expect(wrapper.find('.terminal-stage .split-mode-button').exists()).toBe(false)
   })
 
-  it('expands SFTP below the terminal and persists the state', async () => {
+  it('auto-expands and auto-hides SFTP from the plain horizontal splitter', async () => {
     const { wrapper } = mountWorkspace(state())
-    expect(wrapper.get('.bottom-panel-toggle-handle svg.splitter-chevron').classes()).toContain('chevron-up')
+    const root = wrapper.get('.workspace-shell').element as HTMLElement
+    vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({
+      x: 0, y: 0, width: 1200, height: 700, top: 0, right: 1200,
+      bottom: 700, left: 0, toJSON: () => undefined,
+    })
+    expect(wrapper.find('.horizontal-splitter .bottom-panel-toggle-handle').exists()).toBe(false)
+    expect(wrapper.find('.horizontal-splitter svg.splitter-chevron').exists()).toBe(false)
     expect(wrapper.find('.sftp-panel').classes()).not.toContain('expanded')
-    await wrapper.find('.horizontal-splitter .bottom-panel-toggle-handle').trigger('click')
+
+    await dragSplitter(wrapper, '.horizontal-splitter', { x: 500, y: 670 }, { x: 500, y: 420 })
     expect(wrapper.find('.sftp-panel').classes()).toContain('expanded')
-    expect(wrapper.get('.bottom-panel-toggle-handle svg.splitter-chevron').classes()).toContain('chevron-down')
-    expect(wrapper.find('.right-workspace').attributes('style')).toContain('10px 180px 28px')
+    expect(wrapper.find('.right-workspace').attributes('style')).toContain('10px 252px 28px')
     expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('true')
-    expect(wrapper.text()).toContain('未连接')
-  })
+    expect(localStorage.getItem('serverpilot.sftpHeight')).toBe('252')
 
-  it('uses SVG chevrons for splitter controls instead of font glyphs', () => {
-    const { wrapper } = mountWorkspace(state())
-    const sftpHandle = wrapper.get('.horizontal-splitter .bottom-panel-toggle-handle')
-    const sidebarHandle = wrapper.get('.vertical-splitter .sidebar-toggle')
-
-    expect(sftpHandle.text()).toBe('')
-    expect(sftpHandle.get('svg.splitter-chevron').attributes('viewBox')).toBe('0 0 12 12')
-    expect(sidebarHandle.text()).toBe('')
-    expect(sidebarHandle.get('svg.splitter-chevron').attributes('viewBox')).toBe('0 0 12 12')
-  })
-
-  it('keeps the SVG chevron centered on the SFTP splitter hit area', () => {
-    const { wrapper } = mountWorkspace(state())
-    const splitter = wrapper.get('.horizontal-splitter').element as HTMLElement
-    const chevron = wrapper.get('.horizontal-splitter .bottom-panel-toggle-handle svg').element as SVGElement
-    vi.spyOn(splitter, 'getBoundingClientRect').mockReturnValue({
-      x: 0, y: 200, width: 900, height: 10, top: 200, right: 900, bottom: 210, left: 0,
-      toJSON: () => undefined,
-    })
-    vi.spyOn(chevron, 'getBoundingClientRect').mockReturnValue({
-      x: 444, y: 199, width: 12, height: 12, top: 199, right: 456, bottom: 211, left: 444,
-      toJSON: () => undefined,
-    })
-
-    const splitterBounds = splitter.getBoundingClientRect()
-    const chevronBounds = chevron.getBoundingClientRect()
-    expect(Math.abs((splitterBounds.left + splitterBounds.width / 2) - (chevronBounds.left + chevronBounds.width / 2))).toBeLessThanOrEqual(1)
-    expect(Math.abs((splitterBounds.top + splitterBounds.height / 2) - (chevronBounds.top + chevronBounds.height / 2))).toBeLessThanOrEqual(1)
-  })
-
-  it('keeps SFTP splitter dragging separate from the centered toggle button', async () => {
-    const { wrapper } = mountWorkspace(state())
-    const handle = wrapper.get('.horizontal-splitter .bottom-panel-toggle-handle')
-
-    await handle.trigger('pointerdown')
-    window.dispatchEvent(new MouseEvent('pointermove', { clientY: 400 }))
-    window.dispatchEvent(new MouseEvent('pointerup'))
-
-    expect(localStorage.getItem('serverpilot.sftpHeight')).toBeNull()
+    await dragSplitter(wrapper, '.horizontal-splitter', { x: 500, y: 420 }, { x: 500, y: 620 })
     expect(wrapper.find('.sftp-panel').classes()).not.toContain('expanded')
-
-    await handle.trigger('click')
-    expect(wrapper.find('.sftp-panel').classes()).toContain('expanded')
+    expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('false')
   })
 
-  it('persists sidebar collapse without removing the right workspace', async () => {
+  it('auto-collapses and restores the monitor sidebar from the plain vertical splitter', async () => {
     const { wrapper } = mountWorkspace(state())
-    expect(wrapper.find('.vertical-splitter .sidebar-toggle').exists()).toBe(true)
-    expect(wrapper.find('.vertical-splitter .sidebar-toggle').classes()).toContain('splitter-handle-inline')
-    await wrapper.find('.vertical-splitter .sidebar-toggle').trigger('click')
+    const root = wrapper.get('.workspace-shell').element as HTMLElement
+    vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({
+      x: 0, y: 0, width: 1200, height: 700, top: 0, right: 1200,
+      bottom: 700, left: 0, toJSON: () => undefined,
+    })
+    expect(wrapper.find('.vertical-splitter .sidebar-toggle').exists()).toBe(false)
+    expect(wrapper.find('.vertical-splitter svg.splitter-chevron').exists()).toBe(false)
+
+    await dragSplitter(wrapper, '.vertical-splitter', { x: 300, y: 300 }, { x: 120, y: 300 })
     expect(wrapper.find('.workspace-shell').classes()).toContain('sidebar-collapsed')
     expect(localStorage.getItem('serverpilot.monitorSidebarCollapsed')).toBe('true')
     expect(wrapper.find('.right-workspace').exists()).toBe(true)
+
+    await dragSplitter(wrapper, '.vertical-splitter', { x: 12, y: 300 }, { x: 360, y: 300 })
+    expect(wrapper.find('.workspace-shell').classes()).not.toContain('sidebar-collapsed')
+    expect(localStorage.getItem('serverpilot.monitorSidebarCollapsed')).toBe('false')
+    expect(localStorage.getItem('serverpilot.monitorSidebarWidth')).toBe('360')
   })
 
   it('does not collapse after dragging the sidebar splitter', async () => {
@@ -2077,7 +2053,7 @@ describe('TerminalWorkspace server states', () => {
     expect(wrapper.findComponent({ name: 'SftpPanel' }).exists()).toBe(false)
   })
 
-  it('renders only the generic bottom-panel chevron for active local terminals', async () => {
+  it('renders no bottom-panel chevron for active local terminals', async () => {
     const { wrapper, localStore } = mountWorkspace(state({
       status: 'online',
       terminalActive: true,
@@ -2097,8 +2073,8 @@ describe('TerminalWorkspace server states', () => {
     expect(wrapper.find('.local-explorer-panel').exists()).toBe(true)
     expect(wrapper.find('.horizontal-splitter .sftp-toggle-handle').exists()).toBe(false)
     expect(wrapper.find('.local-explorer-toolbar .sftp-toggle-handle').exists()).toBe(false)
-    expect(wrapper.find('.horizontal-splitter .bottom-panel-toggle-handle').exists()).toBe(true)
-    expect(wrapper.find('.horizontal-splitter .bottom-panel-toggle-handle svg.splitter-chevron').exists()).toBe(true)
+    expect(wrapper.find('.horizontal-splitter .bottom-panel-toggle-handle').exists()).toBe(false)
+    expect(wrapper.find('.horizontal-splitter svg.splitter-chevron').exists()).toBe(false)
   })
 
   it('shares the bottom panel expanded state between local Explorer and remote SFTP', async () => {
@@ -2123,9 +2099,14 @@ describe('TerminalWorkspace server states', () => {
     }))
     localStore.activate('local-cmd')
     await wrapper.vm.$nextTick()
+    const root = wrapper.get('.workspace-shell').element as HTMLElement
+    vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({
+      x: 0, y: 0, width: 1200, height: 700, top: 0, right: 1200,
+      bottom: 700, left: 0, toJSON: () => undefined,
+    })
 
     expect(wrapper.find('.local-explorer-panel').classes()).toContain('expanded')
-    await wrapper.get('.horizontal-splitter .bottom-panel-toggle-handle').trigger('click')
+    await dragSplitter(wrapper, '.horizontal-splitter', { x: 500, y: 420 }, { x: 500, y: 620 })
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.local-explorer-panel').classes()).not.toContain('expanded')
 
@@ -2134,7 +2115,7 @@ describe('TerminalWorkspace server states', () => {
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.sftp-panel').classes()).not.toContain('expanded')
 
-    await wrapper.get('.horizontal-splitter .bottom-panel-toggle-handle').trigger('click')
+    await dragSplitter(wrapper, '.horizontal-splitter', { x: 500, y: 620 }, { x: 500, y: 420 })
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.sftp-panel').classes()).toContain('expanded')
 

@@ -16,7 +16,6 @@ import {
   type ProcessSort,
 } from '../utils/workspaceMetrics'
 import AppIcon from './icons/AppIcon.vue'
-import ChevronIcon from './ChevronIcon.vue'
 import MiniSparkline from './MiniSparkline.vue'
 
 const props = defineProps<{
@@ -42,6 +41,8 @@ const showAllMounts = ref(true)
 const expandedSystemByServer = ref<Record<number, boolean>>({})
 const MIN_MONITOR_HEIGHT = 180
 const MIN_MOUNT_HEIGHT = 120
+const MONITOR_AUTO_COLLAPSE_HEIGHT = 96
+const MOUNTS_AUTO_COLLAPSE_HEIGHT = 72
 const DEFAULT_MONITOR_HEIGHT = 430
 const NETWORK_DISPLAY_WINDOW_MS = 180_000
 const storedMonitorHeightValue = localStorage.getItem('serverpilot.monitorPaneHeight')
@@ -270,7 +271,6 @@ function statusLabel(value: string) {
 }
 
 function startSplit(event: PointerEvent) {
-  if (splitMode.value !== 'split') return
   dragging = true
   if (event.currentTarget instanceof HTMLElement) {
     event.currentTarget.setPointerCapture?.(event.pointerId)
@@ -279,30 +279,30 @@ function startSplit(event: PointerEvent) {
   window.addEventListener('pointerup', stopSplit, { once: true })
 }
 
-function setSplitMode(mode: SplitMode) {
+function applySplitMode(mode: SplitMode) {
+  if (splitMode.value === mode) return
   splitMode.value = mode
   localStorage.setItem('serverpilot.monitorSidebarSplitMode', mode)
-  void nextTick(() => emit('layout'))
-}
-
-function collapseMonitorPane() {
-  setSplitMode('monitorCollapsed')
-}
-
-function collapseMountsPane() {
-  setSplitMode('mountsCollapsed')
-}
-
-function restoreSplitPanes() {
-  setSplitMode('split')
 }
 
 function moveSplit(event: PointerEvent) {
   if (!dragging || !root.value) return
   const rect = root.value.getBoundingClientRect()
+  const rawMonitorHeight = event.clientY - rect.top
+  const rawMountsHeight = rect.bottom - event.clientY
+  if (rawMonitorHeight <= MONITOR_AUTO_COLLAPSE_HEIGHT) {
+    applySplitMode('monitorCollapsed')
+    emit('layout')
+    return
+  }
+  if (rawMountsHeight <= MOUNTS_AUTO_COLLAPSE_HEIGHT) {
+    applySplitMode('mountsCollapsed')
+    emit('layout')
+    return
+  }
+  applySplitMode('split')
   const maxMonitorHeight = Math.max(MIN_MONITOR_HEIGHT, rect.height - MIN_MOUNT_HEIGHT - 10)
-  const next = Math.min(Math.max(event.clientY - rect.top, MIN_MONITOR_HEIGHT), maxMonitorHeight)
-  monitorHeight.value = next
+  monitorHeight.value = Math.min(Math.max(rawMonitorHeight, MIN_MONITOR_HEIGHT), maxMonitorHeight)
   emit('layout')
 }
 
@@ -489,39 +489,9 @@ onBeforeUnmount(() => {
       class="horizontal-splitter monitor-pane-splitter"
       :class="{ 'restore-splitter': splitMode !== 'split' }"
       role="separator"
-      aria-label="Resize monitor and mounts panes"
-      @pointerdown="splitMode === 'split' && startSplit($event)"
-    >
-      <span v-if="splitMode === 'split'" class="monitor-splitter-controls" aria-label="Collapse monitor or mounts pane">
-        <button
-          type="button"
-          class="splitter-handle-inline monitor-splitter-toggle collapse-monitor"
-          title="Collapse monitor pane"
-          aria-label="Collapse monitor pane"
-          @pointerdown.stop.prevent
-          @click.stop="collapseMonitorPane"
-        ><ChevronIcon direction="up" /></button>
-        <button
-          type="button"
-          class="splitter-handle-inline monitor-splitter-toggle collapse-mounts"
-          title="Collapse mounts pane"
-          aria-label="Collapse mounts pane"
-          @pointerdown.stop.prevent
-          @click.stop="collapseMountsPane"
-        ><ChevronIcon direction="down" /></button>
-      </span>
-      <button
-        v-else
-        type="button"
-        class="splitter-handle-inline monitor-splitter-toggle restore-split"
-        title="Restore monitor and mounts panes"
-        aria-label="Restore monitor and mounts panes"
-        @pointerdown.stop.prevent
-        @click.stop="restoreSplitPanes"
-      >
-        <ChevronIcon :direction="splitMode === 'monitorCollapsed' ? 'down' : 'up'" />
-      </button>
-    </div>
+      aria-label="Drag to resize or hide monitor and mounts panes"
+      @pointerdown="startSplit($event)"
+    ></div>
     <section v-if="splitMode !== 'mountsCollapsed'" v-show="monitorDetailsExpanded" class="mount-panel">
       <header>
         <strong>磁盘与挂载点</strong>
