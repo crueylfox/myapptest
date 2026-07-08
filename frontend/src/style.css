@@ -101,6 +101,14 @@
   --surface-highlight: rgba(255, 255, 255, .13);
   --surface-specular: inset 0 1px 0 rgba(255, 255, 255, .08);
   --surface-divider: rgba(148, 163, 184, .36);
+  --liquid-surface-bg: rgba(54, 58, 66, .58);
+  --liquid-panel-bg: rgba(48, 52, 60, .48);
+  --liquid-card-bg: rgba(58, 63, 72, .52);
+  --liquid-border: rgba(255, 255, 255, .18);
+  --liquid-shadow: 0 26px 90px rgba(0, 0, 0, .42), inset 0 1px 0 rgba(255, 255, 255, .16);
+  --liquid-blur: blur(24px) saturate(1.35);
+  --liquid-highlight: rgba(255, 255, 255, .20);
+  --liquid-edge-light: rgba(255, 255, 255, .28);
   --material-backdrop-bg: var(--surface-backdrop-bg);
   --material-window-bg: var(--surface-window-bg);
   --material-surface-bg: var(--surface-modal-bg);
@@ -244,6 +252,14 @@
   --surface-highlight: rgba(255, 255, 255, .13);
   --surface-specular: inset 0 1px 0 rgba(255, 255, 255, .08);
   --surface-divider: rgba(148, 163, 184, .36);
+  --liquid-surface-bg: rgba(54, 58, 66, .58);
+  --liquid-panel-bg: rgba(48, 52, 60, .48);
+  --liquid-card-bg: rgba(58, 63, 72, .52);
+  --liquid-border: rgba(255, 255, 255, .18);
+  --liquid-shadow: 0 26px 90px rgba(0, 0, 0, .42), inset 0 1px 0 rgba(255, 255, 255, .16);
+  --liquid-blur: blur(24px) saturate(1.35);
+  --liquid-highlight: rgba(255, 255, 255, .20);
+  --liquid-edge-light: rgba(255, 255, 255, .28);
   --material-backdrop-bg: var(--surface-backdrop-bg);
   --material-window-bg: var(--surface-window-bg);
   --material-surface-bg: var(--surface-modal-bg);
@@ -375,6 +391,14 @@
   --surface-highlight: rgba(255, 255, 255, .72);
   --surface-specular: inset 0 1px 0 rgba(255, 255, 255, .75);
   --surface-divider: rgba(100, 116, 139, .32);
+  --liquid-surface-bg: rgba(255, 255, 255, .62);
+  --liquid-panel-bg: rgba(255, 255, 255, .50);
+  --liquid-card-bg: rgba(255, 255, 255, .58);
+  --liquid-border: rgba(255, 255, 255, .72);
+  --liquid-shadow: 0 26px 90px rgba(15, 23, 42, .18), inset 0 1px 0 rgba(255, 255, 255, .88);
+  --liquid-blur: blur(24px) saturate(1.28);
+  --liquid-highlight: rgba(255, 255, 255, .84);
+  --liquid-edge-light: rgba(255, 255, 255, .94);
   --material-backdrop-bg: var(--surface-backdrop-bg);
   --material-window-bg: var(--surface-window-bg);
   --material-surface-bg: var(--surface-modal-bg);
@@ -550,6 +574,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .app-surface--card, .app-surface--popover { background: var(--surface-card-bg); border: 1px solid var(--surface-border); box-shadow: var(--surface-specular); }
 .app-surface--toolbar { background: var(--surface-toolbar-bg); border-bottom: 1px solid var(--surface-border); }
 .app-surface--control { background: var(--surface-control-bg); border: 1px solid var(--surface-border); }
+.app-surface--liquid { background: var(--liquid-surface-bg); border-color: var(--liquid-border); box-shadow: var(--liquid-shadow); backdrop-filter: var(--liquid-blur); -webkit-backdrop-filter: var(--liquid-blur); }
 .app-material-surface { background: var(--surface-modal-bg); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); }
 .app-glass-surface { background: var(--surface-modal-bg); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); }
 .app-material-panel { background: var(--surface-panel-bg); border: 1px solid var(--surface-border); }

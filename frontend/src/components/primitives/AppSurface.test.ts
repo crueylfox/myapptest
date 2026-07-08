@@ -56,6 +56,28 @@ describe('UI surface primitives', () => {
     }
   })
 
+  it('can opt a surface into the future Liquid Glass material without changing the default material', () => {
+    const standard = mount(AppSurface, {
+      props: {
+        variant: 'modal',
+      },
+    })
+    const liquid = mount(AppSurface, {
+      props: {
+        variant: 'modal',
+        material: 'liquid',
+      },
+    })
+
+    expect(standard.classes()).not.toContain('app-surface--liquid')
+    expect(liquid.classes()).toEqual(expect.arrayContaining([
+      'app-surface',
+      'app-surface--modal',
+      'app-surface--liquid',
+      'app-material-surface',
+    ]))
+  })
+
   it('renders backdrops as the single canonical backdrop primitive and preserves event fallthrough', async () => {
     let pointerCount = 0
     const wrapper = mount(AppBackdrop, {

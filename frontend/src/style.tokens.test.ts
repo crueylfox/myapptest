@@ -206,9 +206,19 @@ describe('theme and overlay tokens', () => {
       'accent-focus',
       'accent-text',
     ]
+    const requiredLiquidTokens = [
+      'liquid-surface-bg',
+      'liquid-panel-bg',
+      'liquid-card-bg',
+      'liquid-border',
+      'liquid-shadow',
+      'liquid-blur',
+      'liquid-highlight',
+      'liquid-edge-light',
+    ]
 
     for (const tokens of [dark, macosGrayDark, light]) {
-      for (const token of [...requiredSurfaceTokens, ...requiredStateTokens, ...requiredAccentTokens]) expect(tokens[token]).toBeTruthy()
+      for (const token of [...requiredSurfaceTokens, ...requiredStateTokens, ...requiredAccentTokens, ...requiredLiquidTokens]) expect(tokens[token]).toBeTruthy()
       expect(tokens['material-surface-bg']).toBe('var(--surface-modal-bg)')
       expect(tokens['material-panel-bg']).toBe('var(--surface-panel-bg)')
       expect(tokens['material-card-bg']).toBe('var(--surface-card-bg)')
@@ -244,6 +254,13 @@ describe('theme and overlay tokens', () => {
     expect(appMaterialPanel).toContain('background: var(--surface-panel-bg)')
     expect(appMaterialCard).toContain('background: var(--surface-card-bg)')
     expect(appMaterialToolbar).toContain('background: var(--surface-toolbar-bg)')
+
+    const liquidSurface = block('.app-surface--liquid')
+    expect(liquidSurface).toContain('background: var(--liquid-surface-bg)')
+    expect(liquidSurface).toContain('border-color: var(--liquid-border)')
+    expect(liquidSurface).toContain('box-shadow: var(--liquid-shadow)')
+    expect(liquidSurface).toContain('backdrop-filter: var(--liquid-blur)')
+    expect(liquidSurface).toContain('-webkit-backdrop-filter: var(--liquid-blur)')
   })
 
   it('defines semantic state tokens and uses canonical surface/state tokens in inner management panels', () => {

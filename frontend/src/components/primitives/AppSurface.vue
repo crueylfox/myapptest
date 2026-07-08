@@ -2,13 +2,16 @@
 import { computed, type Component } from 'vue'
 
 type SurfaceVariant = 'modal' | 'panel' | 'card' | 'toolbar' | 'control' | 'popover'
+type SurfaceMaterial = 'standard' | 'liquid'
 
 const props = withDefaults(defineProps<{
   as?: string | Component
   variant?: SurfaceVariant
+  material?: SurfaceMaterial
 }>(), {
   as: 'section',
   variant: 'card',
+  material: 'standard',
 })
 
 const materialClass = computed(() => {
@@ -34,7 +37,7 @@ const materialClass = computed(() => {
   <component
     :is="as"
     class="app-surface"
-    :class="[`app-surface--${variant}`, materialClass]"
+    :class="[`app-surface--${variant}`, materialClass, { 'app-surface--liquid': material === 'liquid' }]"
   >
     <slot />
   </component>
