@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { resolveAppDialog, useAppDialog } from '../composables/useAppDialog'
+import AppBackdrop from './primitives/AppBackdrop.vue'
+import AppSurface from './primitives/AppSurface.vue'
 
 const { dialog } = useAppDialog()
 const input = ref('')
@@ -78,15 +80,15 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
-    <div
+    <AppBackdrop
       v-if="dialog"
-      class="modal-backdrop app-dialog-backdrop app-material-backdrop"
-      :class="{ 'danger-modal': dialog.danger }"
+      class="modal-backdrop app-dialog-backdrop"
+      :danger="dialog.danger"
       data-testid="app-dialog"
       @keydown="onKeydown"
       @pointerdown.self="close(dialog.kind === 'confirm' ? false : null)"
     >
-      <form class="modal app-dialog app-material-surface" @submit.prevent="submit">
+      <AppSurface as="form" variant="modal" class="modal app-dialog" @submit.prevent="submit">
         <header>
           <h2>{{ dialog.title }}</h2>
           <button
@@ -129,7 +131,7 @@ onBeforeUnmount(() => {
             :disabled="submitting"
           >{{ submitting ? '处理中…' : dialog.confirmText ?? '确定' }}</button>
         </footer>
-      </form>
-    </div>
+      </AppSurface>
+    </AppBackdrop>
   </Teleport>
 </template>

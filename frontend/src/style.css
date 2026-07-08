@@ -542,11 +542,20 @@ button { border: 0; cursor: pointer; background: transparent; }
 .welcome p { color: var(--muted); margin: 0 0 20px; }
 .app-material-backdrop { background: var(--surface-backdrop-bg); transform: translateZ(0); }
 .app-glass-backdrop { background: var(--surface-backdrop-bg); transform: translateZ(0); }
+.app-backdrop { background: var(--surface-backdrop-bg); transform: translateZ(0); }
+.app-backdrop--modal, .app-backdrop--popover, .app-backdrop--drawer { background: var(--surface-backdrop-bg); }
+.app-surface { min-width: 0; color: var(--text); }
+.app-surface--modal { background: var(--surface-modal-bg); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); }
+.app-surface--panel { background: var(--surface-panel-bg); border: 1px solid var(--surface-border); }
+.app-surface--card, .app-surface--popover { background: var(--surface-card-bg); border: 1px solid var(--surface-border); box-shadow: var(--surface-specular); }
+.app-surface--toolbar { background: var(--surface-toolbar-bg); border-bottom: 1px solid var(--surface-border); }
+.app-surface--control { background: var(--surface-control-bg); border: 1px solid var(--surface-border); }
 .app-material-surface { background: var(--surface-modal-bg); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); }
 .app-glass-surface { background: var(--surface-modal-bg); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); }
 .app-material-panel { background: var(--surface-panel-bg); border: 1px solid var(--surface-border); }
 .app-material-card { background: var(--surface-card-bg); border: 1px solid var(--surface-border); box-shadow: var(--surface-specular); }
 .app-material-toolbar { background: var(--surface-toolbar-bg); border-bottom: 1px solid var(--surface-border); }
+.app-material-control { background: var(--surface-control-bg); border: 1px solid var(--surface-border); }
 .modal-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; background: var(--surface-backdrop-bg); transform: translateZ(0); }
 .modal-backdrop.danger-modal { z-index: var(--z-danger-modal); }
 .app-dialog-backdrop,

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppDialogHost from './AppDialogHost.vue'
+import AppBackdrop from './primitives/AppBackdrop.vue'
 import AlertCenter from './AlertCenter.vue'
 import AuthDialog from './AuthDialog.vue'
 import ConnectionDialog from './ConnectionDialog.vue'
@@ -238,9 +239,10 @@ const emit = defineEmits<{
     @delete-credential="emit('connectionDialogDeleteCredential', $event)"
   />
 
-  <div
+  <AppBackdrop
     v-if="settings.open"
-    class="settings-overlay-backdrop app-material-backdrop"
+    kind="popover"
+    class="settings-overlay-backdrop"
     data-testid="settings-overlay"
   >
     <SettingsView
@@ -262,7 +264,7 @@ const emit = defineEmits<{
       @open-logs="emit('settingsOpenLogs')"
       @notify="(message, type) => emit('notify', message, type)"
     />
-  </div>
+  </AppBackdrop>
 
   <MultiServerDashboardDialog
     v-if="monitorPanel"
