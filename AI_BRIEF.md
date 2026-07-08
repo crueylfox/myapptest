@@ -109,8 +109,11 @@ Updated: 2026-07-08
 - Beta43 Windows EXE copied to `C:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.43.exe`.
 - Beta43 Windows EXE SHA-256: `AB521C5CBC375055E39066B8D89E6CD8DD1631F0D2A0F76436A5839B509442F3`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- Beta43 GitHub Actions macOS package: pending after push.
-- Expected macOS artifact: `ServerPilot-macos-unsigned`, produced by the GitHub Actions macOS runner.
+- GitHub Actions `Build macOS` run `28921515122`: success for commit `14ce7e3ad86f6b4c20ed38c7a51f37645f82ee48`.
+- Artifact: `ServerPilot-macos-unsigned`; desktop artifact zip `D:\Users\Administrator\Desktop\ServerPilot-macos-unsigned.zip`.
+- Artifact wrapper zip SHA-256: `3718E71399B7AF1EC4DBA56ACC0B5A31F607E0697AE1DE35F6E6A96FC4F4F638`.
+- Artifact contents: `ServerPilot-macos-universal-unsigned.zip` SHA-256 `7EB290569C9B20B9C20DDB1D46020888B14FCD3C2B5996090A6C7FA6012CD4F8`; `ServerPilot-macos-universal-unsigned.dmg` SHA-256 `2859AAC9509368307FFE53CB6B770E8BDA42AD73FEF8C8C64AB42E7219C2A8AF`.
+- macOS artifact came from the GitHub Actions macOS runner.
 
 ## 5. Next
 - For any future user-deliverable repackaging, bump the version first; do not create another same-version package.
