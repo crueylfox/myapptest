@@ -168,8 +168,8 @@ const categories = [
 const availableCategoryIds = new Set(categories.map((category) => category.id))
 const forceFormDirty = ref(false)
 const appVersion = ref('')
-const { capabilities: localTerminalCapabilities, showLocalTerminalAdminSetting, loadLocalTerminalCapabilities } = useLocalTerminalSettingsCapabilities(() => { form.localTerminalElevatedEnabled = false })
-const platform = computed(() => localTerminalCapabilities.value?.platform ?? 'windows')
+const { platformCapabilities, showLocalTerminalAdminSetting, loadLocalTerminalCapabilities } = useLocalTerminalSettingsCapabilities(() => { form.localTerminalElevatedEnabled = false })
+const platform = computed(() => platformCapabilities.value.platform)
 const formDirty = computed(() => forceFormDirty.value ||
   JSON.stringify(normalizeSettings(settingsDraft())) !== JSON.stringify(normalizeSettings(props.settings)))
 const appVersionLabel = computed(() => appVersion.value ? `ServerPilot v${appVersion.value}` : 'ServerPilot')
@@ -196,7 +196,7 @@ watch(platform, (value) => {
     form.terminalRightClickPasteEnabled ?? true,
     value,
   )
-  if (value === 'darwin') { externalShortcutConflicts.value = []; form.alerts.nativeNotifications.enabled = false }
+  if (platformCapabilities.value.isMacOS) { externalShortcutConflicts.value = []; form.alerts.nativeNotifications.enabled = false }
   if (activeCategory.value === 'shortcuts') scheduleShortcutConflictCheck()
 })
 
@@ -330,7 +330,7 @@ function enabledShortcutBindings() {
 }
 
 function scheduleShortcutConflictCheck() {
-  if (platform.value === 'darwin') {
+  if (platformCapabilities.value.isMacOS) {
     externalShortcutConflicts.value = [{
       shortcut: '',
       status: 'unknown',
@@ -1334,7 +1334,7 @@ function errorMessage(reason: unknown, fallback: string) {
         <p v-for="entry in externalShortcutConflicts" :key="`${entry.shortcut}-${entry.status}`">
           {{ entry.message }}
         </p>
-        <small v-if="platform === 'darwin'">macOS 全局快捷键冲突检测暂不可用，不能保证发现所有应用内快捷键。</small>
+        <small v-if="platformCapabilities.isMacOS">macOS 全局快捷键冲突检测暂不可用，不能保证发现所有应用内快捷键。</small>
         <small v-else>此检测为 best-effort，只能尽量发现 Windows 或其他应用注册的全局快捷键，不能保证发现所有应用内快捷键。</small>
       </div>
       <p class="settings-note">

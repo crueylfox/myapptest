@@ -1,11 +1,13 @@
-import { computed, ref } from 'vue'
+﻿import { computed, ref } from 'vue'
 import { api } from '../api/backend'
 import type { LocalTerminalCapabilities } from '../types'
+import { buildPlatformCapabilities } from '../utils/platformCapabilities'
 
 export function useLocalTerminalSettingsCapabilities(onAdminSettingHidden?: () => void) {
   const capabilities = ref<LocalTerminalCapabilities | null>(null)
+  const platformCapabilities = computed(() => buildPlatformCapabilities(capabilities.value))
   const showLocalTerminalAdminSetting = computed(() =>
-    !capabilities.value || (capabilities.value.platform !== 'darwin' && capabilities.value.supportsElevation !== false))
+    platformCapabilities.value.supportsWindowsAdminTerminal)
 
   async function loadLocalTerminalCapabilities() {
     try {
@@ -16,5 +18,5 @@ export function useLocalTerminalSettingsCapabilities(onAdminSettingHidden?: () =
     if (!showLocalTerminalAdminSetting.value) onAdminSettingHidden?.()
   }
 
-  return { capabilities, showLocalTerminalAdminSetting, loadLocalTerminalCapabilities }
+  return { capabilities, platformCapabilities, showLocalTerminalAdminSetting, loadLocalTerminalCapabilities }
 }
