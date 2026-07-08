@@ -8,6 +8,7 @@
   --workspace-topbar-height: 34px;
   --workspace-sidebar-restore-size: 26px;
   --workspace-splitter-hit-size: 10px;
+  --workspace-splitter-line-offset: 5px;
   --bg: #1f2023;
   --sidebar: #202226;
   --panel: #26292e;
@@ -1231,9 +1232,10 @@ button { border: 0; cursor: pointer; background: transparent; }
 .workspace-shell.sidebar-collapsed .vertical-splitter { min-width: 1px; cursor: default; background: var(--splitter-line); }
 .workspace-shell.sidebar-collapsed .vertical-splitter::before { display: none; }
 .horizontal-splitter:hover::before, .vertical-splitter:hover::before { background: color-mix(in srgb, var(--splitter-line) 76%, var(--primary) 24%); }
-.right-workspace > .horizontal-splitter { width: calc(100% + var(--workspace-splitter-hit-size)); margin-left: calc(-1 * var(--workspace-splitter-hit-size)); }
+.right-workspace > .horizontal-splitter::before { left: calc(-1 * var(--workspace-splitter-line-offset)); right: 0; width: auto; transform: translateY(-50%); }
 .right-workspace.bottom-panel-collapsed .horizontal-splitter::before { top: 100%; }
 .mount-panel { min-height: 120px; display: grid; grid-template-rows: 24px minmax(0, 1fr); gap: 6px; overflow: hidden; padding: 9px 10px; background: var(--sidebar); }
+.compact-monitor-sidebar.split-split > .mount-panel { border-top: 1px solid var(--splitter-line); }
 .split-monitorCollapsed .mount-panel, .split-mountsCollapsed .compact-monitor { min-height: 0; height: 100%; }
 .mount-panel > header { height: 24px; }
 .mount-panel > header strong { font-size: 12px; }
@@ -1264,8 +1266,9 @@ button { border: 0; cursor: pointer; background: transparent; }
 .splitter-chevron.chevron-left { transform: translate(-50%, -50%) rotate(90deg); }
 .splitter-chevron.chevron-right { transform: translate(-50%, -50%) rotate(-90deg); }
 .sftp-toggle-handle { width: 52px; height: 22px; line-height: 1; }
-.monitor-pane-splitter { margin-inline: -10px; overflow: visible; }
+.monitor-pane-splitter { overflow: visible; }
 .monitor-pane-splitter::before { left: 0; right: 0; width: auto; transform: translateY(-50%); }
+.compact-monitor-sidebar.split-split > .monitor-pane-splitter::before { display: none; }
 .monitor-pane-splitter.restore-splitter { cursor: row-resize; background: color-mix(in srgb, var(--border) 88%, var(--terminal-bg) 12%); }
 .monitor-pane-splitter.restore-splitter:hover { background: color-mix(in srgb, var(--border) 70%, var(--primary) 30%); }
 .sftp-panel { grid-row: 3; min-height: 0; overflow: hidden; border-top: 0; background: var(--sidebar); }
