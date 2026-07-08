@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { confirmDialog } from '../composables/useAppDialog'
 import type { SFTPItemProperties } from '../types'
 import { formatBytes } from '../utils/format'
+import AppActionBar from './primitives/AppActionBar.vue'
 
 const props = defineProps<{
   item: SFTPItemProperties
@@ -212,7 +213,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
         </div>
       </section>
 
-      <footer class="remote-properties-actions">
+      <AppActionBar as="footer" class="remote-properties-actions">
         <button
           type="button"
           class="secondary"
@@ -220,7 +221,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
           :disabled="!canApply"
           @click="applyPermissions"
         >{{ busy ? '应用中...' : '应用权限' }}</button>
-      </footer>
+      </AppActionBar>
     </section>
   </div>
 </template>

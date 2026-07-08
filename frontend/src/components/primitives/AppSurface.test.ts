@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 // @ts-expect-error The app tsconfig intentionally omits Node globals; this test reads local component source.
 const { readFileSync } = await import('node:fs') as { readFileSync: (path: string, encoding: string) => string }
 
+import AppActionBar from './AppActionBar.vue'
 import AppBackdrop from './AppBackdrop.vue'
 import AppPopover from './AppPopover.vue'
 import AppSurface from './AppSurface.vue'
@@ -38,11 +39,12 @@ describe('UI surface primitives', () => {
     expect(wrapper.find('button[type="submit"]').text()).toBe('OK')
   })
 
-  it('maps panel, card, toolbar, control, and popover variants to one canonical primitive', () => {
+  it('maps panel, card, toolbar, actionbar, control, and popover variants to one canonical primitive', () => {
     const variants = [
       ['panel', 'app-material-panel'],
       ['card', 'app-material-card'],
       ['toolbar', 'app-material-toolbar'],
+      ['actionbar', 'app-material-toolbar'],
       ['control', 'app-surface--control'],
       ['popover', 'app-surface--popover'],
     ] as const
@@ -174,6 +176,35 @@ describe('UI surface primitives', () => {
     expect(wrapper.find('button').text()).toBe('Refresh')
   })
 
+  it('renders action bars through the canonical surface primitive with group semantics and attr fallthrough', () => {
+    const wrapper = mount(AppActionBar, {
+      props: {
+        as: 'footer',
+      },
+      attrs: {
+        id: 'dialog-actions',
+        'aria-label': 'Dialog actions',
+        class: 'serverpilot-actions',
+      },
+      slots: {
+        default: '<button type="button">Apply</button>',
+      },
+    })
+
+    expect(wrapper.element.tagName).toBe('FOOTER')
+    expect(wrapper.attributes('role')).toBe('group')
+    expect(wrapper.attributes('id')).toBe('dialog-actions')
+    expect(wrapper.attributes('aria-label')).toBe('Dialog actions')
+    expect(wrapper.classes()).toEqual(expect.arrayContaining([
+      'app-action-bar',
+      'app-surface',
+      'app-surface--actionbar',
+      'app-material-toolbar',
+      'serverpilot-actions',
+    ]))
+    expect(wrapper.find('button').text()).toBe('Apply')
+  })
+
   it('migrates AppDialogHost to primitives without removing existing public selector classes', () => {
     const source = readFileSync('src/components/AppDialogHost.vue', 'utf8')
     expect(source).toContain("import AppBackdrop from './primitives/AppBackdrop.vue'")
@@ -247,6 +278,30 @@ describe('UI surface primitives', () => {
     for (const migration of migrations) {
       const source = readFileSync(migration.path, 'utf8')
       expect(source).toContain(`import AppToolbar from '${migration.importPath}'`)
+      expect(source).toContain(migration.migratedTag)
+      expect(source).not.toContain(migration.legacyTag)
+    }
+  })
+
+  it('routes stable footer action areas through AppActionBar without changing public selector classes', () => {
+    const migrations = [
+      {
+        path: 'src/components/RemoteFilePropertiesDialog.vue',
+        importPath: './primitives/AppActionBar.vue',
+        migratedTag: '<AppActionBar as="footer" class="remote-properties-actions">',
+        legacyTag: '<footer class="remote-properties-actions">',
+      },
+      {
+        path: 'src/components/TerminalWorkspace.vue',
+        importPath: './primitives/AppActionBar.vue',
+        migratedTag: '<AppActionBar as="footer" class="transfer-popover-actions">',
+        legacyTag: '<footer class="transfer-popover-actions">',
+      },
+    ]
+
+    for (const migration of migrations) {
+      const source = readFileSync(migration.path, 'utf8')
+      expect(source).toContain(`import AppActionBar from '${migration.importPath}'`)
       expect(source).toContain(migration.migratedTag)
       expect(source).not.toContain(migration.legacyTag)
     }

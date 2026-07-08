@@ -57,6 +57,7 @@ import {
   transferTerminalMessage,
   transferTerminalToastType,
 } from '../composables/workspaceTransferOverlayModel'
+import AppActionBar from './primitives/AppActionBar.vue'
 import ChevronIcon from './ChevronIcon.vue'
 import CommandPalette from './CommandPalette.vue'
 import CompactMonitorSidebar from './CompactMonitorSidebar.vue'
@@ -1059,11 +1060,10 @@ onBeforeUnmount(() => {
                   <small v-if="row.errorMessage" :title="row.errorMessage">{{ row.errorMessage }}</small>
                 </article>
               </div>
-              <footer class="transfer-popover-actions">
+              <AppActionBar as="footer" class="transfer-popover-actions">
                 <button class="text-button" @click="clearFinishedTransfers">清除已完成</button>
-                <span class="transfer-popover-action-separator" aria-hidden="true">|</span>
-                <button class="text-button" @click="closeTransferPopover">关闭</button>
-              </footer>
+                <span class="transfer-popover-action-separator" aria-hidden="true">|</span><button class="text-button" @click="closeTransferPopover">关闭</button>
+              </AppActionBar>
             </div>
           </Teleport>
         </div>

@@ -573,6 +573,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .app-surface--panel { background: var(--surface-panel-bg); border: 1px solid var(--surface-border); }
 .app-surface--card, .app-surface--popover { background: var(--surface-card-bg); border: 1px solid var(--surface-border); box-shadow: var(--surface-specular); }
 .app-surface--toolbar { background: var(--surface-toolbar-bg); border-bottom: 1px solid var(--surface-border); }
+.app-surface--actionbar { background: var(--surface-toolbar-bg); border-top: 1px solid var(--surface-border); }
 .app-surface--control { background: var(--surface-control-bg); border: 1px solid var(--surface-border); }
 .app-surface--liquid { background: var(--liquid-surface-bg); border-color: var(--liquid-border); box-shadow: var(--liquid-shadow); backdrop-filter: var(--liquid-blur); -webkit-backdrop-filter: var(--liquid-blur); }
 .app-material-surface { background: var(--surface-modal-bg); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); }

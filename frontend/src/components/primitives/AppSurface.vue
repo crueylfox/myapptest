@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, type Component } from 'vue'
 
-type SurfaceVariant = 'modal' | 'panel' | 'card' | 'toolbar' | 'control' | 'popover'
+type SurfaceVariant = 'modal' | 'panel' | 'card' | 'toolbar' | 'actionbar' | 'control' | 'popover'
 type SurfaceMaterial = 'standard' | 'liquid'
 
 const props = withDefaults(defineProps<{
@@ -24,6 +24,7 @@ const materialClass = computed(() => {
     case 'popover':
       return 'app-material-card'
     case 'toolbar':
+    case 'actionbar':
       return 'app-material-toolbar'
     case 'control':
       return 'app-material-control'
