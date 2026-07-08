@@ -1197,16 +1197,16 @@ function errorMessage(reason: unknown, fallback: string) {
                 <input v-model.trim="terminalProfileForm.fontFamily" data-testid="terminal-profile-font" maxlength="120" />
               </label>
               <label>字号
-                <input v-model.number="terminalProfileForm.fontSize" data-testid="terminal-profile-font-size" type="number" min="10" max="28" />
+                <input v-model.number="terminalProfileForm.fontSize" class="terminal-profile-number-input" data-testid="terminal-profile-font-size" type="number" min="10" max="28" />
               </label>
               <label>行高
-                <input v-model.number="terminalProfileForm.lineHeight" data-testid="terminal-profile-line-height" type="number" min="1" max="2" step="0.05" />
+                <input v-model.number="terminalProfileForm.lineHeight" class="terminal-profile-number-input" data-testid="terminal-profile-line-height" type="number" min="1" max="2" step="0.05" />
               </label>
               <label>字间距
-                <input v-model.number="terminalProfileForm.letterSpacing" type="number" min="-1" max="4" step="0.1" />
+                <input v-model.number="terminalProfileForm.letterSpacing" class="terminal-profile-number-input" type="number" min="-1" max="4" step="0.1" />
               </label>
               <label>滚动缓冲
-                <input v-model.number="terminalProfileForm.scrollback" type="number" min="1000" max="50000" step="500" />
+                <input v-model.number="terminalProfileForm.scrollback" class="terminal-profile-number-input" type="number" min="1000" max="50000" step="500" />
               </label>
               <label>光标样式
                 <select v-model="terminalProfileForm.cursorStyle">

@@ -419,6 +419,12 @@ const settingsPanelFlow = useSettingsPanelFlow({
   settings,
   settingsOverlayOpen,
   saveSettingsValue: (value) => api.saveSettings(value),
+  confirmDisableShortcutConflicts: (message) => confirmDialog({
+    title: '快捷键绑定冲突',
+    message,
+    confirmText: '禁用冲突快捷键并保存',
+    cancelText: '返回设置',
+  }),
   configureAlerts: (value) => alertStore.configure(value),
   reloadAlertHistory: () => alertStore.reloadHistory(),
   setDefaultTerminalProfileId: (id) => terminalProfileStore.setDefaultProfileId(id),

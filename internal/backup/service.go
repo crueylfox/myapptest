@@ -665,7 +665,12 @@ func validShortcutBinding(value string) bool {
 		"ctrl+alt+c",
 		"ctrl+alt+v",
 		"ctrl+alt+h",
-		"ctrl+alt+p":
+		"ctrl+alt+p",
+		"meta+c",
+		"meta+v",
+		"meta+k",
+		"shift+meta+h",
+		"shift+meta+p":
 		return true
 	default:
 		return false

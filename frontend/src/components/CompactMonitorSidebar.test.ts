@@ -176,6 +176,15 @@ describe('CompactMonitorSidebar', () => {
     expect(wrapper.get('.compact-state .status-dot').classes()).toContain('online')
   })
 
+  it('moves the monitor state next to the server title and emits collapse from the visible header button', async () => {
+    const wrapper = render()
+
+    expect(wrapper.get('.compact-server-title-row .compact-state').text()).toContain('在线')
+    await wrapper.get('.monitor-sidebar-toggle-button').trigger('click')
+
+    expect(wrapper.emitted('collapse')).toHaveLength(1)
+  })
+
   it('defaults to Memory process order and supports CPU sorting', async () => {
     const wrapper = render()
     expect(wrapper.findAll('.process-row')[0].text()).toContain('memory-heavy')

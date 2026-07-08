@@ -124,6 +124,51 @@ describe('useSettingsPanelFlow', () => {
     expect(ctx.settingsOverlayOpen.value).toBe(true)
   })
 
+  it('can disable conflicting keyboard shortcuts and retry save before closing', async () => {
+    const savedSettings = { ...createDefaultAppSettings() }
+    const saveSettingsValue = vi.fn()
+      .mockRejectedValueOnce(new Error('快捷键绑定无效'))
+      .mockResolvedValueOnce(savedSettings)
+    const confirmDisableShortcutConflicts = vi.fn(async () => true)
+    const ctx = createFlow({ saveSettingsValue, confirmDisableShortcutConflicts })
+    ctx.settingsOverlayOpen.value = true
+    ctx.settings.value.shortcutSettings = {
+      ...ctx.settings.value.shortcutSettings,
+      terminalCopy: 'meta+c',
+      terminalPaste: 'meta+v',
+      terminalCompletion: 'meta+k',
+      openCommandHistory: 'shift+meta+h',
+      openCommandFavorites: 'shift+meta+p',
+    }
+
+    await ctx.flow.saveSettingsAndClose(ctx.settings.value)
+
+    expect(confirmDisableShortcutConflicts).toHaveBeenCalledWith(expect.stringContaining('禁用所有键盘快捷键'))
+    expect(saveSettingsValue).toHaveBeenCalledTimes(2)
+    expect(saveSettingsValue).toHaveBeenLastCalledWith(expect.objectContaining({
+      shortcutSettings: expect.objectContaining({
+        terminalCopy: 'disabled',
+        terminalPaste: 'disabled',
+        terminalCompletion: 'disabled',
+        openCommandHistory: 'disabled',
+        openCommandFavorites: 'disabled',
+      }),
+    }))
+    expect(ctx.settingsOverlayOpen.value).toBe(false)
+  })
+
+  it('keeps settings open when the shortcut conflict retry is cancelled', async () => {
+    const saveSettingsValue = vi.fn(async () => { throw new Error('快捷键绑定无效') })
+    const confirmDisableShortcutConflicts = vi.fn(async () => false)
+    const ctx = createFlow({ saveSettingsValue, confirmDisableShortcutConflicts })
+    ctx.settingsOverlayOpen.value = true
+
+    await ctx.flow.saveSettingsAndClose(ctx.settings.value)
+
+    expect(saveSettingsValue).toHaveBeenCalledTimes(1)
+    expect(ctx.settingsOverlayOpen.value).toBe(true)
+  })
+
   it('saves dashboard layout by updating only dashboard settings fields', async () => {
     const ctx = createFlow()
 

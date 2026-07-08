@@ -603,6 +603,17 @@ describe('TerminalWorkspace server states', () => {
     expect(wrapper.find('.sidebar-restore-button').exists()).toBe(false)
   })
 
+  it('collapses the visible monitor sidebar from the sidebar header button', async () => {
+    const { wrapper } = mountWorkspace(state())
+
+    wrapper.getComponent({ name: 'CompactMonitorSidebar' }).vm.$emit('collapse')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('.workspace-shell').classes()).toContain('sidebar-collapsed')
+    expect(localStorage.getItem('serverpilot.monitorSidebarCollapsed')).toBe('true')
+    expect(wrapper.find('.sidebar-restore-button').exists()).toBe(true)
+  })
+
   it('does not collapse after dragging the sidebar splitter', async () => {
     const { wrapper } = mountWorkspace(state())
     const root = wrapper.get('.workspace-shell').element as HTMLElement

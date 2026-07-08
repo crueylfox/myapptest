@@ -34,6 +34,7 @@ const emit = defineEmits<{
   networkInterface: [mode: MonitorNetworkInterfaceMode, selectedNetworkInterface: string]
   networkDiagnostics: []
   networkInterfacesRefresh: []
+  collapse: []
 }>()
 const root = ref<HTMLElement>()
 const processSort = ref<ProcessSort>('memory')
@@ -322,11 +323,22 @@ onBeforeUnmount(() => {
   <aside ref="root" class="compact-monitor-sidebar" :class="`split-${splitMode}`" :style="paneStyle">
     <section v-if="splitMode !== 'monitorCollapsed'" class="compact-monitor" :class="{ stale }">
       <header class="compact-server-header">
-        <div>
-          <strong>{{ connection?.name ?? '未连接服务器' }}</strong>
+        <div class="compact-server-identity">
+          <span class="compact-server-title-row">
+            <strong>{{ connection?.name ?? '未连接服务器' }}</strong>
+            <span class="compact-state"><i class="status-dot" :class="status"></i>{{ statusLabel(status) }}</span>
+          </span>
           <small>{{ connection ? `${connection.username}@${connection.host}:${connection.port}` : '—' }}</small>
         </div>
-        <span class="compact-state"><i class="status-dot" :class="status"></i>{{ statusLabel(status) }}</span>
+        <button
+          type="button"
+          class="monitor-sidebar-toggle-button"
+          aria-label="隐藏监控侧栏"
+          title="隐藏监控侧栏"
+          @click="emit('collapse')"
+        >
+          <AppIcon name="gauge" :size="14" />
+        </button>
       </header>
       <p v-if="stale" class="last-update">非实时数据 · 最后更新 {{ lastUpdated }}</p>
       <section class="system-info">

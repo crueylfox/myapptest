@@ -1,15 +1,15 @@
 # AI_BRIEF - ServerPilot Current Handoff
 
-Updated: 2026-07-08
+Updated: 2026-07-09
 
 ## 0. Entry
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.49`.
-- Recommended delivery version: `0.5.0-beta.49` user-smoke-required.
-- Current round: beta49 splitter gutter removal package after beta48 precision hairline package and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.48` -> `0.5.0-beta.49` before repackaging.
+- Current VERSION: `0.5.0-beta.50`.
+- Recommended delivery version: `0.5.0-beta.50` user-smoke-required.
+- Current round: beta50 macOS sidebar/shortcut/terminal UI package after beta49 splitter gutter package and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.49` -> `0.5.0-beta.50` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -84,6 +84,7 @@ Updated: 2026-07-08
   - The global blue accent is deepened from `#3f7dff` to `#2f6df2` for dark/macOS-gray themes and to `#1f5fd8` for light mode.
   - This round remains UI surface CSS/tests only; no event, store, API, data-flow, polling, connection, filtering, schema, SSH/SFTP runtime, or KeyVault logic changed.
 - Beta49 removes visible splitter gutter bands: splitter hit areas are transparent, 0px layout tracks; visible hairlines are drawn by adjacent pane borders.
+- Beta50 adjusts the visible monitor-sidebar toggle placement, removes the top-right menu chevron, accepts macOS shortcut bindings with a disable-and-save conflict fallback, stabilizes the command-history floating button size, enlarges macOS terminal Profile number spinners, and forces Ctrl/Meta wheel to terminal font-size zoom without xterm font-weight drift.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `ServerPilot-macos-unsigned`.
@@ -104,16 +105,15 @@ Updated: 2026-07-08
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1707 tests, 89 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1715 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta49 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.49.exe`.
-- Beta49 Windows EXE SHA-256: `97905D53548F10BA18E92C756C86F51DE9B5CFBB1760B50D1B344673D7C4D5C6`.
+- Beta50 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.50.exe`.
+- Beta50 Windows EXE SHA-256: `9D3536776F7F38E4D5621950AB682ECC59AA6CBBEBA05745B75E8B6A48EA5A71`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions `Build macOS` run `28956304140`: success for commit `d3b4eceeb13f6bdea444004de1f881146630292e`.
-- Artifact: `ServerPilot-macos-unsigned`, size `31519136` bytes.
-- Artifact SHA-256: not calculated because the artifact was not downloaded in this run.
-- macOS artifact came from the GitHub Actions macOS runner.
+- GitHub Actions beta50 `Build macOS`: pending until the code commit is pushed.
+- Expected artifact: `ServerPilot-macos-unsigned`.
+- macOS artifact must come from the GitHub Actions macOS runner.
 
 ## 5. Next
 - For any future user-deliverable repackaging, bump the version first; do not create another same-version package.

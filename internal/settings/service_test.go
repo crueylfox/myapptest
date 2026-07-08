@@ -359,6 +359,28 @@ func TestServiceRejectsInvalidShortcutSettings(t *testing.T) {
 	}
 }
 
+func TestServiceAcceptsMacOSShortcutSettings(t *testing.T) {
+	ctx := context.Background()
+	value := domain.DefaultAppSettings()
+	value.Shortcuts.TerminalCopy = "meta+c"
+	value.Shortcuts.TerminalPaste = "meta+v"
+	value.Shortcuts.TerminalCompletion = "meta+k"
+	value.Shortcuts.OpenCommandHistory = "shift+meta+h"
+	value.Shortcuts.OpenCommandFavorites = "shift+meta+p"
+	store := &memoryStore{value: value}
+	service, err := New(ctx, store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if service.Get().Shortcuts.TerminalCopy != "meta+c" ||
+		service.Get().Shortcuts.TerminalPaste != "meta+v" ||
+		service.Get().Shortcuts.TerminalCompletion != "meta+k" ||
+		service.Get().Shortcuts.OpenCommandHistory != "shift+meta+h" ||
+		service.Get().Shortcuts.OpenCommandFavorites != "shift+meta+p" {
+		t.Fatalf("macOS shortcut settings were not preserved: %+v", service.Get().Shortcuts)
+	}
+}
+
 func TestServiceNormalizesLegacyCommandHistoryMaxEntries(t *testing.T) {
 	ctx := context.Background()
 	value := domain.DefaultAppSettings()

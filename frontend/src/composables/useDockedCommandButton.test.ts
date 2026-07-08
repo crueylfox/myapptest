@@ -115,4 +115,43 @@ describe('useDockedCommandButton', () => {
 
     expect(wrapper.get('button').attributes('style')).toContain('top: 176px')
   })
+
+  it('keeps the command button from collapsing into a circular control during transient resize', async () => {
+    const stageRect = { left: 0, top: 0, width: 640, height: 420 }
+    const TestHost = defineComponent({
+      setup() {
+        const stage = ref<HTMLElement>()
+        const dock = useDockedCommandButton(stage)
+        return { ...dock, stage }
+      },
+      template: '<div ref="stage"><button ref="buttonRef" :style="buttonStyle">命令</button></div>',
+    })
+    const wrapper = mount(TestHost)
+    vi.spyOn(wrapper.vm.stage as HTMLElement, 'getBoundingClientRect').mockReturnValue({
+      x: stageRect.left,
+      y: stageRect.top,
+      left: stageRect.left,
+      top: stageRect.top,
+      right: stageRect.left + stageRect.width,
+      bottom: stageRect.top + stageRect.height,
+      width: stageRect.width,
+      height: stageRect.height,
+      toJSON: () => undefined,
+    } as DOMRect)
+    vi.spyOn(wrapper.get('button').element, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      right: 18,
+      bottom: 18,
+      width: 18,
+      height: 18,
+      toJSON: () => undefined,
+    } as DOMRect)
+
+    await nextTick()
+
+    expect(wrapper.get('button').attributes('style')).toContain('top: 376px')
+  })
 })

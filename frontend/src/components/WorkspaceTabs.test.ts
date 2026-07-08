@@ -123,6 +123,7 @@ describe('WorkspaceTabs', () => {
     expect(topbarChildren.at(-1)).toBe(wrapper.get('.topbar-navigation').element)
     expect(wrapper.get('.topbar-action-separator').attributes('aria-hidden')).toBe('true')
     expect(wrapper.find('.topbar-navigation > button .app-icon').exists()).toBe(true)
+    expect(wrapper.find('.topbar-navigation-chevron').exists()).toBe(false)
     expect(wrapper.get('.workspace-tabs').find('.split-mode-button').exists()).toBe(false)
   })
 

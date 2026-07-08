@@ -129,7 +129,10 @@ export function useDockedCommandButton(stageRef: Ref<HTMLElement | undefined>, l
 
   function currentButtonSize(): CommandButtonSize {
     const rect = buttonRef.value?.getBoundingClientRect()
-    return { width: rect?.width || 64, height: rect?.height || 32 }
+    return {
+      width: Math.max(rect?.width || 64, 54),
+      height: Math.max(rect?.height || 32, 32),
+    }
   }
 
   const buttonStyle = computed<CSSProperties>(() => {

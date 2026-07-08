@@ -88,6 +88,8 @@ describe('terminal profile ANSI colors', () => {
     expect(options.theme?.brightYellow).toBe('#ffc65f')
     expect(options.theme?.brightWhite).toBe('#f0f3f6')
     expect(options.minimumContrastRatio).toBeLessThanOrEqual(1.2)
+    expect(options.fontWeight).toBe('normal')
+    expect(options.fontWeightBold).toBe('bold')
     expect(options.theme?.cursor).toBe('#dce6f2')
     expect(options.theme?.background).not.toBe('#07111f')
   })

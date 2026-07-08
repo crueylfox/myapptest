@@ -23,6 +23,9 @@ import MiniSparkline from './MiniSparkline.vue'
 const props = defineProps<{
   session: LocalTerminalState | null
 }>()
+const emit = defineEmits<{
+  collapse: []
+}>()
 
 const snapshot = ref<LocalResourceSnapshot | null>(null)
 const selectedInterfaceName = ref('')
@@ -264,11 +267,22 @@ onBeforeUnmount(() => {
   <aside class="local-monitor-sidebar">
     <section class="compact-monitor local-monitor-card">
       <header class="compact-server-header">
-        <div>
-          <strong>{{ snapshot?.hostname || '本机' }}</strong>
+        <div class="compact-server-identity">
+          <span class="compact-server-title-row">
+            <strong>{{ snapshot?.hostname || '本机' }}</strong>
+            <span class="compact-state"><i class="status-dot online"></i>本地</span>
+          </span>
           <small>{{ props.session?.shell || '本地终端' }} · {{ snapshot?.platform || '本机' }}</small>
         </div>
-        <span class="compact-state"><i class="status-dot online"></i>本地</span>
+        <button
+          type="button"
+          class="monitor-sidebar-toggle-button"
+          aria-label="隐藏监控侧栏"
+          title="隐藏监控侧栏"
+          @click="emit('collapse')"
+        >
+          <AppIcon name="gauge" :size="14" />
+        </button>
       </header>
 
       <section class="system-info local-system-info">

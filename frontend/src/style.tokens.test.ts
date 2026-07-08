@@ -1902,11 +1902,27 @@ describe('theme and overlay tokens', () => {
 
     expect(commandStyles).toContain('right: 18px')
     expect(commandStyles).toContain('bottom: 14px')
+    expect(commandStyles).toContain('min-width: 54px')
+    expect(commandStyles).toContain('height: 32px')
+    expect(commandStyles).toContain('white-space: nowrap')
     expect(scrollStyles).toContain('right: 18px')
     expect(scrollStyles).toContain('bottom: 56px')
     expect(scrollStyles).toContain('z-index: 5')
     expect(terminalHostStyles).not.toContain('padding:')
     expect(xtermStyles).toContain('padding: 0')
+  })
+
+  it('keeps visible monitor-sidebar toggle and macOS profile number controls usable', () => {
+    const toggleStyles = block('.monitor-sidebar-toggle-button')
+    const macNumberInput = block('.app-shell.platform-macos .terminal-profile-number-input')
+    const macSpinButton = block('.app-shell.platform-macos .terminal-profile-number-input::-webkit-inner-spin-button,\n.app-shell.platform-macos .terminal-profile-number-input::-webkit-outer-spin-button')
+
+    expect(toggleStyles).toContain('width: 26px')
+    expect(toggleStyles).toContain('height: 26px')
+    expect(macNumberInput).toContain('min-height: 38px')
+    expect(macNumberInput).toContain('padding-right: 18px')
+    expect(macSpinButton).toContain('width: 18px')
+    expect(macSpinButton).toContain('min-height: 30px')
   })
 
   it('keeps collapsed monitor restore splitters visible as a real row', () => {

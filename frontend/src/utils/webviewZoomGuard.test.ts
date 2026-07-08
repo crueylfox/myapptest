@@ -49,6 +49,20 @@ describe('webview zoom guard', () => {
     unregisterTerminalWheelZoomHandler('ssh-no-hit')
   })
 
+  it('stops immediate wheel propagation so WebView does not convert Ctrl+wheel into font weight changes', () => {
+    const event = new WheelEvent('wheel', {
+      bubbles: true,
+      cancelable: true,
+      ctrlKey: true,
+      deltaY: -100,
+    })
+    const stopImmediatePropagation = vi.spyOn(event, 'stopImmediatePropagation')
+
+    preventWebviewWheelZoom(event)
+
+    expect(stopImmediatePropagation).toHaveBeenCalled()
+  })
+
   it('prevents browser zoom on terminal surfaces and dispatches terminal font zoom', () => {
     const terminal = document.createElement('div')
     terminal.setAttribute('data-terminal-surface', 'true')

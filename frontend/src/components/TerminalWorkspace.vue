@@ -824,10 +824,12 @@ onBeforeUnmount(() => {
       @network-interface="(mode, selected) => emit('networkInterface', mode, selected)"
       @network-diagnostics="emit('networkDiagnostics')"
       @network-interfaces-refresh="emit('networkInterfacesRefresh')"
+      @collapse="setSidebarCollapsedFromSplitter(true)"
     />
     <LocalMonitorSidebar
       v-else-if="!collapsed && localTerminalActive"
       :session="localTerminalStore.activeSession"
+      @collapse="setSidebarCollapsedFromSplitter(true)"
     />
     <div
       class="vertical-splitter"

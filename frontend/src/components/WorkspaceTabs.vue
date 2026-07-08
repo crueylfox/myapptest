@@ -797,7 +797,6 @@ onBeforeUnmount(() => {
         <span class="topbar-action-inner">
           <AppIcon name="menu" :size="16" />
           <span>菜单</span>
-          <span class="topbar-navigation-chevron">▾</span>
         </span>
       </button>
       <AppPopover v-if="navigationOpen" :viewport="false" class="topbar-menu">

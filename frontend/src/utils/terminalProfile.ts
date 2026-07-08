@@ -174,6 +174,8 @@ export function terminalProfileToXtermOptions(profile: TerminalProfile, platform
     scrollback: profile.scrollback,
     fontFamily,
     fontSize: profile.fontSize,
+    fontWeight: 'normal',
+    fontWeightBold: 'bold',
     lineHeight: profile.lineHeight,
     letterSpacing: profile.letterSpacing,
     minimumContrastRatio: 1,
@@ -214,6 +216,8 @@ export function applyTerminalProfileOptions(
   target.scrollback = next.scrollback
   target.fontFamily = next.fontFamily
   target.fontSize = next.fontSize
+  target.fontWeight = next.fontWeight
+  target.fontWeightBold = next.fontWeightBold
   target.lineHeight = next.lineHeight
   target.letterSpacing = next.letterSpacing
   target.theme = { ...(next.theme ?? {}) }

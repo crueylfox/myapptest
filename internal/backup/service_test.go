@@ -1174,6 +1174,15 @@ func TestInvalidVersionAndPasswordValidation(t *testing.T) {
 	if err := validateSettings(invalidSettings); err == nil {
 		t.Fatal("invalid alert settings were accepted")
 	}
+	macShortcutSettings := domain.DefaultAppSettings()
+	macShortcutSettings.Shortcuts.TerminalCopy = "meta+c"
+	macShortcutSettings.Shortcuts.TerminalPaste = "meta+v"
+	macShortcutSettings.Shortcuts.TerminalCompletion = "meta+k"
+	macShortcutSettings.Shortcuts.OpenCommandHistory = "shift+meta+h"
+	macShortcutSettings.Shortcuts.OpenCommandFavorites = "shift+meta+p"
+	if err := validateSettings(macShortcutSettings); err != nil {
+		t.Fatalf("valid macOS shortcut settings were rejected: %v", err)
+	}
 }
 
 func TestBackupPasswordPreservesLeadingAndTrailingSpaces(t *testing.T) {

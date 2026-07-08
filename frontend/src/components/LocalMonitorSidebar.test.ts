@@ -115,6 +115,17 @@ describe('LocalMonitorSidebar', () => {
     expect(wrapper.get('[data-testid="local-process-card"]').text()).toContain('fixture.exe')
   })
 
+  it('shows the local state beside the host title and emits collapse from the visible header button', async () => {
+    const wrapper = mountSidebar(snapshot(), session({ sessionId: 'local-collapse' }))
+    await flush()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.get('.compact-server-title-row .compact-state').text()).toContain('本地')
+    await wrapper.get('.monitor-sidebar-toggle-button').trigger('click')
+
+    expect(wrapper.emitted('collapse')).toHaveLength(1)
+  })
+
   it('renders Windows disks with Linux mount row structure and free over total capacity', async () => {
     const wrapper = mountSidebar(snapshot({
       disks: [

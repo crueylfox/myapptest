@@ -9,6 +9,7 @@ export interface SettingsPanelFlowOptions {
   settings: Ref<AppSettings>
   settingsOverlayOpen: Ref<boolean>
   saveSettingsValue: (settings: AppSettings) => Promise<AppSettings>
+  confirmDisableShortcutConflicts?: (message: string) => Promise<boolean>
   configureAlerts: (settings: AppSettings['alerts']) => void
   reloadAlertHistory: () => Promise<void>
   setDefaultTerminalProfileId: (id: string) => void
@@ -57,18 +58,50 @@ export function useSettingsPanelFlow(options: SettingsPanelFlowOptions) {
     }
   }
 
+  function disableKeyboardShortcutBindings(value: AppSettings): AppSettings {
+    return normalizeAppSettings({
+      ...value,
+      shortcutSettings: {
+        ...value.shortcutSettings,
+        terminalCopy: 'disabled',
+        terminalPaste: 'disabled',
+        terminalCompletion: 'disabled',
+        openCommandHistory: 'disabled',
+        openCommandFavorites: 'disabled',
+      },
+    })
+  }
+
+  function isShortcutBindingSaveError(reason: unknown) {
+    const message = options.errorMessage(reason, '')
+    return /快捷键.*(无效|绑定)|shortcut.*(invalid|binding)/i.test(message)
+  }
+
+  async function persistSettings(next: AppSettings) {
+    options.settings.value = normalizeAppSettings(await options.saveSettingsValue(next))
+    options.configureAlerts(options.settings.value.alerts)
+    await options.reloadAlertHistory()
+    options.setDefaultTerminalProfileId(options.settings.value.defaultTerminalProfileId)
+    options.applyTheme(options.settings.value.themeMode)
+    options.applyUIFontSize(options.settings.value.uiFontSize)
+    options.showToast('设置已保存', 'success')
+  }
+
   async function saveSettings(value: AppSettings) {
     const next = normalizeAppSettings(value)
     if (next.hostKeyPolicy !== 'strict') next.hostKeyPolicy = 'auto_update'
     let saved = false
     await options.run(async () => {
-      options.settings.value = normalizeAppSettings(await options.saveSettingsValue(next))
-      options.configureAlerts(options.settings.value.alerts)
-      await options.reloadAlertHistory()
-      options.setDefaultTerminalProfileId(options.settings.value.defaultTerminalProfileId)
-      options.applyTheme(options.settings.value.themeMode)
-      options.applyUIFontSize(options.settings.value.uiFontSize)
-      options.showToast('设置已保存', 'success')
+      try {
+        await persistSettings(next)
+      } catch (reason) {
+        if (!options.confirmDisableShortcutConflicts || !isShortcutBindingSaveError(reason)) throw reason
+        const confirmed = await options.confirmDisableShortcutConflicts(
+          '检测到快捷键绑定无效，或已被系统/其他软件占用。是否禁用所有键盘快捷键并保存？保存后可回到设置重新启用可用快捷键。',
+        )
+        if (!confirmed) return
+        await persistSettings(disableKeyboardShortcutBindings(next))
+      }
       saved = true
     }, '保存连接设置失败')
     return saved

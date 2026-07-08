@@ -39,6 +39,7 @@ export function preventWebviewWheelZoom(event: WheelEvent) {
   event.preventDefault()
   zoomTerminalSurfaceFromWheel(event)
   event.stopPropagation()
+  event.stopImmediatePropagation?.()
 }
 
 export function isWebviewZoomWheelGesture(event: WheelEvent) {
@@ -89,4 +90,5 @@ export function preventWebviewKeyboardZoom(event: KeyboardEvent) {
   if (!shouldPreventWebviewKeyboardZoom(event)) return
   event.preventDefault()
   event.stopPropagation()
+  event.stopImmediatePropagation?.()
 }

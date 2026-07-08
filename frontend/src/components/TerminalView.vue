@@ -236,6 +236,7 @@ function consumeTerminalWheelZoom(event: WheelEvent) {
   if (!isWebviewZoomWheelGesture(event)) return false
   event.preventDefault()
   event.stopPropagation()
+  event.stopImmediatePropagation?.()
   applyWheelZoomDelta(event.deltaY)
   return true
 }
