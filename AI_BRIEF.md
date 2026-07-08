@@ -6,10 +6,10 @@ Updated: 2026-07-08
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.42`.
-- Recommended delivery version: `0.5.0-beta.42` user-smoke-required.
-- Current round: beta42 canonical surface token package after beta41 material token package and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.41` -> `0.5.0-beta.42` before repackaging.
+- Current VERSION: `0.5.0-beta.43`.
+- Recommended delivery version: `0.5.0-beta.43` user-smoke-required.
+- Current round: beta43 user-smoke package after beta42 canonical surface token package and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.42` -> `0.5.0-beta.43` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -103,17 +103,14 @@ Updated: 2026-07-08
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 183 Vitest files / 1682 tests, 89 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1707 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta42 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.42.exe`.
-- Beta42 Windows EXE SHA-256: `28D7EA1B54540FC31AAE4D2FB0DC7E0A4E33E374A671BE91A098C7973CACAC40`.
+- Beta43 Windows EXE copied to `C:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.43.exe`.
+- Beta43 Windows EXE SHA-256: `AB521C5CBC375055E39066B8D89E6CD8DD1631F0D2A0F76436A5839B509442F3`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions `Build macOS` run `28886603359`: success for commit `368f5743be5c1501d9b308654b9604e56dbe6b18`.
-- Artifact: `ServerPilot-macos-unsigned`; API digest/artifact zip SHA-256: `31BDE84F394DD86B70C97AB3DB6B8C1EB4E96233759A55ACF16454FA30D5CAFC`.
-- Desktop artifact zip: `D:\Users\Administrator\Desktop\ServerPilot-macos-unsigned.zip`.
-- Artifact contents: `ServerPilot-macos-universal-unsigned.zip` SHA-256 `05679AE6BE53079898FA24E190AB8B750FE273BA4A8CA031304C9A710E6C924B`; `ServerPilot-macos-universal-unsigned.dmg` SHA-256 `BC99A0F8EF658163FB07DFC95DADA1CC0F6F53E60630D8C3F78284F92BCF8C22`.
-- macOS artifact came from the GitHub Actions macOS runner.
+- Beta43 GitHub Actions macOS package: pending after push.
+- Expected macOS artifact: `ServerPilot-macos-unsigned`, produced by the GitHub Actions macOS runner.
 
 ## 5. Next
 - For any future user-deliverable repackaging, bump the version first; do not create another same-version package.
