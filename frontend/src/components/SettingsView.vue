@@ -1354,7 +1354,7 @@ function errorMessage(reason: unknown, fallback: string) {
       <AlertNotificationSettingsSection
         :alerts="form.alerts"
         :native-notification-status="props.nativeNotificationStatus"
-        :platform="platform"
+        :native-notification-capability="platformCapabilities.nativeNotifications"
         @update-alerts-enabled="form.alerts.enabled = $event"
         @update-notify-recovery="form.alerts.notifyRecovery = $event"
         @update-native-notifications-enabled="form.alerts.nativeNotifications.enabled = $event"

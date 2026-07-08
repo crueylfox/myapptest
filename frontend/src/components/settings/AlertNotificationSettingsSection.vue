@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AlertSettings, NativeNotificationStatus } from '../../types'
+import type { NativeNotificationPlatformCapability } from '../../utils/platformCapabilities'
 
 const props = defineProps<{
   alerts: AlertSettings
   nativeNotificationStatus: NativeNotificationStatus
-  platform?: string
+  nativeNotificationCapability: NativeNotificationPlatformCapability
 }>()
 
 const emit = defineEmits<{
@@ -16,11 +17,11 @@ const emit = defineEmits<{
 }>()
 
 const nativeNotificationStatusText = computed(() => {
-  if (props.platform === 'darwin') return 'macOS 系统通知暂不可用。'
-  if (!props.alerts.nativeNotifications.enabled) return '默认关闭，开启后会发送已有告警事件到系统原生通知。'
+  if (!props.nativeNotificationCapability.supported) return props.nativeNotificationCapability.unavailableStatus
+  if (!props.alerts.nativeNotifications.enabled) return props.nativeNotificationCapability.defaultOffStatus
   return props.nativeNotificationStatus.message
 })
-const nativeNotificationSupported = computed(() => props.platform !== 'darwin')
+const nativeNotificationSupported = computed(() => props.nativeNotificationCapability.supported)
 const nativeNotificationChecked = computed(() => nativeNotificationSupported.value && props.alerts.nativeNotifications.enabled)
 
 function checkboxValue(event: Event) {

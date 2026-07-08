@@ -7,6 +7,7 @@ import {
   type NativeAlertNotification,
   type NativeNotificationPayload,
 } from '../utils/nativeAlertNotifications'
+import { buildNativeNotificationPlatformCapability } from '../utils/platformCapabilities'
 
 type ToastType = 'success' | 'error' | 'info'
 type NotificationSendOptions = NativeNotificationPayload
@@ -87,9 +88,9 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
       await options.runtime.send({
         id: 'serverpilot-native-notification-test',
         title: 'ServerPilot 测试通知',
-        body: nativeNotificationEnabledBody(platformName()),
+        body: nativeNotificationCapability().enabledBody,
       })
-      options.notify(nativeNotificationSentMessage(platformName()), 'success')
+      options.notify(nativeNotificationCapability().sentMessage, 'success')
       return { ok: true }
     } catch {
       notifyFailureOnce()
@@ -106,11 +107,12 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
   }
 
   async function initializeRuntime() {
-    if (platformName() === 'darwin') {
+    const capability = nativeNotificationCapability()
+    if (!capability.supported) {
       status.value = {
         initialized: true,
         available: false,
-        message: 'macOS 系统通知暂不可用。',
+        message: capability.unavailableStatus,
       }
       return false
     }
@@ -122,14 +124,14 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
       status.value = {
         initialized: true,
         available: ready,
-        message: ready ? nativeNotificationAvailableMessage(platformName()) : nativeNotificationUnavailableMessage(platformName()),
+        message: ready ? capability.availableStatus : capability.unavailableStatus,
       }
       return ready
     } catch {
       status.value = {
         initialized: true,
         available: false,
-        message: nativeNotificationInitFailedMessage(platformName()),
+        message: capability.initFailedStatus,
       }
       return false
     }
@@ -138,17 +140,21 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
   function notifyUnavailableOnce() {
     if (unavailableNotified) return
     unavailableNotified = true
-    options.notify(nativeNotificationUnavailableMessage(platformName()).replace(/。$/, ''), 'info')
+    options.notify(stripTrailingChinesePeriod(nativeNotificationCapability().unavailableStatus), 'info')
   }
 
   function notifyFailureOnce() {
     if (failureNotified) return
     failureNotified = true
-    options.notify(nativeNotificationFailedMessage(platformName()), 'error')
+    options.notify(nativeNotificationCapability().failedMessage, 'error')
   }
 
-  function platformName() {
-    return options.platform?.value ?? 'windows'
+  function nativeNotificationCapability() {
+    return buildNativeNotificationPlatformCapability(options.platform?.value ?? 'windows')
+  }
+
+  function stripTrailingChinesePeriod(message: string) {
+    return message.endsWith('\u3002') ? message.slice(0, -1) : message
   }
 
   return {
@@ -159,28 +165,4 @@ export function useNativeAlertNotifications(options: UseNativeAlertNotifications
     handleAlertNotifications,
     sendTestNotification,
   }
-}
-
-function nativeNotificationAvailableMessage(platform: string) {
-  return platform === 'darwin' ? 'macOS 系统通知可用。' : 'Windows 原生通知可用。'
-}
-
-function nativeNotificationUnavailableMessage(platform: string) {
-  return platform === 'darwin' ? 'macOS 系统通知暂不可用。' : 'Windows 原生通知不可用。'
-}
-
-function nativeNotificationInitFailedMessage(platform: string) {
-  return platform === 'darwin' ? 'macOS 系统通知初始化失败。' : 'Windows 原生通知初始化失败。'
-}
-
-function nativeNotificationEnabledBody(platform: string) {
-  return platform === 'darwin' ? 'macOS 系统通知已启用。' : 'Windows 原生通知已启用。'
-}
-
-function nativeNotificationSentMessage(platform: string) {
-  return platform === 'darwin' ? 'macOS 系统通知测试已发送' : 'Windows 原生通知测试已发送'
-}
-
-function nativeNotificationFailedMessage(platform: string) {
-  return platform === 'darwin' ? 'macOS 系统通知发送失败' : 'Windows 原生通知发送失败'
 }
