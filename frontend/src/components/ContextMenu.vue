@@ -2,6 +2,7 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { ContextMenuItem } from '../types'
 import { getViewportPopoverPosition } from '../utils/viewportPopover'
+import AppPopover from './primitives/AppPopover.vue'
 
 const props = defineProps<{
   x: number
@@ -10,15 +11,19 @@ const props = defineProps<{
   interactionScope?: string
 }>()
 const emit = defineEmits<{ close: []; select: [id: string] }>()
-const menu = ref<HTMLDivElement>()
+const menu = ref<{ element?: HTMLElement | null } | null>(null)
 const menuStyle = ref<Record<string, string>>({
   left: `${props.x}px`,
   top: `${props.y}px`,
 })
 
+function menuElement() {
+  return menu.value?.element ?? null
+}
+
 async function updatePosition() {
   await nextTick()
-  const bounds = menu.value?.getBoundingClientRect()
+  const bounds = menuElement()?.getBoundingClientRect()
   const width = bounds && bounds.width > 0 ? bounds.width : 190
   const height = bounds && bounds.height > 0 ? bounds.height : 260
   const position = getViewportPopoverPosition({
@@ -49,7 +54,7 @@ async function updatePosition() {
 }
 
 function closeOnPointer(event: PointerEvent) {
-  if (!menu.value?.contains(event.target as Node)) emit('close')
+  if (!menuElement()?.contains(event.target as Node)) emit('close')
 }
 
 function closeOnKey(event: KeyboardEvent) {
@@ -69,7 +74,7 @@ onMounted(async () => {
   window.addEventListener('resize', updatePosition)
   document.addEventListener('scroll', updatePosition, true)
   await updatePosition()
-  menu.value?.focus()
+  menuElement()?.focus()
 })
 
 watch(() => [props.x, props.y, props.items.length] as const, updatePosition, { flush: 'post' })
@@ -89,9 +94,9 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
-    <div
+    <AppPopover
       ref="menu"
-      class="viewport-popover viewport-popover-menu viewport-popover-scroll context-menu"
+      class="context-menu"
       role="menu"
       tabindex="-1"
       :data-interaction-scope="interactionScope || undefined"
@@ -111,6 +116,6 @@ onBeforeUnmount(() => {
           {{ item.label }}
         </button>
       </template>
-    </div>
+    </AppPopover>
   </Teleport>
 </template>

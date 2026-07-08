@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type Component } from 'vue'
+import { computed, ref, type Component } from 'vue'
 
 type SurfaceVariant = 'modal' | 'panel' | 'card' | 'toolbar' | 'control' | 'popover'
 type SurfaceMaterial = 'standard' | 'liquid'
@@ -31,10 +31,15 @@ const materialClass = computed(() => {
       return ''
   }
 })
+
+const element = ref<HTMLElement | null>(null)
+
+defineExpose({ element })
 </script>
 
 <template>
   <component
+    ref="element"
     :is="as"
     class="app-surface"
     :class="[`app-surface--${variant}`, materialClass, { 'app-surface--liquid': material === 'liquid' }]"

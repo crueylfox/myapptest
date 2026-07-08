@@ -6,6 +6,7 @@ import { useTerminalStore } from '../stores/terminal'
 import type { ContextMenuItem, LocalTerminalState, ServerWorkspace, TerminalSessionInfo } from '../types'
 import ContextMenu from './ContextMenu.vue'
 import AppIcon from './icons/AppIcon.vue'
+import AppPopover from './primitives/AppPopover.vue'
 
 const TAB_DRAG_THRESHOLD = 6
 type SplitMode = 'single' | 'vertical' | 'horizontal' | 'quad'
@@ -799,7 +800,7 @@ onBeforeUnmount(() => {
           <span class="topbar-navigation-chevron">▾</span>
         </span>
       </button>
-      <div v-if="navigationOpen" class="topbar-menu">
+      <AppPopover v-if="navigationOpen" :viewport="false" class="topbar-menu">
         <button class="topbar-menu-item active" @click="navigate('terminals')"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="terminal" :size="18" /><span class="topbar-menu-label">SSH 工作区</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
         <button class="topbar-menu-item" @click="openTunnels"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="route" :size="18" /><span class="topbar-menu-label">端口转发</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
         <button class="topbar-menu-item" @click="openDocker"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="box" :size="18" /><span class="topbar-menu-label">容器管理</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
@@ -813,7 +814,7 @@ onBeforeUnmount(() => {
         </button>
         <button class="topbar-menu-item" @click="openMonitorPanel"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="gauge" :size="18" /><span class="topbar-menu-label">监控面板</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
         <button class="topbar-menu-item" @click="navigate('settings')"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="gear" :size="18" /><span class="topbar-menu-label">设置</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
-      </div>
+      </AppPopover>
     </div>
     <ContextMenu
       v-if="tabMenu"

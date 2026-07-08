@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest'
 const { readFileSync } = await import('node:fs') as { readFileSync: (path: string, encoding: string) => string }
 
 import AppBackdrop from './AppBackdrop.vue'
+import AppPopover from './AppPopover.vue'
 import AppSurface from './AppSurface.vue'
 
 describe('UI surface primitives', () => {
@@ -107,6 +108,42 @@ describe('UI surface primitives', () => {
     expect(pointerCount).toBe(1)
   })
 
+  it('renders viewport popovers through the canonical surface primitive while preserving attrs and events', async () => {
+    let contextMenuCount = 0
+    const wrapper = mount(AppPopover, {
+      attrs: {
+        class: 'context-menu',
+        role: 'menu',
+        tabindex: '-1',
+        style: 'left: 12px; top: 18px;',
+        onContextmenu: (event: Event) => {
+          event.preventDefault()
+          contextMenuCount += 1
+        },
+      },
+      slots: {
+        default: '<button type="button">Open</button>',
+      },
+    })
+
+    expect(wrapper.classes()).toEqual(expect.arrayContaining([
+      'app-popover',
+      'app-surface',
+      'app-surface--popover',
+      'app-material-card',
+      'viewport-popover',
+      'viewport-popover-menu',
+      'viewport-popover-scroll',
+      'context-menu',
+    ]))
+    expect(wrapper.attributes('role')).toBe('menu')
+    expect(wrapper.attributes('tabindex')).toBe('-1')
+    expect(wrapper.find('button').text()).toBe('Open')
+
+    await wrapper.trigger('contextmenu')
+    expect(contextMenuCount).toBe(1)
+  })
+
   it('migrates AppDialogHost to primitives without removing existing public selector classes', () => {
     const source = readFileSync('src/components/AppDialogHost.vue', 'utf8')
     expect(source).toContain("import AppBackdrop from './primitives/AppBackdrop.vue'")
@@ -124,5 +161,23 @@ describe('UI surface primitives', () => {
     expect(source).toContain('kind="popover"')
     expect(source).toContain('class="settings-overlay-backdrop"')
     expect(source).not.toContain('class="settings-overlay-backdrop app-material-backdrop"')
+  })
+
+  it('migrates ContextMenu to AppPopover without changing its public selector classes', () => {
+    const source = readFileSync('src/components/ContextMenu.vue', 'utf8')
+    expect(source).toContain("import AppPopover from './primitives/AppPopover.vue'")
+    expect(source).toContain('<AppPopover')
+    expect(source).toContain('class="context-menu"')
+    expect(source).not.toContain('class="viewport-popover viewport-popover-menu viewport-popover-scroll context-menu"')
+  })
+
+  it('migrates the topbar navigation menu to AppPopover without changing menu item markup', () => {
+    const source = readFileSync('src/components/WorkspaceTabs.vue', 'utf8')
+    expect(source).toContain("import AppPopover from './primitives/AppPopover.vue'")
+    expect(source).toContain('<AppPopover v-if="navigationOpen" :viewport="false" class="topbar-menu">')
+    expect(source).toContain('</AppPopover>')
+    expect(source).not.toContain('<div v-if="navigationOpen" class="topbar-menu">')
+    expect(source).toContain('class="topbar-menu-item active"')
+    expect(source).toContain('class="topbar-menu-item topbar-menu-badge-row"')
   })
 })
