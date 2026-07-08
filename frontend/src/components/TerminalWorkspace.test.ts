@@ -522,7 +522,7 @@ describe('TerminalWorkspace server states', () => {
     expect(shell.attributes('style')).toContain('300px')
     expect(shell.element.children[0].tagName.toLowerCase()).toContain('compact')
     const right = wrapper.find('.right-workspace')
-    expect(right.attributes('style')).toContain('minmax(180px, 1fr) 10px 0 28px')
+    expect(right.attributes('style')).toContain('minmax(180px, 1fr) 0 0 28px')
     expect(right.find('.terminal-stage').exists()).toBe(true)
     expect(right.find('.terminal-stage .terminal-command-button').exists()).toBe(true)
     expect(right.find('.terminal-statusbar .terminal-command-button').exists()).toBe(false)
@@ -556,7 +556,7 @@ describe('TerminalWorkspace server states', () => {
 
     await dragSplitter(wrapper, '.horizontal-splitter', { x: 500, y: 670 }, { x: 500, y: 420 })
     expect(wrapper.find('.sftp-panel').classes()).toContain('expanded')
-    expect(wrapper.find('.right-workspace').attributes('style')).toContain('10px 252px 28px')
+    expect(wrapper.find('.right-workspace').attributes('style')).toContain('0 252px 28px')
     expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('true')
     expect(localStorage.getItem('serverpilot.sftpHeight')).toBe('252')
 

@@ -20,13 +20,13 @@ describe('workspacePaneLayoutModel', () => {
       gridTemplateColumns: '0 1px minmax(0, 1fr)',
     })
     expect(buildWorkspaceShellStyle({ collapsed: false, sidebarWidth: 312 })).toEqual({
-      gridTemplateColumns: '312px 10px minmax(0, 1fr)',
+      gridTemplateColumns: '312px 0 minmax(0, 1fr)',
     })
     expect(buildWorkspaceRightStyle({ sftpExpanded: true, sftpHeight: 244 })).toEqual({
-      gridTemplateRows: 'minmax(180px, 1fr) 10px 244px 28px',
+      gridTemplateRows: 'minmax(180px, 1fr) 0 244px 28px',
     })
     expect(buildWorkspaceRightStyle({ sftpExpanded: false, sftpHeight: 244 })).toEqual({
-      gridTemplateRows: 'minmax(180px, 1fr) 10px 0 28px',
+      gridTemplateRows: 'minmax(180px, 1fr) 0 0 28px',
     })
   })
 

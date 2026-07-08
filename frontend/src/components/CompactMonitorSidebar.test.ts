@@ -424,7 +424,7 @@ describe('CompactMonitorSidebar', () => {
     window.dispatchEvent(new MouseEvent('pointermove', { clientY: 60 }))
     await wrapper.vm.$nextTick()
     expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('monitorCollapsed')
-    expect(wrapper.attributes('style')).toContain('10px minmax(0, 1fr)')
+    expect(wrapper.attributes('style')).toContain('0 minmax(0, 1fr)')
     expect(wrapper.find('.compact-monitor').exists()).toBe(false)
     expect(wrapper.classes()).toContain('split-monitorCollapsed')
 
@@ -455,7 +455,7 @@ describe('CompactMonitorSidebar', () => {
     await wrapper.vm.$nextTick()
     expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('mountsCollapsed')
     expect(localStorage.getItem('serverpilot.monitorPaneHeight')).toBe('390')
-    expect(wrapper.attributes('style')).toContain('minmax(0, 1fr) 10px')
+    expect(wrapper.attributes('style')).toContain('minmax(0, 1fr) 0')
     expect(wrapper.find('.mount-panel').exists()).toBe(false)
     expect(wrapper.classes()).toContain('split-mountsCollapsed')
   })

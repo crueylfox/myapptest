@@ -6,10 +6,10 @@ Updated: 2026-07-08
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.44`.
-- Recommended delivery version: `0.5.0-beta.44` user-smoke-required.
-- Current round: beta44 splitter auto-hide smoke package after beta43 user-smoke package and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.43` -> `0.5.0-beta.44` before repackaging.
+- Current VERSION: `0.5.0-beta.49`.
+- Recommended delivery version: `0.5.0-beta.49` user-smoke-required.
+- Current round: beta49 splitter gutter removal package after beta48 precision hairline package and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.48` -> `0.5.0-beta.49` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -83,6 +83,7 @@ Updated: 2026-07-08
   - Docker, Tunnel, Process, and Service manager inner panel CSS now consumes canonical `--surface-*` and `--state-*` tokens directly instead of legacy `--material-*` compatibility aliases.
   - The global blue accent is deepened from `#3f7dff` to `#2f6df2` for dark/macOS-gray themes and to `#1f5fd8` for light mode.
   - This round remains UI surface CSS/tests only; no event, store, API, data-flow, polling, connection, filtering, schema, SSH/SFTP runtime, or KeyVault logic changed.
+- Beta49 removes visible splitter gutter bands: splitter hit areas are transparent, 0px layout tracks; visible hairlines are drawn by adjacent pane borders.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `ServerPilot-macos-unsigned`.
@@ -103,17 +104,13 @@ Updated: 2026-07-08
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1705 tests, 89 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1707 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta44 Windows EXE copied to `C:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.44.exe`.
-- Beta44 Windows EXE SHA-256: `8619453B00AFCDEAF31AC258E8F818797650BC64023A76B3832206C97B3CDFE0`.
+- Beta49 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.49.exe`.
+- Beta49 Windows EXE SHA-256: `97905D53548F10BA18E92C756C86F51DE9B5CFBB1760B50D1B344673D7C4D5C6`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions `Build macOS` run `28921515122`: success for commit `14ce7e3ad86f6b4c20ed38c7a51f37645f82ee48`.
-- Artifact: `ServerPilot-macos-unsigned`; desktop artifact zip `D:\Users\Administrator\Desktop\ServerPilot-macos-unsigned.zip`.
-- Artifact wrapper zip SHA-256: `3718E71399B7AF1EC4DBA56ACC0B5A31F607E0697AE1DE35F6E6A96FC4F4F638`.
-- Artifact contents: `ServerPilot-macos-universal-unsigned.zip` SHA-256 `7EB290569C9B20B9C20DDB1D46020888B14FCD3C2B5996090A6C7FA6012CD4F8`; `ServerPilot-macos-universal-unsigned.dmg` SHA-256 `2859AAC9509368307FFE53CB6B770E8BDA42AD73FEF8C8C64AB42E7219C2A8AF`.
-- macOS artifact came from the GitHub Actions macOS runner.
+- GitHub Actions `Build macOS`: pending for the beta49 splitter gutter package after push.
 
 ## 5. Next
 - For any future user-deliverable repackaging, bump the version first; do not create another same-version package.

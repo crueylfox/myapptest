@@ -32,15 +32,15 @@ export function buildWorkspaceShellStyle(input: MonitorSidebarStyleInput) {
   return {
     gridTemplateColumns: input.collapsed
       ? '0 1px minmax(0, 1fr)'
-      : `${input.sidebarWidth}px 10px minmax(0, 1fr)`,
+      : `${input.sidebarWidth}px 0 minmax(0, 1fr)`,
   }
 }
 
 export function buildWorkspaceRightStyle(input: WorkspaceRightStyleInput) {
   return {
     gridTemplateRows: input.sftpExpanded
-      ? `minmax(180px, 1fr) 10px ${input.sftpHeight}px 28px`
-      : 'minmax(180px, 1fr) 10px 0 28px',
+      ? `minmax(180px, 1fr) 0 ${input.sftpHeight}px 28px`
+      : 'minmax(180px, 1fr) 0 0 28px',
   }
 }
 

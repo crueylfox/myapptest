@@ -18,6 +18,13 @@ function block(selector: string) {
   return match[1]
 }
 
+function exactBlock(selector: string) {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const match = css.match(new RegExp(`(?:^|\\n)${escaped}\\s*\\{([\\s\\S]*?)\\}`))
+  if (!match) throw new Error(`Missing exact CSS block: ${selector}`)
+  return match[1]
+}
+
 function declaration(cssBlock: string, property: string) {
   const escaped = property.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const match = cssBlock.match(new RegExp(`${escaped}:\\s*([^;]+);`))
@@ -1650,20 +1657,18 @@ describe('theme and overlay tokens', () => {
     expect(css).not.toContain('.monitor-splitter-controls')
   })
 
-  it('renders workspace splitters as equal one-pixel hairlines inside larger hit areas', () => {
+  it('keeps workspace splitters as transparent hit areas and draws hairlines on pane edges', () => {
     const root = block(':root')
     const base = block('.horizontal-splitter, .vertical-splitter')
     const sharedLine = block('.horizontal-splitter::before, .vertical-splitter::before')
-    const horizontalLine = block('.horizontal-splitter::before')
-    const verticalLine = block('.vertical-splitter::before')
-    const rightWorkspace = block('.right-workspace')
-    const rightWorkspaceSplitterLine = block('.right-workspace > .horizontal-splitter::before')
+    const horizontalSplitter = exactBlock('.horizontal-splitter')
+    const verticalSplitter = exactBlock('.vertical-splitter')
+    const workspacePaneEdges = block('.workspace-shell:not(.sidebar-collapsed) > .workspace-topbar, .workspace-shell:not(.sidebar-collapsed) > .right-workspace')
+    const rightWorkspace = exactBlock('.right-workspace')
     const collapsedSplitter = block('.workspace-shell.sidebar-collapsed .vertical-splitter')
     const collapsedSplitterLine = block('.workspace-shell.sidebar-collapsed .vertical-splitter::before')
-    const collapsedRightSplitter = block('.right-workspace.bottom-panel-collapsed .horizontal-splitter::before')
     const collapsedStatusbar = block('.right-workspace.bottom-panel-collapsed .terminal-statusbar')
-    const monitorPaneSplitter = block('.monitor-pane-splitter')
-    const monitorSplitLine = block('.compact-monitor-sidebar.split-split > .monitor-pane-splitter::before')
+    const monitorRestoreSplitter = block('.monitor-pane-splitter.restore-splitter')
     const monitorMountPanel = block('.compact-monitor-sidebar.split-split > .mount-panel')
     const localMonitor = block('.local-monitor-sidebar')
     const sftpPanel = block('.sftp-panel')
@@ -1671,29 +1676,25 @@ describe('theme and overlay tokens', () => {
     const localExplorer = block('.local-explorer-panel')
 
     expect(root).toContain('--workspace-splitter-hit-size: 10px')
-    expect(root).toContain('--workspace-splitter-line-offset: 5px')
     expect(base).toContain('background: transparent')
     expect(base).toContain('isolation: isolate')
-    expect(sharedLine).toContain('background: var(--splitter-line)')
-    expect(sharedLine).toContain('border-radius: 0')
-    expect(horizontalLine).toContain('height: 1px')
-    expect(verticalLine).toContain('width: 1px')
-    expect(rightWorkspace).toContain('overflow: visible')
-    expect(rightWorkspaceSplitterLine).toContain('left: calc(-1 * var(--workspace-splitter-line-offset))')
-    expect(rightWorkspaceSplitterLine).toContain('right: 0')
-    expect(rightWorkspaceSplitterLine).toContain('width: auto')
-    expect(monitorPaneSplitter).toContain('overflow: visible')
-    expect(monitorSplitLine).toContain('display: none')
+    expect(sharedLine).toContain('display: none')
+    expect(horizontalSplitter).toContain('height: var(--workspace-splitter-hit-size)')
+    expect(horizontalSplitter).toContain('min-height: 0')
+    expect(verticalSplitter).toContain('width: var(--workspace-splitter-hit-size)')
+    expect(verticalSplitter).toContain('min-width: 0')
+    expect(workspacePaneEdges).toContain('border-left: 1px solid var(--splitter-line)')
+    expect(rightWorkspace).toContain('overflow: hidden')
+    expect(monitorRestoreSplitter).toContain('background: transparent')
     expect(monitorMountPanel).toContain('border-top: 1px solid var(--splitter-line)')
     expect(collapsedSplitter).toContain('min-width: 1px')
     expect(collapsedSplitter).toContain('background: var(--splitter-line)')
     expect(collapsedSplitterLine).toContain('display: none')
-    expect(collapsedRightSplitter).toContain('top: 100%')
     expect(collapsedStatusbar).toContain('border-top: 0')
     expect(localMonitor).toContain('border-right: 0')
-    expect(sftpPanel).toContain('border-top: 0')
+    expect(sftpPanel).toContain('border-top: 1px solid var(--splitter-line)')
     expect(sftpToolbar).toContain('border-top: 0')
-    expect(localExplorer).toContain('border-top: 0')
+    expect(localExplorer).toContain('border-top: 1px solid var(--splitter-line)')
   })
 
   it('keeps terminal surfaces continuous without fake xterm padding', () => {

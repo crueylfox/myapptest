@@ -184,10 +184,10 @@ const paneStyle = computed(() => ({
   gridTemplateRows: !monitorDetailsExpanded.value
     ? 'minmax(0, 1fr) 0 0'
     : splitMode.value === 'monitorCollapsed'
-    ? '10px minmax(0, 1fr)'
+    ? '0 minmax(0, 1fr)'
     : splitMode.value === 'mountsCollapsed'
-      ? 'minmax(0, 1fr) 10px'
-      : `${monitorHeight.value}px 10px minmax(120px, 1fr)`,
+      ? 'minmax(0, 1fr) 0'
+      : `${monitorHeight.value}px 0 minmax(120px, 1fr)`,
 }))
 const systemExpanded = computed(() => {
   const serverId = props.connection?.id
