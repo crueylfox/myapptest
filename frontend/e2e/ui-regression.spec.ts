@@ -800,6 +800,7 @@ test('workspace tabs many keeps close gap compact and close click isolated', asy
   await openFixture(page, 'workspace-tabs-many')
 
   const tabs = page.locator('.terminal-tab')
+  const topbar = page.locator('.workspace-topbar')
   const add = page.locator('.topbar-add')
   const longTab = page.locator('[data-tab-id="tab-long"]')
   const ipTab = page.locator('[data-tab-id="tab-ip"]')
@@ -807,6 +808,8 @@ test('workspace tabs many keeps close gap compact and close click isolated', asy
 
   await expect(tabs).toHaveCount(12)
   await expect(add).toBeVisible()
+  expect((await box(topbar)).height).toBeLessThanOrEqual(36)
+  expect((await box(ipTab)).height).toBeLessThanOrEqual(31)
   expect((await box(ipTab)).width).toBeLessThanOrEqual(210)
   expect(await longTab.locator('.terminal-tab-title').evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(true)
 

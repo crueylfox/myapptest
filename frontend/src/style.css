@@ -5,6 +5,8 @@
   font-synthesis: none;
   --app-ui-font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
   --app-terminal-font-family: "Cascadia Mono", Consolas, monospace;
+  --workspace-topbar-height: 34px;
+  --workspace-sidebar-restore-size: 26px;
   --bg: #1f2023;
   --sidebar: #202226;
   --panel: #26292e;
@@ -931,18 +933,23 @@ button { border: 0; cursor: pointer; background: transparent; }
 .toast-enter-active, .toast-leave-active { transition: opacity .15s ease, transform .15s ease; }
 .toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(-6px); }
 .empty, .empty-side { margin: 0; color: var(--muted); text-align: center; padding: 24px 8px; font-size: 12px; }
-.workspace-topbar { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto 1px auto; align-items: stretch; border-bottom: 1px solid var(--border); background: var(--sidebar); z-index: 12; }
-.app-shell.platform-macos .workspace-topbar { min-height: var(--macos-titlebar-height); --wails-draggable: drag; }
+.workspace-topbar { min-width: 0; height: var(--workspace-topbar-height); min-height: var(--workspace-topbar-height); display: grid; grid-template-columns: minmax(0, 1fr) auto 1px auto; align-items: stretch; border-bottom: 1px solid var(--border); background: var(--sidebar); z-index: 12; }
+.app-shell.platform-macos .workspace-topbar { height: var(--macos-titlebar-height); min-height: var(--macos-titlebar-height); --wails-draggable: drag; }
 .app-shell.platform-macos:not(.terminal-layout) .app-visual-root > .workspace-topbar { padding-left: var(--macos-traffic-light-safe-left); }
 .app-shell.platform-macos.terminal-layout .workspace-shell > .workspace-topbar { padding-left: 0; }
 .app-shell.platform-macos.terminal-layout .workspace-shell.sidebar-collapsed > .workspace-topbar { padding-left: var(--macos-traffic-light-safe-left); }
 .workspace-shell > .workspace-topbar { grid-column: 3; grid-row: 1; }
-.workspace-tabs { min-width: 0; display: flex; align-items: stretch; gap: 2px; padding: 4px 5px 0; overflow-x: auto; overflow-y: hidden; }
+.sidebar-restore-button { grid-column: 3; grid-row: 1; z-index: 14; width: var(--workspace-sidebar-restore-size); height: var(--workspace-sidebar-restore-size); align-self: center; justify-self: start; display: inline-flex; align-items: center; justify-content: center; margin-left: 5px; padding: 0; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); background: color-mix(in srgb, var(--sidebar) 84%, transparent); box-shadow: 0 8px 24px rgba(0, 0, 0, .20); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); }
+.sidebar-restore-button:hover, .sidebar-restore-button:focus-visible { color: var(--text); border-color: var(--accent-border); background: var(--state-selected-soft-bg); outline: none; }
+.app-shell.platform-macos.terminal-layout .workspace-shell.sidebar-collapsed .sidebar-restore-button { margin-left: calc(var(--macos-traffic-light-safe-left) + 5px); }
+.workspace-tabs { min-width: 0; display: flex; align-items: stretch; gap: 2px; padding: 3px 5px 0; overflow-x: auto; overflow-y: hidden; }
+.workspace-shell.sidebar-collapsed .workspace-tabs { padding-left: calc(var(--workspace-sidebar-restore-size) + 10px); }
 .app-shell.platform-macos .workspace-tabs { padding-left: 0; }
-.app-shell.platform-macos .workspace-topbar :where(button, input, select, textarea, a, [role="tab"], .terminal-tab, .topbar-menu) { --wails-draggable: no-drag; }
+.app-shell.platform-macos .workspace-shell.sidebar-collapsed .workspace-tabs { padding-left: calc(var(--workspace-sidebar-restore-size) + 10px); }
+.app-shell.platform-macos .workspace-topbar :where(button, input, select, textarea, a, [role="tab"], .terminal-tab, .topbar-menu), .app-shell.platform-macos .sidebar-restore-button { --wails-draggable: no-drag; }
 .app-shell.platform-macos :where(.terminal-view, .xterm, .sftp-panel, .horizontal-splitter, .vertical-splitter) { --wails-draggable: no-drag; }
 .workspace-tabs:focus-visible { outline: 1px solid #79a7ff; outline-offset: -2px; }
-.terminal-tab { min-width: 0px; max-width: 210px; width: fit-content; display: inline-flex; align-items: center; gap: 5px; padding: 7px 9px 7px 9px; border: 1px solid transparent; border-bottom: 0; border-radius: 7px 7px 0 0; color: var(--muted); }
+.terminal-tab { min-width: 0px; max-width: 210px; width: fit-content; display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px 4px 8px; border: 1px solid transparent; border-bottom: 0; border-radius: 7px 7px 0 0; color: var(--muted); }
 .terminal-tab.active { color: var(--text); border-color: var(--border); background: var(--panel); }
 .terminal-tab:focus-visible { outline: 1px solid #79a7ff; outline-offset: -2px; }
 .terminal-tab.dragging { opacity: .45; }
@@ -953,18 +960,18 @@ button { border: 0; cursor: pointer; background: transparent; }
 .terminal-close { flex: 0 0 auto; width: 16px; display: grid; place-items: center; border-radius: 4px; color: var(--muted); font-size: 16px; white-space: nowrap; }
 .terminal-close:hover { background: #ef5b6720; color: var(--danger); }
 .workspace-tab-dragging-active { user-select: none; cursor: grabbing; }
-.topbar-add { flex: 0 0 36px; width: 36px; border: 1px solid transparent; border-bottom: 0; border-radius: 7px 7px 0 0; color: var(--muted); font-size: 22px; }
+.topbar-add { flex: 0 0 30px; width: 30px; border: 1px solid transparent; border-bottom: 0; border-radius: 7px 7px 0 0; color: var(--muted); font-size: 20px; }
 .topbar-add:hover { color: var(--text); background: var(--panel-2); }
 .topbar-split { position: relative; display: grid; align-items: stretch; }
 .topbar-split .split-mode-button { height: 100%; display: inline-flex; align-items: center; justify-content: center; padding: 0 4px; border: 0; background: transparent; color: var(--muted); font-size: 12px; white-space: nowrap; box-shadow: none; }
 .topbar-split .split-mode-button:focus-visible { outline: 1px solid #79a7ff; outline-offset: -2px; }
 .topbar-split .app-icon, .topbar-navigation .app-icon { width: 16px; height: 16px; color: #8fa4bf; }
-.topbar-action-separator { width: 1px; height: 24px; align-self: center; border-radius: 999px; background: var(--surface-divider); pointer-events: none; }
+.topbar-action-separator { width: 1px; height: 20px; align-self: center; border-radius: 999px; background: var(--surface-divider); pointer-events: none; }
 .topbar-navigation { position: relative; display: grid; }
 .topbar-navigation > button { display: inline-flex; align-items: center; justify-content: center; padding: 0 4px; color: var(--muted); border: 0; background: transparent; font-size: 12px; box-shadow: none; }
-.topbar-action-inner { min-height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 10px; border-radius: 8px; }
+.topbar-action-inner { min-height: 22px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 3px 7px; border-radius: 8px; }
 .topbar-split .split-mode-button:hover .topbar-action-inner, .topbar-split .split-mode-button[aria-expanded="true"] .topbar-action-inner, .topbar-navigation > button:hover .topbar-action-inner, .topbar-navigation > button[aria-expanded="true"] .topbar-action-inner { color: var(--text); background: var(--panel-2); }
-.topbar-menu { position: absolute; z-index: var(--z-popover); top: 42px; right: 6px; width: 145px; min-width: 145px; max-width: 145px; display: grid; gap: 2px; overflow: hidden; padding: 4px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-card-bg); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); box-shadow: 0 14px 40px var(--shadow-strong); }
+.topbar-menu { position: absolute; z-index: var(--z-popover); top: calc(var(--workspace-topbar-height) + 2px); right: 6px; width: 145px; min-width: 145px; max-width: 145px; display: grid; gap: 2px; overflow: hidden; padding: 4px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-card-bg); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); box-shadow: 0 14px 40px var(--shadow-strong); }
 .topbar-menu button { width: 100%; min-width: 0; max-width: 100%; min-height: 38px; display: grid; grid-template-columns: 18px minmax(0, 1fr) 18px; align-items: center; gap: 3px; overflow: hidden; padding: 6px 3px; border: 0; border-radius: 6px; color: var(--muted); background: transparent; text-align: center; font-size: 13px; font-weight: 600; }
 .topbar-menu button:hover { color: var(--text); background: var(--state-hover-bg); }
 .topbar-menu button.active { color: var(--text); background: var(--state-selected-bg); }
@@ -1005,7 +1012,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .server-row.drop-after { box-shadow: inset 0 -2px var(--primary); }
 .server-group.group-drop-target > header { color: var(--primary); }
 .server-row-dragging-active { user-select: none; cursor: grabbing; }
-.workspace-shell { position: relative; flex: 1; width: 100%; height: 100%; min-width: 0; min-height: 0; display: grid; grid-template-rows: 44px minmax(0, 1fr); overflow: hidden; background: var(--terminal-bg); }
+.workspace-shell { position: relative; flex: 1; width: 100%; height: 100%; min-width: 0; min-height: 0; display: grid; grid-template-rows: var(--workspace-topbar-height) minmax(0, 1fr); overflow: hidden; background: var(--terminal-bg); }
 .app-shell.platform-macos .workspace-shell { grid-template-rows: var(--macos-titlebar-height) minmax(0, 1fr); }
 .terminal-workspace-hidden { position: absolute; inset: 0; visibility: hidden; pointer-events: none; overflow: hidden; }
 .compact-monitor-sidebar { grid-column: 1; grid-row: 1 / 3; min-width: 0; min-height: 0; display: grid; overflow: hidden; border-right: 0; background: color-mix(in srgb, var(--sidebar) 82%, var(--terminal-bg) 18%); }
@@ -1089,7 +1096,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .network-unavailable { margin: 4px 0 0; color: var(--muted); font-size: var(--ui-font-size-small); }
 .network-compact .download { color: #2dd4bf; }
 .network-compact .upload { color: #fb923c; }
-.local-monitor-sidebar { grid-column: 1; grid-row: 1 / 3; min-height: 0; overflow: hidden; background: var(--sidebar); border-right: 1px solid var(--border); }
+.local-monitor-sidebar { grid-column: 1; grid-row: 1 / 3; min-height: 0; overflow: hidden; background: var(--sidebar); border-right: 0; }
 .local-monitor-sidebar .compact-monitor { height: 100%; overflow-x: hidden; overflow-y: auto; padding: 10px; }
 .local-system-info .system-info-summary { cursor: default; }
 .local-network-interface { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: var(--ui-font-size-small); }
@@ -1102,7 +1109,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .local-disk-row, .local-process-row { min-width: 0; display: grid; grid-template-columns: minmax(44px, .8fr) max-content minmax(72px, 1fr); gap: 6px; align-items: center; color: var(--muted); font-size: 11px; }
 .local-disk-row span, .local-process-row span, .local-disk-row small, .local-process-row small { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .local-disk-row strong, .local-process-row strong { color: var(--text); font-size: 12px; font-variant-numeric: tabular-nums; }
-.local-explorer-panel { min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; border-top: 1px solid var(--border); background: var(--panel); }
+.local-explorer-panel { min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; border-top: 0; background: var(--panel); }
 .local-explorer-panel:not(.expanded) { display: none; }
 .local-explorer-toolbar { min-width: 0; display: grid; grid-template-columns: minmax(180px, min(42%, 420px)) minmax(140px, 220px) max-content auto; align-items: center; gap: 6px; padding: 7px 10px; border-bottom: 1px solid var(--border); overflow: hidden; }
 .local-explorer-nav-actions { flex: 0 0 auto; width: max-content; display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
@@ -1217,6 +1224,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .horizontal-splitter::before, .vertical-splitter::before { content: ""; position: absolute; z-index: 0; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 999px; background: var(--splitter-line); pointer-events: none; }
 .horizontal-splitter { min-height: 10px; cursor: row-resize; }
 .vertical-splitter { grid-column: 2; grid-row: 1 / 3; min-width: 10px; cursor: col-resize; }
+.workspace-shell.sidebar-collapsed .vertical-splitter { min-width: 1px; cursor: default; }
 .horizontal-splitter:hover::before, .vertical-splitter:hover::before { background: color-mix(in srgb, var(--splitter-line) 76%, var(--primary) 24%); }
 .mount-panel { min-height: 120px; display: grid; grid-template-rows: 24px minmax(0, 1fr); gap: 6px; overflow: hidden; padding: 9px 10px; background: var(--sidebar); }
 .split-monitorCollapsed .mount-panel, .split-mountsCollapsed .compact-monitor { min-height: 0; height: 100%; }
@@ -1252,10 +1260,10 @@ button { border: 0; cursor: pointer; background: transparent; }
 .monitor-pane-splitter { overflow: visible; }
 .monitor-pane-splitter.restore-splitter { cursor: row-resize; background: color-mix(in srgb, var(--border) 88%, var(--terminal-bg) 12%); }
 .monitor-pane-splitter.restore-splitter:hover { background: color-mix(in srgb, var(--border) 70%, var(--primary) 30%); }
-.sftp-panel { grid-row: 3; min-height: 0; overflow: hidden; border-top: 1px solid var(--border); background: var(--sidebar); }
+.sftp-panel { grid-row: 3; min-height: 0; overflow: hidden; border-top: 0; background: var(--sidebar); }
 .sftp-panel { display: grid; grid-template-rows: 38px minmax(0, 1fr); color: var(--text); }
 .sftp-panel:not(.expanded) { grid-template-rows: 0; border-top: 0; background: var(--terminal-bg); }
-.sftp-toolbar { min-width: 0; display: flex; align-items: center; gap: 4px; padding: 4px 8px; overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--panel); }
+.sftp-toolbar { min-width: 0; display: flex; align-items: center; gap: 4px; padding: 4px 8px; overflow: hidden; border-top: 0; border-bottom: 1px solid var(--border); background: var(--panel); }
 .sftp-toolbar button, .sftp-toolbar select { flex: 0 0 auto; padding: 5px 8px; font-size: 11px; }
 .sftp-toolbar select { padding: 5px 42px 5px 8px; }
 .sftp-toolbar select { width: 112px; height: 28px; }

@@ -31,7 +31,7 @@ export type VisibleOutputSessionInput = {
 export function buildWorkspaceShellStyle(input: MonitorSidebarStyleInput) {
   return {
     gridTemplateColumns: input.collapsed
-      ? '0 18px minmax(0, 1fr)'
+      ? '0 1px minmax(0, 1fr)'
       : `${input.sidebarWidth}px 10px minmax(0, 1fr)`,
   }
 }

@@ -60,6 +60,7 @@ import {
 import AppActionBar from './primitives/AppActionBar.vue'
 import CommandPalette from './CommandPalette.vue'
 import CompactMonitorSidebar from './CompactMonitorSidebar.vue'
+import AppIcon from './icons/AppIcon.vue'
 import LocalExplorerPanel from './LocalExplorerPanel.vue'
 import LocalMonitorSidebar from './LocalMonitorSidebar.vue'
 import LocalTerminalView from './LocalTerminalView.vue'
@@ -552,6 +553,14 @@ function setSidebarCollapsedFromSplitter(nextCollapsed: boolean) {
   localStorage.setItem('serverpilot.monitorSidebarCollapsed', String(sidebarCollapsed.value))
 }
 
+function restoreMonitorSidebar() {
+  sidebarCollapsed.value = false
+  autoCollapsed.value = false
+  autoCollapseDismissed.value = true
+  localStorage.setItem('serverpilot.monitorSidebarCollapsed', 'false')
+  bumpLayout()
+}
+
 function setBottomPanelExpandedFromSplitter(nextExpanded: boolean) {
   sftpExpanded.value = nextExpanded
   localStorage.setItem('serverpilot.sftpExpanded', String(sftpExpanded.value))
@@ -826,6 +835,9 @@ onBeforeUnmount(() => {
       @pointerdown="startDrag('sidebar', $event)"
     ></div>
     <slot name="tabs"></slot>
+    <button v-if="collapsed" class="sidebar-restore-button" type="button" aria-label="显示监控侧栏" title="显示监控侧栏" @click="restoreMonitorSidebar">
+      <AppIcon name="gauge" :size="15" />
+    </button>
     <section class="right-workspace" :style="rightStyle">
       <div ref="terminalStage" class="terminal-stage">
         <TerminalSplitWorkspace

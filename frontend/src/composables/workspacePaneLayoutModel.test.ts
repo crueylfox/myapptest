@@ -17,7 +17,7 @@ const source = readFileSync(new URL('./workspacePaneLayoutModel.ts', import.meta
 describe('workspacePaneLayoutModel', () => {
   it('builds the existing monitor/sidebar and SFTP grid styles', () => {
     expect(buildWorkspaceShellStyle({ collapsed: true, sidebarWidth: 300 })).toEqual({
-      gridTemplateColumns: '0 18px minmax(0, 1fr)',
+      gridTemplateColumns: '0 1px minmax(0, 1fr)',
     })
     expect(buildWorkspaceShellStyle({ collapsed: false, sidebarWidth: 312 })).toEqual({
       gridTemplateColumns: '312px 10px minmax(0, 1fr)',

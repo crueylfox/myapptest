@@ -586,6 +586,23 @@ describe('TerminalWorkspace server states', () => {
     expect(localStorage.getItem('serverpilot.monitorSidebarWidth')).toBe('360')
   })
 
+  it('shows a compact topbar restore button when the monitor sidebar is hidden', async () => {
+    localStorage.setItem('serverpilot.monitorSidebarCollapsed', 'true')
+    const { wrapper } = mountWorkspace(state())
+
+    expect(wrapper.find('.workspace-shell').classes()).toContain('sidebar-collapsed')
+    expect(wrapper.find('.workspace-shell').attributes('style')).toContain('0 1px minmax(0, 1fr)')
+    const restore = wrapper.get('.sidebar-restore-button')
+    expect(restore.attributes('aria-label')).toBe('显示监控侧栏')
+    expect(restore.find('.app-icon--gauge').exists()).toBe(true)
+
+    await restore.trigger('click')
+
+    expect(wrapper.find('.workspace-shell').classes()).not.toContain('sidebar-collapsed')
+    expect(localStorage.getItem('serverpilot.monitorSidebarCollapsed')).toBe('false')
+    expect(wrapper.find('.sidebar-restore-button').exists()).toBe(false)
+  })
+
   it('does not collapse after dragging the sidebar splitter', async () => {
     const { wrapper } = mountWorkspace(state())
     const root = wrapper.get('.workspace-shell').element as HTMLElement
