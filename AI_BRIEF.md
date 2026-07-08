@@ -6,10 +6,10 @@ Updated: 2026-07-08
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.43`.
-- Recommended delivery version: `0.5.0-beta.43` user-smoke-required.
-- Current round: beta43 user-smoke package after beta42 canonical surface token package and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.42` -> `0.5.0-beta.43` before repackaging.
+- Current VERSION: `0.5.0-beta.44`.
+- Recommended delivery version: `0.5.0-beta.44` user-smoke-required.
+- Current round: beta44 splitter auto-hide smoke package after beta43 user-smoke package and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.43` -> `0.5.0-beta.44` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -103,11 +103,11 @@ Updated: 2026-07-08
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1707 tests, 89 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1705 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta43 Windows EXE copied to `C:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.43.exe`.
-- Beta43 Windows EXE SHA-256: `AB521C5CBC375055E39066B8D89E6CD8DD1631F0D2A0F76436A5839B509442F3`.
+- Beta44 Windows EXE copied to `C:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.44.exe`.
+- Beta44 Windows EXE SHA-256: `8619453B00AFCDEAF31AC258E8F818797650BC64023A76B3832206C97B3CDFE0`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 - GitHub Actions `Build macOS` run `28921515122`: success for commit `14ce7e3ad86f6b4c20ed38c7a51f37645f82ee48`.
 - Artifact: `ServerPilot-macos-unsigned`; desktop artifact zip `D:\Users\Administrator\Desktop\ServerPilot-macos-unsigned.zip`.
