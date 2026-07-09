@@ -119,8 +119,8 @@ func TestGetAppVersionReturnsCurrentReleaseVersion(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := strings.TrimSpace(string(raw))
-	if want != "0.5.0-beta.54" {
-		t.Fatalf("VERSION=%q, want %q", want, "0.5.0-beta.54")
+	if want != "0.5.0-beta.55" {
+		t.Fatalf("VERSION=%q, want %q", want, "0.5.0-beta.55")
 	}
 
 	info := app.GetAppVersion()
@@ -141,6 +141,27 @@ func TestMainConfiguresMacOSHiddenInsetTitlebar(t *testing.T) {
 	}
 	if !strings.Contains(text, `Mac: &mac.Options{`) || !strings.Contains(text, `TitleBar: mac.TitleBarHiddenInset()`) {
 		t.Fatal("main.go must configure the native macOS hidden inset titlebar")
+	}
+}
+
+func TestMainConfiguresStableWindowsWebviewDataPath(t *testing.T) {
+	source, err := os.ReadFile("main.go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(source)
+	if !strings.Contains(text, `"github.com/wailsapp/wails/v2/pkg/options/windows"`) {
+		t.Fatal("main.go must import Wails Windows options")
+	}
+	if !strings.Contains(text, `Windows: &windows.Options{`) || !strings.Contains(text, `WebviewUserDataPath: stableWindowsWebviewUserDataPath()`) {
+		t.Fatal("main.go must configure a stable Windows WebView2 user data path")
+	}
+	path := serverPilotWebviewUserDataPath(filepath.Join("C:\\Users\\Administrator\\AppData\\Roaming"))
+	if path != filepath.Join("C:\\Users\\Administrator\\AppData\\Roaming", "ServerPilot", "WebView2") {
+		t.Fatalf("webview data path = %q", path)
+	}
+	if strings.Contains(path, ".exe") || strings.Contains(path, "beta") {
+		t.Fatalf("webview data path must not depend on executable or version name: %q", path)
 	}
 }
 

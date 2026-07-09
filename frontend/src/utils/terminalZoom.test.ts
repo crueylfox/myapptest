@@ -105,8 +105,8 @@ describe('terminal zoom', () => {
     })
 
     expect(options.fontSize).toBe(18)
-    expect(options.lineHeight).toBeCloseTo(1.406, 3)
-    expect(options.letterSpacing).toBeCloseTo(1.22, 3)
+    expect(options.lineHeight).toBeCloseTo(1.25, 3)
+    expect(options.letterSpacing).toBeCloseTo(1.6, 3)
     expect(options.fontWeight).toBe('normal')
     expect(options.fontWeightBold).toBe('bold')
 
@@ -143,7 +143,8 @@ describe('terminal zoom', () => {
     })
 
     expect(zoomedIn.fontSize).toBe(18)
-    expect(zoomedIn.letterSpacing).toBeGreaterThan(0)
+    expect(zoomedIn.lineHeight).toBeCloseTo(1.25, 3)
+    expect(zoomedIn.letterSpacing).toBeCloseTo(0.7, 3)
 
     clearTerminalZoomDelta('ssh-zero-tracking')
     nextTerminalZoomDeltaForSession('ssh-zero-tracking', 16, 100)
@@ -156,7 +157,8 @@ describe('terminal zoom', () => {
     })
 
     expect(zoomedOut.fontSize).toBe(14)
-    expect(zoomedOut.letterSpacing).toBeLessThan(0)
+    expect(zoomedOut.lineHeight).toBeCloseTo(1.25, 3)
+    expect(zoomedOut.letterSpacing).toBeCloseTo(-0.7, 3)
     clearTerminalZoomDelta('ssh-zero-tracking')
   })
 

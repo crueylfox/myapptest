@@ -2,17 +2,35 @@ package main
 
 import (
 	"embed"
+	"os"
+	"path/filepath"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
+	"github.com/wailsapp/wails/v2/pkg/options/windows"
 
 	"serverpilot/internal/domain"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
+
+func serverPilotWebviewUserDataPath(configDir string) string {
+	return filepath.Join(configDir, "ServerPilot", "WebView2")
+}
+
+func stableWindowsWebviewUserDataPath() string {
+	configDir, err := os.UserConfigDir()
+	if err != nil || configDir == "" {
+		configDir = os.Getenv("APPDATA")
+	}
+	if configDir == "" {
+		configDir = os.TempDir()
+	}
+	return serverPilotWebviewUserDataPath(configDir)
+}
 
 func main() {
 	// Create an instance of the app structure
@@ -33,6 +51,9 @@ func main() {
 		},
 		Mac: &mac.Options{
 			TitleBar: mac.TitleBarHiddenInset(),
+		},
+		Windows: &windows.Options{
+			WebviewUserDataPath: stableWindowsWebviewUserDataPath(),
 		},
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup:        app.startup,

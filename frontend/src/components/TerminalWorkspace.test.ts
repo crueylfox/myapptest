@@ -522,14 +522,14 @@ describe('TerminalWorkspace server states', () => {
     expect(shell.attributes('style')).toContain('300px')
     expect(shell.element.children[0].tagName.toLowerCase()).toContain('compact')
     const right = wrapper.find('.right-workspace')
-    expect(right.attributes('style')).toContain('minmax(180px, 1fr) 0 0 28px')
+    expect(right.attributes('style')).toContain('minmax(180px, 1fr) 0 180px 28px')
     expect(right.find('.terminal-stage').exists()).toBe(true)
     expect(right.find('.terminal-stage .terminal-command-button').exists()).toBe(true)
     expect(right.find('.terminal-statusbar .terminal-command-button').exists()).toBe(false)
     expect(right.find('.horizontal-splitter .bottom-panel-toggle-handle').exists()).toBe(false)
     expect(right.find('.horizontal-splitter svg.splitter-chevron').exists()).toBe(false)
     expect(right.find('.sftp-panel').exists()).toBe(true)
-    expect(right.find('.sftp-panel').text()).not.toContain('SFTP')
+    expect(right.find('.sftp-panel').classes()).toContain('expanded')
     expect(right.find('.terminal-statusbar').exists()).toBe(true)
     expect(shell.find('.sftp-rail').exists()).toBe(false)
     expect(shell.find('.tabs-slot').exists()).toBe(true)
@@ -544,6 +544,7 @@ describe('TerminalWorkspace server states', () => {
   })
 
   it('auto-expands and auto-hides SFTP from the plain horizontal splitter', async () => {
+    localStorage.setItem('serverpilot.sftpExpanded', 'false')
     const { wrapper } = mountWorkspace(state())
     const root = wrapper.get('.workspace-shell').element as HTMLElement
     vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({
@@ -658,6 +659,21 @@ describe('TerminalWorkspace server states', () => {
     expect(statusbar.text()).not.toContain('↑')
   })
 
+  it('defaults the bottom SFTP area open until the user saves a collapsed state', async () => {
+    const { wrapper } = mountWorkspace(state())
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(true)
+    expect(wrapper.get('.right-workspace').attributes('style')).toContain('0 180px 28px')
+
+    localStorage.setItem('serverpilot.sftpExpanded', 'false')
+    const collapsed = mountWorkspace(state()).wrapper
+    await collapsed.vm.$nextTick()
+
+    expect(collapsed.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(false)
+    expect(collapsed.get('.right-workspace').attributes('style')).toContain('0 0 28px')
+  })
+
   it('keeps the monitor sidebar visually default when a server connection fails', async () => {
     const { wrapper } = mountWorkspace(state({
       status: 'auth_failed',
@@ -687,6 +703,7 @@ describe('TerminalWorkspace server states', () => {
 
     const toggle = wrapper.get('[data-testid="status-sftp-toggle"]')
     expect(toggle.element.nextElementSibling).toBe(wrapper.get('.status-monitor-region').element)
+    expect(toggle.text()).toBe('')
     expect(toggle.attributes('aria-pressed')).toBe('false')
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(false)
 
@@ -698,6 +715,22 @@ describe('TerminalWorkspace server states', () => {
     await toggle.trigger('click')
     expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('false')
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(false)
+  })
+
+  it('keeps status metrics fixed while the server name takes status bar truncation', () => {
+    const { wrapper, store } = mountWorkspace(state({
+      status: 'online',
+      terminalActive: true,
+      sftpActive: true,
+      hasActiveSession: true,
+    }))
+    store.workspaces[connection.id].status = 'connected'
+
+    const status = wrapper.get('.status-monitor-region')
+    expect(status.get('.status-server-name').text()).toContain('server')
+    expect(status.get('.status-connection-state').text()).toContain('已连接')
+    expect(status.get('.status-latency').text()).toContain('延迟')
+    expect(status.findAll('.status-rate')).toHaveLength(2)
   })
 
   it('seeds the active TerminalView draft before executing command palette commands', async () => {

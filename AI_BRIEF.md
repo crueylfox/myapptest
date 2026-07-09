@@ -6,10 +6,10 @@ Updated: 2026-07-09
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.54`.
-- Recommended delivery version: `0.5.0-beta.54` user-smoke-required.
-- Current round: beta54 terminal zoom/SFTP status toggle and failed-monitor-sidebar hotfix after beta53 terminal dialog polish and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.53` -> `0.5.0-beta.54` before repackaging.
+- Current VERSION: `0.5.0-beta.55`.
+- Recommended delivery version: `0.5.0-beta.55` user-smoke-required.
+- Current round: beta55 stable Windows WebView data path, SFTP default/status toggle, failed-sidebar quiet state, and terminal zoom follow-up after beta54 and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.54` -> `0.5.0-beta.55` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -88,7 +88,7 @@ Updated: 2026-07-09
 - Beta51 keeps the default no-server workspace visually quiet by hiding empty monitor metrics/status details, uses a single adjacent-pane hairline when the monitor sidebar is collapsed, and reduces empty-pane center actions to New Server / Connect Saved with one separator.
 - Beta52 removes the no-server sidebar placeholder dash and keeps the empty-pane New Server / Connect Saved actions side-by-side with a vertical separator at normal split-pane widths.
 - Beta53 removes the SSH scroll-to-bottom button, defaults the floating command button to bottom-right dock, reconnects edited failed tabs in place, adds ConnectionDialog Escape discard prompting, uses larger terminal Profile number steppers, and makes Ctrl/Meta wheel scale terminal font metrics without font-weight drift.
-- Beta54 makes Ctrl/Meta wheel add terminal tracking for true visual zoom, keeps failed server monitor sidebars in the default quiet state, and adds a bottom-status SFTP show/hide toggle.
+- Beta55 fixes Windows WebView2 data path to `%APPDATA%\ServerPilot\WebView2`, defaults first-run SFTP open while preserving saved collapse state, makes the SFTP status control icon-only, keeps failed server monitor sidebars quiet, and changes terminal wheel zoom to scale font/cell tracking without double-scaling xterm line-height.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `ServerPilot-macos-unsigned`.
@@ -112,10 +112,10 @@ Updated: 2026-07-09
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1723 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta54 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.54.exe`.
-- Beta54 Windows EXE SHA-256: `E92E29D5E839A3AB5688E19EA273BE2D10002DEF972E1D7722A6636A2845AEBC`.
+- Beta55 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.55.exe`.
+- Beta55 Windows EXE SHA-256: `4AD6D02F831AE010D78068DBE05648BC3DFDE84A6F2B503152599D5B3CECE3C0`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions beta54 `Build macOS`: pending until the beta54 code commit is pushed.
+- GitHub Actions beta55 `Build macOS`: pending until the beta55 code commit is pushed.
 - Artifact: `ServerPilot-macos-unsigned` expected from the macOS runner.
 - Artifact SHA-256: pending.
 - macOS artifact came from the GitHub Actions macOS runner.

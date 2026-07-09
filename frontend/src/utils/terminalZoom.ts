@@ -1,6 +1,6 @@
 export const terminalZoomMinFontSize = 10
 export const terminalZoomMaxFontSize = 28
-const terminalZoomLetterSpacingPerFontPixel = 0.16
+const terminalZoomLetterSpacingPerFontPixel = 0.35
 const terminalZoomMinLetterSpacing = -1
 const terminalZoomMaxLetterSpacing = 4
 const terminalFontZoomDeltaBySessionID = new Map<string, number>()
@@ -68,7 +68,7 @@ export function effectiveTerminalZoomedProfileOptions(
   const ratio = fontSize / baseFontSize
   return {
     fontSize,
-    lineHeight: roundedMetric(profile.lineHeight * ratio),
+    lineHeight: roundedMetric(profile.lineHeight),
     letterSpacing: effectiveTerminalLetterSpacing(profile, fontSize, baseFontSize, ratio),
     fontWeight: 'normal',
     fontWeightBold: 'bold',

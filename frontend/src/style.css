@@ -1615,14 +1615,15 @@ button { border: 0; cursor: pointer; background: transparent; }
 .workspace-actions { display: flex; gap: 9px; margin-top: 8px; }
 .terminal-statusbar { grid-row: 4; position: relative; display: flex; align-items: center; gap: 10px; padding: 0 10px; overflow: visible; white-space: nowrap; border-top: 1px solid var(--border); background: var(--sidebar); color: var(--muted); font-size: var(--ui-font-size-small); text-align: left; }
 .right-workspace.bottom-panel-collapsed .terminal-statusbar { border-top: 0; }
-.status-sftp-toggle { flex: 0 0 auto; min-width: 0; height: 22px; display: inline-flex; align-items: center; gap: 4px; padding: 0 7px; border: 1px solid var(--border); border-radius: 7px; background: color-mix(in srgb, var(--panel) 70%, transparent); color: var(--muted); font-size: var(--ui-font-size-small); line-height: 1; }
+.status-sftp-toggle { flex: 0 0 auto; width: 28px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 1px solid var(--border); border-radius: 7px; background: color-mix(in srgb, var(--panel) 70%, transparent); color: var(--muted); line-height: 1; }
 .status-sftp-toggle:hover { border-color: var(--state-selected-border); background: var(--state-hover-bg); color: var(--text); }
 .status-sftp-toggle[aria-pressed="true"] { border-color: var(--state-info-border); background: var(--state-selected-bg); color: var(--state-info-text); }
-.status-sftp-toggle span { line-height: 1; }
-.status-monitor-region { min-width: 0; flex: 1 1 auto; display: flex; align-items: center; gap: 18px; overflow: hidden; color: inherit; text-align: left; }
+.status-monitor-region { min-width: 0; flex: 1 1 auto; display: flex; align-items: center; gap: 10px; overflow: hidden; color: inherit; text-align: left; }
 .status-monitor-region span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status-server-name { flex: 1 1 8ch; max-width: 18ch; }
+.status-connection-state, .status-latency, .status-rate { flex: 0 0 auto; min-width: max-content; }
 .status-monitor-region:hover { color: var(--text); }
-.status-transfer-wrap { position: relative; flex: 0 1 420px; min-width: 190px; display: flex; justify-content: flex-end; align-items: center; gap: 14px; margin-left: auto; }
+.status-transfer-wrap { position: relative; flex: 0 1 340px; min-width: 150px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-left: auto; }
 .status-alert { flex: 0 0 auto; color: #f3a0a7; font-size: var(--ui-font-size-small); }
 .status-alert:hover { color: var(--text); }
 .status-tunnel { flex: 0 0 auto; color: #8db4ff; font-size: var(--ui-font-size-small); }

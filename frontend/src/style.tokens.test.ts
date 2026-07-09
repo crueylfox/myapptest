@@ -1577,16 +1577,20 @@ describe('theme and overlay tokens', () => {
 
   it('keeps terminal status transfer and tunnel controls grouped on the right', () => {
     const statusbar = block('.terminal-statusbar')
+    const serverName = block('.status-server-name')
+    const latency = block('.status-connection-state, .status-latency, .status-rate')
     const transferWrap = block('.status-transfer-wrap')
     const transfer = block('.status-transfer')
     const tunnel = block('.status-tunnel')
 
     expect(statusbar).toContain('display: flex')
+    expect(serverName).toContain('flex: 1 1 8ch')
+    expect(latency).toContain('min-width: max-content')
     expect(transferWrap).toContain('justify-content: flex-end')
     expect(transferWrap).toContain('align-items: center')
-    expect(transferWrap).toContain('gap: 14px')
+    expect(transferWrap).toContain('gap: 10px')
     expect(transferWrap).toContain('margin-left: auto')
-    expect(transferWrap).toContain('flex: 0 1 420px')
+    expect(transferWrap).toContain('flex: 0 1 340px')
     expect(transfer).toContain('text-align: right')
     expect(tunnel).toContain('flex: 0 0 auto')
   })

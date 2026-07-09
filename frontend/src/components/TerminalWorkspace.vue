@@ -137,7 +137,7 @@ const storedWidth = storedWidthValue === null ? Number.NaN : Number(storedWidthV
 const sidebarWidth = ref(Number.isFinite(storedWidth) ? storedWidth : 300)
 const sidebarCollapsed = ref(localStorage.getItem('serverpilot.monitorSidebarCollapsed') === 'true')
 const autoCollapsed = ref(false)
-const sftpExpanded = ref(localStorage.getItem('serverpilot.sftpExpanded') === 'true')
+const sftpExpanded = ref(localStorage.getItem('serverpilot.sftpExpanded') !== 'false')
 const storedSFTPHeightValue = localStorage.getItem('serverpilot.sftpHeight')
 const storedSFTPHeight = storedSFTPHeightValue === null ? Number.NaN : Number(storedSFTPHeightValue)
 const sftpHeight = ref(Number.isFinite(storedSFTPHeight) ? storedSFTPHeight : 180)
@@ -1000,7 +1000,7 @@ onBeforeUnmount(() => {
         @notify="(message, type) => emit('notify', message, type)"
       />
       <div class="terminal-statusbar">
-        <button v-if="!localTerminalActive" class="status-sftp-toggle" data-testid="status-sftp-toggle" type="button" :aria-pressed="bottomPanelExpanded" :title="bottomPanelExpanded ? 'Hide SFTP panel' : 'Show SFTP panel'" @click.stop="toggleSFTP"><AppIcon :name="bottomPanelExpanded ? 'chevron-down' : 'chevron-up'" :size="13" /><span>SFTP</span></button>
+        <button v-if="!localTerminalActive" class="status-sftp-toggle" data-testid="status-sftp-toggle" type="button" :aria-label="bottomPanelExpanded ? 'Hide SFTP panel' : 'Show SFTP panel'" :aria-pressed="bottomPanelExpanded" :title="bottomPanelExpanded ? 'Hide SFTP panel' : 'Show SFTP panel'" @click.stop="toggleSFTP"><AppIcon :name="bottomPanelExpanded ? 'chevron-down' : 'chevron-up'" :size="13" /></button>
         <button v-if="localTerminalActive" class="status-monitor-region">
           <span>本地终端</span>
           <span>{{ localTerminalStore.activeSession?.shell || 'Shell' }}</span>
@@ -1008,11 +1008,11 @@ onBeforeUnmount(() => {
           <span>{{ localTerminalStore.activeSession?.cwd || '—' }}</span>
         </button>
         <button v-else class="status-monitor-region" @click="emit('monitor')">
-          <span>{{ activeWorkspaceConnection?.name ?? '未连接服务器' }}</span>
-          <span v-if="hasRemoteStatusSummary">{{ statusLabel(store.activeWorkspace?.status) }}</span>
-          <span v-if="hasRemoteStatusSummary">延迟 {{ snapshot?.latencyAvailable ? `${snapshot.latencyMillis} ms` : '—' }}</span>
-          <span v-if="hasRemoteStatusSummary">↓ {{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
-          <span v-if="hasRemoteStatusSummary">↑ {{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</span>
+          <span class="status-server-name">{{ activeWorkspaceConnection?.name ?? '未连接服务器' }}</span>
+          <span v-if="hasRemoteStatusSummary" class="status-connection-state">{{ statusLabel(store.activeWorkspace?.status) }}</span>
+          <span v-if="hasRemoteStatusSummary" class="status-latency">延迟 {{ snapshot?.latencyAvailable ? `${snapshot.latencyMillis} ms` : '—' }}</span>
+          <span v-if="hasRemoteStatusSummary" class="status-rate">↓ {{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
+          <span v-if="hasRemoteStatusSummary" class="status-rate">↑ {{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</span>
         </button>
         <div class="status-transfer-wrap">
           <button ref="transferButton" class="status-transfer" :title="transferSummary(latestTransfer)" @click.stop="openTransferPopover">
