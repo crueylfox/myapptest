@@ -115,9 +115,9 @@ Updated: 2026-07-09
 - Beta56 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.56.exe`.
 - Beta56 Windows EXE SHA-256: `2FCA57BDB4E99910629EBA7BF428CB66ABBAE9775D424A7BFC9772F38019B233`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions beta56 `Build macOS`: pending until the beta56 code commit is pushed.
-- Artifact: `ServerPilot-macos-unsigned` expected from the macOS runner.
-- Artifact SHA-256: pending.
+- GitHub Actions beta56 `Build macOS`: passed for commit `f15db3f`, run `29006448326`.
+- Artifact: `ServerPilot-macos-unsigned` produced by the macOS runner.
+- Artifact SHA-256: pending local/user download.
 - macOS artifact came from the GitHub Actions macOS runner.
 
 ## 5. Next
