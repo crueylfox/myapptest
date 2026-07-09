@@ -613,6 +613,9 @@ describe('theme and overlay tokens', () => {
     expect(menu).toContain('top: calc(var(--workspace-topbar-height) + 2px)')
     expect(restore).toContain('width: var(--workspace-sidebar-restore-size)')
     expect(restore).toContain('height: var(--workspace-sidebar-restore-size)')
+    expect(restore).toContain('border: 0')
+    expect(restore).toContain('background: transparent')
+    expect(restore).not.toContain('box-shadow')
   })
 
   it('keeps checked radio controls visible in dark and light settings groups', () => {
