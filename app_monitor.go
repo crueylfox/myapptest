@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func (a *App) BeginAlertSession(request domain.BeginAlertSessionRequest) error {

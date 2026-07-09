@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const exitMarker = "__SERVERPILOT_DIAG_EXIT__="

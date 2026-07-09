@@ -39,15 +39,7 @@ describe('TerminalEmptyPane', () => {
     expect(wrapper.text()).not.toContain('CMD')
     expect(wrapper.text()).not.toContain('PowerShell')
     expect(wrapper.findAll('.terminal-pane-empty-actions .app-icon')).toHaveLength(2)
-    const separators = wrapper.findAll('.terminal-pane-empty-actions .action-separator')
-    expect(separators).toHaveLength(1)
-    for (const separator of separators) {
-      expect(separator.attributes('aria-hidden')).toBe('true')
-      expect(separator.classes()).toContain('action-separator--vertical-stack')
-      expect(separator.classes()).not.toContain('action-separator--horizontal-stack')
-    }
-    expect(wrapper.find('.terminal-pane-empty-actions .action-separator:first-child').exists()).toBe(false)
-    expect(wrapper.find('.terminal-pane-empty-actions .action-separator:last-child').exists()).toBe(false)
+    expect(wrapper.findAll('.terminal-pane-empty-actions .action-separator')).toHaveLength(0)
     for (const action of wrapper.findAll('.terminal-pane-empty-actions button')) {
       expect(action.classes()).not.toContain('primary')
       expect(action.classes()).not.toContain('secondary')
@@ -101,11 +93,6 @@ describe('TerminalEmptyPane', () => {
     expect(actions.classes()).toContain('terminal-empty-actions--horizontal')
     expect(actions.classes()).not.toContain('terminal-empty-actions--vertical')
     expect(actions.findAll('button')).toHaveLength(2)
-    const separators = actions.findAll('.action-separator')
-    expect(separators).toHaveLength(1)
-    for (const separator of separators) {
-      expect(separator.classes()).toContain('action-separator--vertical-stack')
-      expect(separator.classes()).not.toContain('action-separator--horizontal-stack')
-    }
+    expect(actions.findAll('.action-separator')).toHaveLength(0)
   })
 })

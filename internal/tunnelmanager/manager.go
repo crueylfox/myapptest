@@ -14,9 +14,9 @@ import (
 	"syscall"
 	"time"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/sshclient"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/sshclient"
 )
 
 var ErrPublicBindRequiresConfirmation = errors.New("PUBLIC_BIND_REQUIRES_CONFIRMATION")

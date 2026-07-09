@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type fakeTransport struct {

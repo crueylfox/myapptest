@@ -22,7 +22,7 @@ export interface CommandButtonPoint {
   y: number
 }
 
-export const COMMAND_BUTTON_DOCK_STORAGE_KEY = 'serverpilot.commandButtonDock'
+export const COMMAND_BUTTON_DOCK_STORAGE_KEY = 'hostdeck.commandButtonDock'
 export const DEFAULT_COMMAND_BUTTON_DOCK: CommandButtonDock = { edge: 'bottom', offset: 18, align: 'end' }
 export const COMMAND_BUTTON_MARGIN = 12
 export const COMMAND_BUTTON_DRAG_THRESHOLD = 6

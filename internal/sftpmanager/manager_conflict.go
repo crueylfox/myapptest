@@ -3,9 +3,9 @@ package sftpmanager
 import (
 	"errors"
 	"fmt"
+	"hostdeck/internal/domain"
 	"os"
 	"path/filepath"
-	"serverpilot/internal/domain"
 	"strings"
 )
 

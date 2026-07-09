@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const inspectRemoteForwardAccessCommand = `sh <<'SERVERPILOT_INSPECT_GATEWAYPORTS'
@@ -80,9 +80,9 @@ if [ "$(id -u)" != "0" ]; then
   fi
 fi
 STAMP=$(date +%Y%m%d%H%M%S)
-BACKUP="${CONFIG}.serverpilot.bak.${STAMP}"
+BACKUP="${CONFIG}.hostdeck.bak.${STAMP}"
 $SUDO cp -p "$CONFIG" "$BACKUP" || fail backup_failed "备份 sshd_config 失败。"
-TMP=$(mktemp /tmp/serverpilot-sshd-config.XXXXXX) || fail temp_failed "创建临时配置失败。" "$BACKUP"
+TMP=$(mktemp /tmp/hostdeck-sshd-config.XXXXXX) || fail temp_failed "创建临时配置失败。" "$BACKUP"
 awk '
 BEGIN { done=0; inmatch=0 }
 tolower($1)=="match" && !done { print "GatewayPorts yes"; done=1; inmatch=1; print; next }

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const kibibyte = uint64(1024)

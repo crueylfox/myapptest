@@ -16,8 +16,8 @@ import (
 	"sync"
 	"time"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
 )
 
 const (
@@ -30,7 +30,7 @@ var (
 	ErrUnsupported          = errors.New("当前系统不支持本地终端")
 	ErrNotFound             = errors.New("本地终端会话不存在")
 	ErrDisabled             = errors.New("LOCAL_TERMINAL_DISABLED: 本地终端暂未启用")
-	ErrNeedElevatedRelaunch = errors.New("NEED_ELEVATED_RELAUNCH: 管理员本地终端需要以管理员身份运行 ServerPilot")
+	ErrNeedElevatedRelaunch = errors.New("NEED_ELEVATED_RELAUNCH: 管理员本地终端需要以管理员身份运行 HostDeck")
 )
 
 type lookPathFunc func(string) (string, error)
@@ -187,8 +187,8 @@ func localTerminalShellOptionsForPlatform(platform string, admin bool) []domain.
 	}
 	if admin {
 		return []domain.LocalTerminalShellOption{
-			{ID: "cmd-admin", Label: "CMD（管理员）", Description: "以管理员身份运行 ServerPilot 时打开管理员 CMD。"},
-			{ID: "powershell-admin", Label: "PowerShell（管理员）", Description: "以管理员身份运行 ServerPilot 时打开管理员 PowerShell。"},
+			{ID: "cmd-admin", Label: "CMD（管理员）", Description: "以管理员身份运行 HostDeck 时打开管理员 CMD。"},
+			{ID: "powershell-admin", Label: "PowerShell（管理员）", Description: "以管理员身份运行 HostDeck 时打开管理员 PowerShell。"},
 		}
 	}
 	return []domain.LocalTerminalShellOption{

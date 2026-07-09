@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type shortcutHotkey struct {
@@ -127,11 +127,11 @@ func shortcutConflictMessage(hotkey shortcutHotkey, status domain.ShortcutConfli
 		return fmt.Sprintf("%s 暂未检测到 Windows 全局占用。此检测为 best-effort，仍可能被输入法或应用内快捷键拦截。", hotkey.Display)
 	case domain.ShortcutConflictOccupied:
 		if hotkey.Normalized == "ctrl+space" {
-			return fmt.Sprintf("%s 可能已被 Windows、输入法或其他应用注册，ServerPilot 可能无法收到该按键。仍可保存。", hotkey.Display)
+			return fmt.Sprintf("%s 可能已被 Windows、输入法或其他应用注册，HostDeck 可能无法收到该按键。仍可保存。", hotkey.Display)
 		}
-		return fmt.Sprintf("%s 可能已被 Windows 或其他应用注册为全局快捷键，ServerPilot 可能无法收到该按键。仍可保存。", hotkey.Display)
+		return fmt.Sprintf("%s 可能已被 Windows 或其他应用注册为全局快捷键，HostDeck 可能无法收到该按键。仍可保存。", hotkey.Display)
 	case domain.ShortcutConflictReserved:
-		return fmt.Sprintf("%s 可能是 Windows、输入法或桌面环境保留快捷键，ServerPilot 可能无法稳定收到该按键。仍可保存。", hotkey.Display)
+		return fmt.Sprintf("%s 可能是 Windows、输入法或桌面环境保留快捷键，HostDeck 可能无法稳定收到该按键。仍可保存。", hotkey.Display)
 	case domain.ShortcutConflictUnknown:
 		return fmt.Sprintf("无法确认 %s 是否被外部快捷键占用；此检测为 best-effort，不能发现所有应用内快捷键。仍可保存。", hotkey.Display)
 	default:

@@ -132,13 +132,13 @@ const localTerminalStore = useLocalTerminalStore()
 const tunnelStore = useTunnelStore()
 const root = ref<HTMLElement>()
 const terminalStage = ref<HTMLElement>()
-const storedWidthValue = localStorage.getItem('serverpilot.monitorSidebarWidth')
+const storedWidthValue = localStorage.getItem('hostdeck.monitorSidebarWidth')
 const storedWidth = storedWidthValue === null ? Number.NaN : Number(storedWidthValue)
 const sidebarWidth = ref(Number.isFinite(storedWidth) ? storedWidth : 230)
-const sidebarCollapsed = ref(localStorage.getItem('serverpilot.monitorSidebarCollapsed') === 'true')
+const sidebarCollapsed = ref(localStorage.getItem('hostdeck.monitorSidebarCollapsed') === 'true')
 const autoCollapsed = ref(false)
-const sftpExpanded = ref(localStorage.getItem('serverpilot.sftpExpanded') !== 'false')
-const storedSFTPHeightValue = localStorage.getItem('serverpilot.sftpHeight')
+const sftpExpanded = ref(localStorage.getItem('hostdeck.sftpExpanded') !== 'false')
+const storedSFTPHeightValue = localStorage.getItem('hostdeck.sftpHeight')
 const storedSFTPHeight = storedSFTPHeightValue === null ? Number.NaN : Number(storedSFTPHeightValue)
 const sftpHeight = ref(Number.isFinite(storedSFTPHeight) ? storedSFTPHeight : 140)
 const internalRevision = ref(0)
@@ -361,8 +361,8 @@ const panelResizeFlow = useWorkspacePaneResizeFlow({
   rootRef: root,
   sidebarWidth,
   sftpHeight,
-  persistSidebarWidth: (width) => localStorage.setItem('serverpilot.monitorSidebarWidth', String(width)),
-  persistSftpHeight: (height) => localStorage.setItem('serverpilot.sftpHeight', String(height)),
+  persistSidebarWidth: (width) => localStorage.setItem('hostdeck.monitorSidebarWidth', String(width)),
+  persistSftpHeight: (height) => localStorage.setItem('hostdeck.sftpHeight', String(height)),
   setSidebarCollapsed: setSidebarCollapsedFromSplitter,
   setSftpExpanded: setBottomPanelExpandedFromSplitter,
   bumpLayout,
@@ -555,20 +555,20 @@ function setSidebarCollapsedFromSplitter(nextCollapsed: boolean) {
     autoCollapsed.value = false
     autoCollapseDismissed.value = true
   }
-  localStorage.setItem('serverpilot.monitorSidebarCollapsed', String(sidebarCollapsed.value))
+  localStorage.setItem('hostdeck.monitorSidebarCollapsed', String(sidebarCollapsed.value))
 }
 
 function restoreMonitorSidebar() {
   sidebarCollapsed.value = false
   autoCollapsed.value = false
   autoCollapseDismissed.value = true
-  localStorage.setItem('serverpilot.monitorSidebarCollapsed', 'false')
+  localStorage.setItem('hostdeck.monitorSidebarCollapsed', 'false')
   bumpLayout()
 }
 
 function setBottomPanelExpandedFromSplitter(nextExpanded: boolean) {
   sftpExpanded.value = nextExpanded
-  localStorage.setItem('serverpilot.sftpExpanded', String(sftpExpanded.value))
+  localStorage.setItem('hostdeck.sftpExpanded', String(sftpExpanded.value))
 }
 
 function errorMessage(reason: unknown, fallback: string) {
@@ -618,7 +618,7 @@ function handleWorkspaceKeydown(event: KeyboardEvent) {
 
 function toggleSFTP() {
   sftpExpanded.value = !sftpExpanded.value
-  localStorage.setItem('serverpilot.sftpExpanded', String(sftpExpanded.value))
+  localStorage.setItem('hostdeck.sftpExpanded', String(sftpExpanded.value))
   void nextTick(bumpLayout)
 }
 
@@ -672,7 +672,7 @@ watch(
 watch(() => props.sftpOpenRevision, () => {
   if (!props.sftpOpenRevision) return
   sftpExpanded.value = true
-  localStorage.setItem('serverpilot.sftpExpanded', 'true')
+  localStorage.setItem('hostdeck.sftpExpanded', 'true')
   void nextTick(bumpLayout)
 })
 
@@ -786,10 +786,10 @@ onMounted(() => {
   window.addEventListener('pointerdown', closePaneOverlays, true)
   window.addEventListener('keydown', handleWorkspaceKeydown, true)
   window.addEventListener('resize', updateTransferPopoverPosition)
-  window.addEventListener('serverpilot:workspace-tab-external-drop', handleExternalTabDrop)
-  window.addEventListener('serverpilot:workspace-split-mode-change', handleSplitModeChange)
-  window.addEventListener('serverpilot:workspace-split-ratio-reset', handleSplitRatioReset)
-  window.addEventListener('serverpilot:workspace-split-clear-panes', handleSplitClearPanes)
+  window.addEventListener('hostdeck:workspace-tab-external-drop', handleExternalTabDrop)
+  window.addEventListener('hostdeck:workspace-split-mode-change', handleSplitModeChange)
+  window.addEventListener('hostdeck:workspace-split-ratio-reset', handleSplitRatioReset)
+  window.addEventListener('hostdeck:workspace-split-clear-panes', handleSplitClearPanes)
   refreshVisibleOutputSessions()
 })
 
@@ -805,10 +805,10 @@ onBeforeUnmount(() => {
   window.removeEventListener('pointerdown', closePaneOverlays, true)
   window.removeEventListener('keydown', handleWorkspaceKeydown, true)
   window.removeEventListener('resize', updateTransferPopoverPosition)
-  window.removeEventListener('serverpilot:workspace-tab-external-drop', handleExternalTabDrop)
-  window.removeEventListener('serverpilot:workspace-split-mode-change', handleSplitModeChange)
-  window.removeEventListener('serverpilot:workspace-split-ratio-reset', handleSplitRatioReset)
-  window.removeEventListener('serverpilot:workspace-split-clear-panes', handleSplitClearPanes)
+  window.removeEventListener('hostdeck:workspace-tab-external-drop', handleExternalTabDrop)
+  window.removeEventListener('hostdeck:workspace-split-mode-change', handleSplitModeChange)
+  window.removeEventListener('hostdeck:workspace-split-ratio-reset', handleSplitRatioReset)
+  window.removeEventListener('hostdeck:workspace-split-clear-panes', handleSplitClearPanes)
 })
 </script>
 

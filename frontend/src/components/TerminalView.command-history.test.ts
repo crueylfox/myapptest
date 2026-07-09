@@ -892,8 +892,8 @@ describe('TerminalView command history attachment', () => {
   })
 
   it('uses SSH completion trigger length and max suggestion preferences', async () => {
-    localStorage.setItem('serverpilot.sshCommandCompletion.triggerChars', '3')
-    localStorage.setItem('serverpilot.sshCommandCompletion.maxSuggestions', '5')
+    localStorage.setItem('hostdeck.sshCommandCompletion.triggerChars', '3')
+    localStorage.setItem('hostdeck.sshCommandCompletion.maxSuggestions', '5')
     vi.mocked(window.go!.main!.App!.ListCommandHistory).mockResolvedValue([])
     vi.mocked(window.go!.main!.App!.ListCommandFavorites).mockResolvedValue([])
     const { wrapper } = mountTerminal()
@@ -911,7 +911,7 @@ describe('TerminalView command history attachment', () => {
   })
 
   it('shows command descriptions in the SSH completion overlay when enabled', async () => {
-    localStorage.setItem('serverpilot.sshCommandCompletion.showDescriptions', 'true')
+    localStorage.setItem('hostdeck.sshCommandCompletion.showDescriptions', 'true')
     vi.mocked(window.go!.main!.App!.ListCommandHistory).mockResolvedValue([])
     vi.mocked(window.go!.main!.App!.ListCommandFavorites).mockResolvedValue([])
     const { wrapper } = mountTerminal()
@@ -1031,7 +1031,7 @@ describe('TerminalView command history attachment', () => {
     await wrapper.get('[data-testid="completion-disable"]').trigger('click')
     await flush()
 
-    expect(localStorage.getItem('serverpilot.sshCommandCompletion.enabled')).toBe('false')
+    expect(localStorage.getItem('hostdeck.sshCommandCompletion.enabled')).toBe('false')
     expect(wrapper.find('[data-testid="terminal-completion-overlay"]').exists()).toBe(false)
 
     terminalState.dataCallback?.('\x15')

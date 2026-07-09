@@ -185,7 +185,7 @@ describe('TunnelManagerDialog', () => {
           })),
           EnableRemoteForwardAccess: vi.fn(async () => ({
             success: true,
-            backupPath: '/etc/ssh/sshd_config.serverpilot.bak.20260618210000',
+            backupPath: '/etc/ssh/sshd_config.hostdeck.bak.20260618210000',
             changedFiles: ['/etc/ssh/sshd_config'],
             reloadCommand: 'systemctl reload sshd',
             message: 'GatewayPorts yes 已启用。',
@@ -194,7 +194,7 @@ describe('TunnelManagerDialog', () => {
           EnableRemoteForwardAccessAndRestart: vi.fn(async () => ({
             access: {
               success: true,
-              backupPath: '/etc/ssh/sshd_config.serverpilot.bak.20260618210000',
+              backupPath: '/etc/ssh/sshd_config.hostdeck.bak.20260618210000',
               changedFiles: ['/etc/ssh/sshd_config'],
               reloadCommand: 'systemctl reload sshd',
               message: 'GatewayPorts yes 已启用并已重启隧道。',

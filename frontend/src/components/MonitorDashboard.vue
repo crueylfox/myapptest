@@ -77,13 +77,13 @@ onMounted(() => {
     updateSize(entry.contentRect.width, entry.contentRect.height)
   })
   if (root.value) observer.observe(root.value)
-  window.addEventListener('serverpilot:appearance', handleAppearanceChange)
+  window.addEventListener('hostdeck:appearance', handleAppearanceChange)
 })
 
 onBeforeUnmount(() => {
   observer?.disconnect()
   observer = null
-  window.removeEventListener('serverpilot:appearance', handleAppearanceChange)
+  window.removeEventListener('hostdeck:appearance', handleAppearanceChange)
 })
 </script>
 

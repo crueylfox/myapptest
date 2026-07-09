@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const maxEntries = 2000
@@ -22,7 +22,7 @@ func New(directory string) (*Logger, error) {
 	if err := os.MkdirAll(directory, 0o700); err != nil {
 		return nil, err
 	}
-	file, err := os.OpenFile(filepath.Join(directory, "serverpilot.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
+	file, err := os.OpenFile(filepath.Join(directory, "HostDeck.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
 	if err != nil {
 		return nil, err
 	}

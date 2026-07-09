@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 var ErrTunnelProfileNameExists = errors.New("TUNNEL_PROFILE_NAME_EXISTS: 该服务器下已存在同名端口转发配置，请修改名称。")

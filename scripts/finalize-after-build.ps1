@@ -2,7 +2,7 @@ param(
     [ValidateSet("Current", "Milestone", "Rules")]
     [string]$Mode = "Current",
 
-    [string]$ExePath = "build/bin/ServerPilot.exe",
+    [string]$ExePath = "build/bin/HostDeck.exe",
 
     [switch]$Check,
 

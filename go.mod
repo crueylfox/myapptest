@@ -1,4 +1,4 @@
-module serverpilot
+module hostdeck
 
 go 1.26.0
 

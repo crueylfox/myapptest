@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/linuxmonitor"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/networkdiag"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/linuxmonitor"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/networkdiag"
 )
 
 const monitorCollectionFixture = `@@CPU

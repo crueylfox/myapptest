@@ -19,10 +19,10 @@ const (
 type TerminalThemeName string
 
 const (
-	TerminalThemeServerPilotDark TerminalThemeName = "serverpilot-dark"
-	TerminalThemeClassicDark     TerminalThemeName = "classic-dark"
-	TerminalThemeLight           TerminalThemeName = "light"
-	TerminalThemeCustom          TerminalThemeName = "custom"
+	TerminalThemeHostDeckDark TerminalThemeName = "hostdeck-dark"
+	TerminalThemeClassicDark  TerminalThemeName = "classic-dark"
+	TerminalThemeLight        TerminalThemeName = "light"
+	TerminalThemeCustom       TerminalThemeName = "custom"
 )
 
 type TerminalProfile struct {
@@ -113,7 +113,7 @@ func DefaultTerminalProfile() TerminalProfile {
 		CursorStyle:         TerminalCursorBlock,
 		CursorBlink:         true,
 		Scrollback:          10000,
-		ThemeName:           TerminalThemeServerPilotDark,
+		ThemeName:           TerminalThemeHostDeckDark,
 		Foreground:          "#d7dde5",
 		Background:          "#15171a",
 		SelectionBackground: "#5b8cff47",
@@ -136,7 +136,7 @@ func NormalizeTerminalProfileRequest(request SaveTerminalProfileRequest) SaveTer
 		request.CursorStyle = TerminalCursorBlock
 	}
 	if request.ThemeName == "" {
-		request.ThemeName = TerminalThemeServerPilotDark
+		request.ThemeName = TerminalThemeHostDeckDark
 	}
 	return request
 }
@@ -173,7 +173,7 @@ func ValidateTerminalProfile(request SaveTerminalProfileRequest) error {
 		return errors.New("滚动缓冲行数必须在 1000 到 50000 之间")
 	}
 	switch request.ThemeName {
-	case TerminalThemeServerPilotDark, TerminalThemeClassicDark, TerminalThemeLight, TerminalThemeCustom:
+	case TerminalThemeHostDeckDark, TerminalThemeClassicDark, TerminalThemeLight, TerminalThemeCustom:
 	default:
 		return errors.New("配色方案无效")
 	}

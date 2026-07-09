@@ -6,10 +6,10 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/dockermanager"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/dockermanager"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
 )
 
 func (a *App) DockerCheck(serverID int64) (domain.DockerAvailability, error) {

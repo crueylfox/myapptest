@@ -273,7 +273,7 @@ describe('RemoteTextEditor', () => {
     expect(wrapper.get('.sftp-editor-error').text()).toContain('SFTP_SAVE_PERMISSION_DENIED')
   })
 
-  it('injects the ServerPilot CodeMirror theme and search match styles', () => {
+  it('injects the HostDeck CodeMirror theme and search match styles', () => {
     mountEditor({ name: 'script.sh', path: '/tmp/script.sh' })
     const styleText = Array.from(document.querySelectorAll('style')).map((style) => style.textContent ?? '').join('\n')
 

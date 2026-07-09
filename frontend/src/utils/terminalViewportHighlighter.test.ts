@@ -856,7 +856,7 @@ describe('terminal viewport highlighter', () => {
     expect(decorationForLineText(decorations, lines[1], 1, 'echo')).toBeTruthy()
   })
 
-  it('surfaces ServerPilot decoration on plain cat output instead of relying on remote ANSI ls colors', () => {
+  it('surfaces HostDeck decoration on plain cat output instead of relying on remote ANSI ls colors', () => {
     const lines = [
       'root@centos:~# cat 3.sh',
       'MANUAL_TAR="/root/3.gz"',

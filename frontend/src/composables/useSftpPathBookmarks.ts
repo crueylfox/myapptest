@@ -10,7 +10,7 @@ import {
 import { normalizeRemoteInputPath } from '../utils/sftpRemotePath'
 import { safeReadJson, safeWriteJson, type PersistentJsonStorage } from '../utils/persistentJson'
 
-export const PATH_BOOKMARKS_KEY = 'serverpilot.sftpPathBookmarks.v1'
+export const PATH_BOOKMARKS_KEY = 'hostdeck.sftpPathBookmarks.v1'
 
 export type SftpPathBookmarkAddResult =
   | { status: 'added'; bookmark: SftpPathBookmark; saved: boolean }

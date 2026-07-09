@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/sshclient"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/sshclient"
 	"strings"
 )
 

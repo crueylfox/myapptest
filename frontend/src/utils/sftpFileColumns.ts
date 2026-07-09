@@ -18,7 +18,7 @@ export type FileColumnLayout = {
 
 export type FileColumnLayoutStorage = PersistentJsonStorage
 
-export const FILE_COLUMN_LAYOUT_KEY = 'serverpilot.sftpColumnLayout.v1'
+export const FILE_COLUMN_LAYOUT_KEY = 'hostdeck.sftpColumnLayout.v1'
 
 export const FILE_COLUMNS: FileColumn[] = [
   { id: 'name', label: '名称', minWidth: 120, defaultWidth: 260, sortable: 'name' },

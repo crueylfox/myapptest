@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func (s *Store) GetWindowState(ctx context.Context) (domain.WindowState, bool, error) {

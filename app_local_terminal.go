@@ -8,8 +8,8 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/localterminal"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/localterminal"
 )
 
 func (a *App) GetLocalTerminalCapabilities() (domain.LocalTerminalCapabilities, error) {
@@ -40,7 +40,7 @@ func (a *App) RelaunchElevatedLocalTerminal(request domain.LocalTerminalElevated
 	}
 	executable, err := os.Executable()
 	if err != nil {
-		return fmt.Errorf("获取 ServerPilot 路径失败: %w", err)
+		return fmt.Errorf("获取 HostDeck 路径失败: %w", err)
 	}
 	if err := localterminal.RelaunchElevated(
 		executable,

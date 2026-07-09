@@ -3,7 +3,7 @@ package sftpmanager
 import (
 	"context"
 	"errors"
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 	"sort"
 	"strings"
 )

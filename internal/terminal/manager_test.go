@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
 )
 
 type testEmitter struct {

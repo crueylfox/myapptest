@@ -3,10 +3,10 @@ package sftpmanager
 import (
 	"context"
 	"errors"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
 	"io"
 	"net"
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
 	"strings"
 )
 

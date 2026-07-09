@@ -9,7 +9,7 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const (

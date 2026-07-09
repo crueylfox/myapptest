@@ -154,8 +154,8 @@ describe('useNativeAlertNotifications', () => {
 
     expect(runtime.send).toHaveBeenCalledTimes(1)
     expect(runtime.send).toHaveBeenCalledWith(expect.objectContaining({
-      id: 'serverpilot-native-notification-test',
-      title: 'ServerPilot 测试通知',
+      id: 'hostdeck-native-notification-test',
+      title: 'HostDeck 测试通知',
     }))
   })
 

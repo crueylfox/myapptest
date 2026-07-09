@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type processListCommand struct {

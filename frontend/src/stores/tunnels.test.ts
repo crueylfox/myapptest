@@ -110,7 +110,7 @@ describe('tunnel store', () => {
           })),
           EnableRemoteForwardAccess: vi.fn(async () => ({
             success: true,
-            backupPath: '/etc/ssh/sshd_config.serverpilot.bak.20260618210000',
+            backupPath: '/etc/ssh/sshd_config.hostdeck.bak.20260618210000',
             changedFiles: ['/etc/ssh/sshd_config'],
             reloadCommand: 'systemctl reload sshd',
             message: 'GatewayPorts yes 已启用。',
@@ -176,7 +176,7 @@ describe('tunnel store', () => {
     expect(window.go?.main?.App?.InspectRemoteForwardAccess).toHaveBeenCalledWith(request)
     expect(window.go?.main?.App?.EnableRemoteForwardAccess).toHaveBeenCalledWith(request)
     expect(inspect.sshdType).toBe('openssh')
-    expect(enabled.backupPath).toContain('serverpilot.bak')
+    expect(enabled.backupPath).toContain('hostdeck.bak')
   })
 
   it('applies state, traffic, and error events by tunnel id', () => {

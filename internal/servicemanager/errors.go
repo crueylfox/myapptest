@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func userMessageForError(err error, fallback string) string {

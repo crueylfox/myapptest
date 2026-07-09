@@ -12,12 +12,12 @@ import (
 	"sync"
 	"time"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/linuxmonitor"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/networkdiag"
-	"serverpilot/internal/sshclient"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/linuxmonitor"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/networkdiag"
+	"hostdeck/internal/sshclient"
 )
 
 type HostKeySaver func(context.Context, int64, string) error

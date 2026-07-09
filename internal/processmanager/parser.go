@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const (
@@ -123,7 +123,7 @@ func parseSingleProcessList(serverID int64, strategy string, output string) (dom
 	}, nil
 }
 
-// ParseProcProcessList parses ServerPilot's tab-separated /proc collector
+// ParseProcProcessList parses HostDeck's tab-separated /proc collector
 // output. The final column intentionally carries only UI data; callers must not
 // log it.
 func ParseProcProcessList(serverID int64, input string) ([]domain.ProcessEntry, []string, error) {

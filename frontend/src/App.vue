@@ -404,7 +404,7 @@ const localTerminalLaunchFlow = useLocalTerminalLaunchFlow({
   relaunchElevatedLocalTerminal: (shellKind) => api.relaunchElevatedLocalTerminal({ shellKind }),
   confirmElevatedRelaunch: () => confirmDialog({
     title: '管理员本地终端',
-    message: '管理员模式需要以管理员身份重新启动 ServerPilot，是否继续？',
+    message: '管理员模式需要以管理员身份重新启动 HostDeck，是否继续？',
     confirmText: '重新启动',
   }),
   closeTransientOverlays,

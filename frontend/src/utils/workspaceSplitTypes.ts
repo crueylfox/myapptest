@@ -15,7 +15,7 @@ export type SplitLayoutState = {
 
 export type SplitRatios = Pick<SplitLayoutState, 'columnRatio' | 'rowRatio'>
 
-export const WORKSPACE_SPLIT_LAYOUT_STORAGE_KEY = 'serverpilot.workspaceSplitLayout.v1'
+export const WORKSPACE_SPLIT_LAYOUT_STORAGE_KEY = 'hostdeck.workspaceSplitLayout.v1'
 export const SPLIT_RATIO_DEFAULT = 0.5
 export const SPLIT_RATIO_MIN = 0.25
 export const SPLIT_RATIO_MAX = 0.75

@@ -145,7 +145,7 @@ const terminalProfileForm = reactive<SaveTerminalProfileRequest>({
   cursorColor: defaultTerminalProfile.cursorColor,
 })
 const terminalThemeOptions: Array<{ value: TerminalThemeName; label: string }> = [
-  { value: 'serverpilot-dark', label: 'ServerPilot Dark' },
+  { value: 'hostdeck-dark', label: 'HostDeck Dark' },
   { value: 'classic-dark', label: 'Classic Dark' },
   { value: 'light', label: 'Light' },
   { value: 'custom', label: 'Custom' },
@@ -173,7 +173,7 @@ const { platformCapabilities, showLocalTerminalAdminSetting, loadLocalTerminalCa
 const platform = computed(() => platformCapabilities.value.platform)
 const formDirty = computed(() => forceFormDirty.value ||
   JSON.stringify(normalizeSettings(settingsDraft())) !== JSON.stringify(normalizeSettings(props.settings)))
-const appVersionLabel = computed(() => appVersion.value ? `ServerPilot v${appVersion.value}` : 'ServerPilot')
+const appVersionLabel = computed(() => appVersion.value ? `HostDeck v${appVersion.value}` : 'HostDeck')
 const shortcutConflicts = computed(() => findShortcutConflicts(form.shortcutSettings))
 const externalShortcutConflicts = ref<ShortcutConflictEntry[]>([])
 let shortcutConflictCheckTimer: number | null = null
@@ -335,7 +335,7 @@ function scheduleShortcutConflictCheck() {
     externalShortcutConflicts.value = [{
       shortcut: '',
       status: 'unknown',
-      message: 'macOS 快捷键冲突检测暂不可用。ServerPilot 仍可保存这些设置。',
+      message: 'macOS 快捷键冲突检测暂不可用。HostDeck 仍可保存这些设置。',
     }]
     return
   }
@@ -365,7 +365,7 @@ async function runShortcutConflictCheck() {
     externalShortcutConflicts.value = [{
       shortcut: shortcuts.join(', '),
       status: 'unknown',
-      message: '快捷键外部冲突检测暂不可用。ServerPilot 仍可保存这些设置。',
+      message: '快捷键外部冲突检测暂不可用。HostDeck 仍可保存这些设置。',
     }]
   }
 }
@@ -916,7 +916,7 @@ async function deleteKeyEntry(entry: KeyVaultEntry, event?: Event) {
 
 function deleteKeyMessage(entry: KeyVaultEntry, result: { unboundServerCount: number; unboundServerNames: string[] } | null) {
   const legacyNote = entry.storageMode === 'legacy_file_path'
-    ? '\n\n只删除 ServerPilot 中的密钥记录，不会删除本地原始私钥文件。'
+    ? '\n\n只删除 HostDeck 中的密钥记录，不会删除本地原始私钥文件。'
     : ''
   if (!result || result.unboundServerCount <= 0) {
     return `确定删除“${entry.name}”？\n\n私钥密文和保存的私钥口令将被删除。${legacyNote}`
@@ -1233,7 +1233,7 @@ function errorMessage(reason: unknown, fallback: string) {
               <label>光标色<input v-model.trim="terminalProfileForm.cursorColor" /></label>
             </div>
             <div class="terminal-profile-preview" data-testid="terminal-profile-preview" :style="terminalProfilePreview">
-              <span>serverpilot@demo:~$ docker ps</span>
+              <span>hostdeck@demo:~$ docker ps</span>
               <span>CONTAINER ID   IMAGE     STATUS</span>
               <span>7f3a9d2c1b44   nginx     Up 3 minutes</span>
               <span>中文宽字符 / vim / top / Ctrl+C 行为不由 Profile 接管</span>
@@ -1252,7 +1252,7 @@ function errorMessage(reason: unknown, fallback: string) {
 
     <article v-show="activeCategory === 'shortcuts'" class="settings-card" data-testid="shortcut-settings">
       <h2>快捷键</h2>
-      <p class="settings-note">这些快捷键只在 ServerPilot 窗口聚焦时生效，不会注册系统全局热键。</p>
+      <p class="settings-note">这些快捷键只在 HostDeck 窗口聚焦时生效，不会注册系统全局热键。</p>
 
       <h3 class="settings-subheading">终端鼠标行为</h3>
       <label class="setting-toggle" data-testid="shortcut-copy-on-select">
@@ -1345,7 +1345,7 @@ function errorMessage(reason: unknown, fallback: string) {
       <div class="alert-settings-header">
         <div class="alert-settings-header-copy">
           <h2>告警</h2>
-          <p>告警仅在 ServerPilot 运行且服务器正在提供监控数据时生效。</p>
+          <p>告警仅在 HostDeck 运行且服务器正在提供监控数据时生效。</p>
         </div>
         <button type="button" class="secondary alert-test-button" data-testid="alert-test-button" @click="emit('testAlert')">发送测试告警</button>
       </div>

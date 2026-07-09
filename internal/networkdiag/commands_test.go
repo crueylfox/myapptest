@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func TestBuildCommandRejectsInjectedTarget(t *testing.T) {

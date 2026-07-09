@@ -6,9 +6,9 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/commands"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/persistence"
+	"hostdeck/internal/commands"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/persistence"
 )
 
 type batchCommandEmitter struct {

@@ -58,7 +58,7 @@ export function useLocalTerminalLaunchFlow(options: LocalTerminalLaunchFlowOptio
       }
       await options.run(async () => {
         await options.relaunchElevatedLocalTerminal(shellKind)
-      }, '重新启动 ServerPilot 失败')
+      }, '重新启动 HostDeck 失败')
       options.clearPendingPaneOpenTarget(paneTarget)
       return
     }

@@ -147,8 +147,8 @@ async function flushAsyncUi() {
 }
 
 const fileColumnIds = ['name', 'type', 'size', 'modTime', 'permissions', 'owner', 'group']
-const fileColumnLayoutKey = 'serverpilot.sftpColumnLayout.v1'
-const pathBookmarksKey = 'serverpilot.sftpPathBookmarks.v1'
+const fileColumnLayoutKey = 'hostdeck.sftpColumnLayout.v1'
+const pathBookmarksKey = 'hostdeck.sftpPathBookmarks.v1'
 
 function setBrowsableSftpState(rows: SFTPEntry[] = [
   entry({ name: 'b.txt', path: '/home/demo/b.txt', size: 2 }),
@@ -1269,7 +1269,7 @@ describe('SftpPanel', () => {
 
     expect(store.stateByServerId[7].currentPath).toBe('/var/log')
     expect((fileFilterInput(wrapper).element as HTMLInputElement).value).toBe('')
-    expect(localStorage.getItem('serverpilot.sftpFileFilter.v1')).toBeNull()
+    expect(localStorage.getItem('hostdeck.sftpFileFilter.v1')).toBeNull()
   })
 
   it('highlights matched name text case-insensitively without changing the original filename text', async () => {
@@ -2473,7 +2473,7 @@ describe('SftpPanel', () => {
     const wrapper = mountPanel(true)
 
     await wrapper.get('.sftp-details header .text-button').trigger('click')
-    expect(localStorage.getItem('serverpilot.sftpDetailsCollapsed')).toBe('true')
+    expect(localStorage.getItem('hostdeck.sftpDetailsCollapsed')).toBe('true')
     expect(wrapper.find('.sftp-details').exists()).toBe(false)
     wrapper.unmount()
 
@@ -2513,7 +2513,7 @@ describe('SftpPanel', () => {
     window.dispatchEvent(new MouseEvent('pointerup', { clientX: 700, bubbles: true }))
     await wrapper.vm.$nextTick()
 
-    expect(localStorage.getItem('serverpilot.sftpDetailsWidth')).toBe('276')
+    expect(localStorage.getItem('hostdeck.sftpDetailsWidth')).toBe('276')
   })
 
   it('opens file properties from the context menu without reading file content', async () => {

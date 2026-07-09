@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/persistence"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/persistence"
 )
 
 func TestCommandHistoryLifecycleAndFiltering(t *testing.T) {

@@ -6,10 +6,10 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/servicemanager"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/servicemanager"
 )
 
 func (a *App) CheckServiceManager(request domain.ServiceManagerServerRequest) (domain.ServiceManagerCapability, error) {

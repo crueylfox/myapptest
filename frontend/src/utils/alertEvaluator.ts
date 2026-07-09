@@ -226,12 +226,12 @@ export class AlertEvaluator {
   createTestAlert(now = Date.now()): AlertNotification {
     const event = this.newEvent({
       serverID: 0,
-      serverName: 'ServerPilot',
+      serverName: 'HostDeck',
       ruleType: 'test',
       severity: 'warning',
       source: 'test',
       title: '测试告警',
-      message: '这是一条 ServerPilot 应用内测试告警。',
+      message: '这是一条 HostDeck 应用内测试告警。',
       startedAt: iso(now),
       read: false,
       muted: false,

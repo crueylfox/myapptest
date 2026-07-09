@@ -59,7 +59,7 @@ function severityLabel(event: AlertEvent) {
 
 function sanitizeText(value: string | null | undefined) {
   let text = String(value ?? '').replace(/\s+/g, ' ').trim()
-  if (!text) return 'ServerPilot'
+  if (!text) return 'HostDeck'
   for (const pattern of sensitivePatterns) {
     text = text.replace(pattern, redactedText)
   }

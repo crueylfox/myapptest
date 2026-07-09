@@ -18,7 +18,7 @@ func TestAgentsContainsUiRegressionAndVersionBumpRules(t *testing.T) {
 		"Popovers must clamp to viewport and use internal scrolling when content is larger than available space.",
 		"Buttons in compact toolbars must not wrap text unless explicitly designed.",
 		"Version bump rule:",
-		"Any development round that produces a new `build/bin/ServerPilot.exe` must bump the application version in the same commit.",
+		"Any development round that produces a new `build/bin/HostDeck.exe` must bump the application version in the same commit.",
 		"Version sources must stay synchronized:",
 		"`AI_BRIEF.md` must record old version, new version, EXE path, and SHA-256.",
 	}

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"serverpilot/internal/secretstore"
+	"hostdeck/internal/secretstore"
 )
 
 type memorySecretStore struct {

@@ -26,10 +26,10 @@ export const LOCAL_COMMAND_HISTORY_SERVER_IDS: Record<LocalCommandHistoryScope, 
   'local:powershell': -1002,
 }
 const LOCAL_COMMAND_HISTORY_STORAGE_KEYS: Record<LocalCommandHistoryScope, string> = {
-  'local:cmd': 'serverpilot.commandHistory.local.cmd',
-  'local:powershell': 'serverpilot.commandHistory.local.powershell',
+  'local:cmd': 'hostdeck.commandHistory.local.cmd',
+  'local:powershell': 'hostdeck.commandHistory.local.powershell',
 }
-const LOCAL_COMMAND_FAVORITES_STORAGE_KEY = 'serverpilot.commandFavorites.local'
+const LOCAL_COMMAND_FAVORITES_STORAGE_KEY = 'hostdeck.commandFavorites.local'
 const defaultHistoryLimit = 2000
 let localHistorySequence = 0
 let localFavoriteSequence = 0
@@ -39,7 +39,7 @@ export const useCommandStore = defineStore('commands', () => {
   const favorites = ref<CommandFavorite[]>([])
   const suggestions = ref<CommandSuggestion[]>([])
   const busy = ref(false)
-  const historyScope = ref<CommandListScope>((localStorage.getItem('serverpilot.commandScope') as CommandListScope | null) || 'all')
+  const historyScope = ref<CommandListScope>((localStorage.getItem('hostdeck.commandScope') as CommandListScope | null) || 'all')
 
   const safeFavorites = computed(() => normalizeFavorites(favorites.value))
   const globalFavorites = computed(() => safeFavorites.value.filter((item) => item.scope === 'global'))
@@ -249,7 +249,7 @@ export const useCommandStore = defineStore('commands', () => {
 
   function setHistoryScope(scope: CommandListScope) {
     historyScope.value = scope
-    localStorage.setItem('serverpilot.commandScope', scope)
+    localStorage.setItem('hostdeck.commandScope', scope)
   }
 
   function commonCommandsForConnection(connection: Connection | null, query = '', limit = 50): CommandPanelCommonCommand[] {

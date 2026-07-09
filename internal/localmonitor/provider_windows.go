@@ -20,7 +20,7 @@ import (
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/registry"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type OSProvider struct {

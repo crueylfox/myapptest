@@ -7,8 +7,8 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/backup"
-	"serverpilot/internal/domain"
+	"hostdeck/internal/backup"
+	"hostdeck/internal/domain"
 )
 
 func (a *App) SelectBackupExportPath() (string, error) {
@@ -18,12 +18,12 @@ func (a *App) SelectBackupExportPath() (string, error) {
 	if ctx == nil {
 		return "", errors.New("application is not initialized")
 	}
-	defaultName := "serverpilot-backup-" + time.Now().Format("2006-01-02") + ".spbackup"
+	defaultName := "hostdeck-backup-" + time.Now().Format("2006-01-02") + ".spbackup"
 	return runtime.SaveFileDialog(ctx, runtime.SaveDialogOptions{
-		Title:           "保存 ServerPilot 加密备份",
+		Title:           "保存 HostDeck 加密备份",
 		DefaultFilename: defaultName,
 		Filters: []runtime.FileFilter{
-			{DisplayName: "ServerPilot 备份 (*.spbackup)", Pattern: "*.spbackup"},
+			{DisplayName: "HostDeck 备份 (*.spbackup)", Pattern: "*.spbackup"},
 			{DisplayName: "所有文件", Pattern: "*"},
 		},
 	})
@@ -37,9 +37,9 @@ func (a *App) SelectBackupImportFile() (string, error) {
 		return "", errors.New("application is not initialized")
 	}
 	return runtime.OpenFileDialog(ctx, runtime.OpenDialogOptions{
-		Title: "选择 ServerPilot 加密备份",
+		Title: "选择 HostDeck 加密备份",
 		Filters: []runtime.FileFilter{
-			{DisplayName: "ServerPilot 备份 (*.spbackup)", Pattern: "*.spbackup"},
+			{DisplayName: "HostDeck 备份 (*.spbackup)", Pattern: "*.spbackup"},
 			{DisplayName: "所有文件", Pattern: "*"},
 		},
 	})

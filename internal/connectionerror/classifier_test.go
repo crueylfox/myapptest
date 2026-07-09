@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"testing"
 
-	"serverpilot/internal/credential"
-	"serverpilot/internal/domain"
+	"hostdeck/internal/credential"
+	"hostdeck/internal/domain"
 )
 
 type testHostKeyError struct {

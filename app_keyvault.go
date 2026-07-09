@@ -11,9 +11,9 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/credential"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/keyvault"
+	"hostdeck/internal/credential"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/keyvault"
 )
 
 func (a *App) ListKeyVaultEntries() ([]domain.KeyVaultEntry, error) {

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func (s *Store) ListCommandHistory(

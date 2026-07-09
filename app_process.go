@@ -6,10 +6,10 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/processmanager"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/processmanager"
 )
 
 func (a *App) ListProcesses(request domain.ListProcessesRequest) (domain.ProcessListResponse, error) {

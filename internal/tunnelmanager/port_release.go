@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 var errTunnelPortReleaseFailed = errors.New("端口转发停止失败，配置未删除，请先手动停止后再删除。")

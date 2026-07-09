@@ -32,7 +32,7 @@ function updateDraft(event: Event) {
         命令
         <textarea :value="modelValue" rows="4" required @input="updateDraft" />
       </label>
-      <p class="form-note">这里只修改 ServerPilot 本地保存的历史记录，不代表修改远程已执行命令。</p>
+      <p class="form-note">这里只修改 HostDeck 本地保存的历史记录，不代表修改远程已执行命令。</p>
       <footer>
         <button type="button" class="secondary" @click="emit('cancel')">取消</button>
         <button type="submit" class="primary" :disabled="saving">保存</button>

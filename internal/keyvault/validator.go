@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const (

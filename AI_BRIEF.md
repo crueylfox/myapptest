@@ -1,4 +1,4 @@
-# AI_BRIEF - ServerPilot Current Handoff
+# AI_BRIEF - HostDeck Current Handoff
 
 Updated: 2026-07-09
 
@@ -6,10 +6,10 @@ Updated: 2026-07-09
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.60`.
-- Recommended delivery version: `0.5.0-beta.60` user-smoke-required.
+- Current VERSION: `0.5.0-beta.61`.
+- Recommended delivery version: `0.5.0-beta.61` user-smoke-required.
 - Current round: beta60 bottom status connected-label polish after beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.59` -> `0.5.0-beta.60` before repackaging.
+- Version bump this packaging round: yes; `0.5.0-beta.59` -> `0.5.0-beta.61` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -53,7 +53,7 @@ Updated: 2026-07-09
   - Settings left nav active state uses a stronger full-row background with distinct hover.
 - Beta31 same-version SFTP/terminal theme UI blocker completion:
   - SFTP More menu and transfer queue use bottom anchoring when placed above/at the workspace bottom, so short menus stay attached at low SFTP heights.
-  - Production dark theme and default `serverpilot-dark` terminal profile now use the same graphite/Codex-like background instead of the legacy deep blue terminal background.
+  - Production dark theme and default `hostdeck-dark` terminal profile now use the same graphite/Codex-like background instead of the legacy deep blue terminal background.
   - Transfer queue `|` separators are independent DOM elements, so active tab backgrounds no longer cover the separator.
   - Settings radio policy options use full-surface checked styling, not a left-marker-only active state.
   - macOS local terminal initial `%` stripping handles split output chunks without changing SSH terminal behavior.
@@ -91,7 +91,7 @@ Updated: 2026-07-09
 - Beta60 hides the redundant bottom-status `已连接` label for connected/online sessions while keeping connecting/reconnecting/failed/offline status labels visible; no SSH/SFTP runtime behavior changed.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
-- macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `ServerPilot-macos-unsigned`.
+- macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `HostDeck-macos-unsigned`.
 
 ## 3. Explicit Non-Goals
 - No Windows DPAPI behavior change.
@@ -112,11 +112,11 @@ Updated: 2026-07-09
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1728 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta60 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.60.exe`.
+- Beta60 Windows EXE copied to `D:\Users\Administrator\Desktop\HostDeck-v0.5.0-beta.61.exe`.
 - Beta60 Windows EXE SHA-256: `71B93518B4AE92D321C1F9CDA4CE614E8F0BFAE331A76D83FB85636DFA4FB231`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
 - GitHub Actions beta60 `Build macOS`: passed for commit `7222fea`, run `29026046736`.
-- Artifact: `ServerPilot-macos-unsigned` produced by the macOS runner.
+- Artifact: `HostDeck-macos-unsigned` produced by the macOS runner.
 - Artifact SHA-256: pending local/user download.
 - macOS artifact came from the GitHub Actions macOS runner.
 

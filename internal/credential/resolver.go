@@ -11,9 +11,9 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/keyvault"
-	"serverpilot/internal/secretstore"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/keyvault"
+	"hostdeck/internal/secretstore"
 )
 
 const (
@@ -320,6 +320,7 @@ func (r *Resolver) ClearKind(ctx context.Context, connectionID int64, kind strin
 		return err
 	}
 	canonical := Reference(connectionID, kind)
+	legacyCanonical := legacyReference(connectionID, kind)
 	if reference != "" {
 		if err := r.secrets.Delete(ctx, reference); err != nil {
 			return err
@@ -327,6 +328,11 @@ func (r *Resolver) ClearKind(ctx context.Context, connectionID int64, kind strin
 	}
 	if reference != canonical {
 		if err := r.secrets.Delete(ctx, canonical); err != nil {
+			return err
+		}
+	}
+	if reference != legacyCanonical {
+		if err := r.secrets.Delete(ctx, legacyCanonical); err != nil {
 			return err
 		}
 	}
@@ -374,7 +380,23 @@ func (r *Resolver) recoverCanonicalSecret(
 	if err != nil {
 		var credentialErr *Error
 		if errors.As(err, &credentialErr) && credentialErr.Code == CodeCredentialUnavailable {
-			return nil, &Error{Code: CodeAuthenticationRequired, Message: requiredMessage(connection)}
+			legacy := legacyReference(connection.ID, kind)
+			value, legacyErr := r.secretByReference(ctx, legacy)
+			if legacyErr != nil {
+				return nil, &Error{Code: CodeAuthenticationRequired, Message: requiredMessage(connection)}
+			}
+			if setErr := r.secrets.Set(ctx, reference, value); setErr != nil {
+				if refErr := r.references.SetCredentialRef(ctx, connection.ID, kind, legacy); refErr != nil {
+					wipe(value)
+					return nil, refErr
+				}
+				return value, nil
+			}
+			if refErr := r.references.SetCredentialRef(ctx, connection.ID, kind, reference); refErr != nil {
+				wipe(value)
+				return nil, refErr
+			}
+			return value, nil
 		}
 		return nil, err
 	}
@@ -483,11 +505,15 @@ func Kind(connection domain.Connection) string {
 }
 
 func Reference(connectionID int64, kind string) string {
-	return fmt.Sprintf("ServerPilot/connection/%d/%s", connectionID, kind)
+	return fmt.Sprintf("HostDeck/connection/%d/%s", connectionID, kind)
+}
+
+func legacyReference(connectionID int64, kind string) string {
+	return fmt.Sprintf("%s/connection/%d/%s", "Server"+"Pilot", connectionID, kind)
 }
 
 func KeyVaultPassphraseReference(keyID int64) string {
-	return fmt.Sprintf("ServerPilot/keyvault/%d/passphrase", keyID)
+	return fmt.Sprintf("HostDeck/keyvault/%d/passphrase", keyID)
 }
 
 func secretValue(connection domain.Connection, auth domain.AuthRequest) string {

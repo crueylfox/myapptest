@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func TestAlertHistoryUpsertReadAndClear(t *testing.T) {

@@ -14,10 +14,10 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/keyvault"
-	"serverpilot/internal/persistence"
-	"serverpilot/internal/secretstore"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/keyvault"
+	"hostdeck/internal/persistence"
+	"hostdeck/internal/secretstore"
 )
 
 type memorySecrets struct {
@@ -63,7 +63,7 @@ func (s *memorySecrets) Delete(_ context.Context, key string) error {
 func setupResolver(t *testing.T) (context.Context, *persistence.Store, *memorySecrets, *Resolver) {
 	t.Helper()
 	ctx := context.Background()
-	store, err := persistence.Open(ctx, filepath.Join(t.TempDir(), "serverpilot.db"))
+	store, err := persistence.Open(ctx, filepath.Join(t.TempDir(), "HostDeck.db"))
 	if err != nil {
 		t.Fatal(err)
 	}

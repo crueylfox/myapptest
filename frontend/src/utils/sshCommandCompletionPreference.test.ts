@@ -48,7 +48,7 @@ describe('ssh command completion preferences', () => {
 
   it('emits a shared preference event when beta22 settings change', () => {
     const listener = vi.fn()
-    window.addEventListener('serverpilot:ssh-command-completion-preference', listener)
+    window.addEventListener('hostdeck:ssh-command-completion-preference', listener)
 
     setSshCommandCompletionShowDescriptions(false)
     setSshCommandCompletionMaxSuggestions(16)
@@ -58,6 +58,6 @@ describe('ssh command completion preferences', () => {
     expect(listener.mock.calls.at(-1)?.[0]).toMatchObject({
       detail: expect.objectContaining({ triggerChars: 3 }),
     })
-    window.removeEventListener('serverpilot:ssh-command-completion-preference', listener)
+    window.removeEventListener('hostdeck:ssh-command-completion-preference', listener)
   })
 })

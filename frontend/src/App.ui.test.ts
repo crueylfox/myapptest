@@ -409,7 +409,7 @@ describe('App UI overlays', () => {
 
     expect(window.go?.main?.App?.OpenLocalTerminal).not.toHaveBeenCalled()
     expect(window.go?.main?.App?.RelaunchElevatedLocalTerminal).not.toHaveBeenCalled()
-    expect(document.body.querySelector('.app-dialog')?.textContent).toContain('管理员模式需要以管理员身份重新启动 ServerPilot')
+    expect(document.body.querySelector('.app-dialog')?.textContent).toContain('管理员模式需要以管理员身份重新启动 HostDeck')
 
     resolveAppDialog(true)
     await settle()

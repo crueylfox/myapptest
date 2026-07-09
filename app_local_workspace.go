@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func (a *App) GetLocalResourceSnapshot() (domain.LocalResourceSnapshot, error) {

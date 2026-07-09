@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 
 	_ "modernc.org/sqlite"
 )
@@ -209,7 +209,7 @@ INSERT OR IGNORE INTO terminal_profiles(
     foreground, background, selection_background, cursor_color, created_at, updated_at
 ) VALUES(
     'default', '默认', 'Consolas, Cascadia Mono, monospace', 15, 1.2, 0,
-    'block', 1, 10000, 'serverpilot-dark',
+    'block', 1, 10000, 'hostdeck-dark',
     '#dbeafe', '#07111f', '#2563eb66', '#ffffff',
     CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 );
@@ -349,7 +349,7 @@ WHERE id='default'
   AND cursor_style='block'
   AND cursor_blink=1
   AND scrollback=10000
-  AND theme_name='serverpilot-dark'
+  AND theme_name='hostdeck-dark'
   AND foreground='#dbeafe'
   AND background='#07111f'
   AND selection_background='#2563eb66'

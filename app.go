@@ -12,28 +12,28 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/batchcommand"
-	"serverpilot/internal/connectionstate"
-	"serverpilot/internal/credential"
-	"serverpilot/internal/dockermanager"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/keyvault"
-	"serverpilot/internal/localfiles"
-	"serverpilot/internal/localmonitor"
-	"serverpilot/internal/localterminal"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/monitor"
-	"serverpilot/internal/networkinspect"
-	"serverpilot/internal/persistence"
-	"serverpilot/internal/processmanager"
-	"serverpilot/internal/secretstore"
-	"serverpilot/internal/serverlifecycle"
-	"serverpilot/internal/servicemanager"
-	"serverpilot/internal/settings"
-	sftpservice "serverpilot/internal/sftpmanager"
-	"serverpilot/internal/sshclient"
-	terminalservice "serverpilot/internal/terminal"
-	"serverpilot/internal/tunnelmanager"
+	"hostdeck/internal/batchcommand"
+	"hostdeck/internal/connectionstate"
+	"hostdeck/internal/credential"
+	"hostdeck/internal/dockermanager"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/keyvault"
+	"hostdeck/internal/localfiles"
+	"hostdeck/internal/localmonitor"
+	"hostdeck/internal/localterminal"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/monitor"
+	"hostdeck/internal/networkinspect"
+	"hostdeck/internal/persistence"
+	"hostdeck/internal/processmanager"
+	"hostdeck/internal/secretstore"
+	"hostdeck/internal/serverlifecycle"
+	"hostdeck/internal/servicemanager"
+	"hostdeck/internal/settings"
+	sftpservice "hostdeck/internal/sftpmanager"
+	"hostdeck/internal/sshclient"
+	terminalservice "hostdeck/internal/terminal"
+	"hostdeck/internal/tunnelmanager"
 )
 
 type App struct {
@@ -65,7 +65,7 @@ type App struct {
 	startupLocalTerminalShell string
 }
 
-const startupLocalTerminalArgPrefix = "--serverpilot-open-local-terminal="
+const startupLocalTerminalArgPrefix = "--hostdeck-open-local-terminal="
 
 func NewApp() *App {
 	return newAppWithArgs(os.Args[1:])
@@ -157,8 +157,8 @@ func (a *App) startup(ctx context.Context) {
 		a.setInitError(err)
 		return
 	}
-	dataDir := filepath.Join(configDir, "ServerPilot")
-	if err := os.MkdirAll(dataDir, 0o700); err != nil {
+	dataDir, err := ensureHostDeckDataDir(configDir)
+	if err != nil {
 		a.setInitError(err)
 		return
 	}
@@ -167,7 +167,7 @@ func (a *App) startup(ctx context.Context) {
 		a.setInitError(err)
 		return
 	}
-	store, err := persistence.Open(appCtx, filepath.Join(dataDir, "serverpilot.db"))
+	store, err := persistence.Open(appCtx, hostDeckDatabasePath(dataDir))
 	if err != nil {
 		logger.Write("error", "数据库迁移或打开失败", "database.migrate", 0, err)
 		_ = logger.Close()
@@ -308,7 +308,7 @@ func (a *App) startup(ctx context.Context) {
 	a.logger, a.store, a.monitor, a.terminal, a.localTerm, a.localFiles, a.localMonitor, a.sftp, a.tunnel, a.docker, a.process, a.batch, a.services, a.networkInspect, a.credentials, a.keyProtector, a.settings, a.states, a.lifecycle =
 		logger, store, manager, terminalManager, localTerminalManager, localFilesService, localMonitorService, sftpManager, tunnelManager, dockerManager, processManager, batchManager, serviceManager, networkInspectManager, resolver, keyProtector, settingsService, stateTracker, lifecycle
 	a.mu.Unlock()
-	logger.Write("info", "ServerPilot 已启动", "app.startup", 0, nil)
+	logger.Write("info", "HostDeck 已启动", "app.startup", 0, nil)
 }
 
 func (a *App) shutdown(ctx context.Context) {
@@ -359,7 +359,7 @@ func (a *App) shutdown(ctx context.Context) {
 		_ = store.Close()
 	}
 	if logger != nil {
-		logger.Write("info", "ServerPilot 已停止", "app.shutdown", 0, nil)
+		logger.Write("info", "HostDeck 已停止", "app.shutdown", 0, nil)
 		_ = logger.Close()
 	}
 }

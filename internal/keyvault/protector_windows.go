@@ -23,7 +23,7 @@ func (DPAPIProtector) Protect(plaintext []byte) ([]byte, error) {
 	}
 	in := windows.DataBlob{Size: uint32(len(plaintext)), Data: &plaintext[0]}
 	var out windows.DataBlob
-	name, _ := windows.UTF16PtrFromString("ServerPilot private key")
+	name, _ := windows.UTF16PtrFromString("HostDeck private key")
 	err := windows.CryptProtectData(&in, name, nil, 0, nil, cryptProtectUIForbidden, &out)
 	if err != nil {
 		return nil, err

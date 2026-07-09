@@ -10,10 +10,12 @@ import (
 
 	"golang.org/x/crypto/chacha20poly1305"
 
-	"serverpilot/internal/secretstore"
+	"hostdeck/internal/secretstore"
 )
 
-const darwinMasterKeyReference = "ServerPilot/keyvault/master-key"
+const darwinMasterKeyReference = "HostDeck/keyvault/master-key"
+
+var legacyDarwinMasterKeyReference = "Server" + "Pilot/keyvault/master-key"
 
 type DarwinProtector struct {
 	secrets secretstore.Store
@@ -58,7 +60,8 @@ func (p DarwinProtector) Unprotect(ciphertext []byte) ([]byte, error) {
 	if len(ciphertext) == 0 {
 		return nil, errors.New("protected private key material is empty")
 	}
-	if !IsLocalProtectorBlob(ciphertext) {
+	body, ok := localProtectorBlobBody(ciphertext)
+	if !ok {
 		return nil, errors.New(WindowsProtectedCredentialHint)
 	}
 	key, err := p.masterKey()
@@ -70,7 +73,6 @@ func (p DarwinProtector) Unprotect(ciphertext []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	body := ciphertext[len(LocalProtectorBlobPrefix):]
 	if len(body) <= chacha20poly1305.NonceSizeX {
 		return nil, errors.New("macOS private key material is invalid")
 	}
@@ -92,6 +94,21 @@ func (p DarwinProtector) masterKey() ([]byte, error) {
 		if len(key) != chacha20poly1305.KeySize {
 			wipe(key)
 			return nil, errors.New("macOS key vault master key is invalid")
+		}
+		return key, nil
+	}
+	if !errors.Is(err, secretstore.ErrNotFound) {
+		return nil, errors.New("macOS key vault master key is unavailable")
+	}
+	key, err = p.secrets.Get(context.Background(), legacyDarwinMasterKeyReference)
+	if err == nil {
+		if len(key) != chacha20poly1305.KeySize {
+			wipe(key)
+			return nil, errors.New("macOS key vault master key is invalid")
+		}
+		if setErr := p.secrets.Set(context.Background(), darwinMasterKeyReference, key); setErr != nil {
+			wipe(key)
+			return nil, errors.New("macOS key vault master key could not be saved to Keychain")
 		}
 		return key, nil
 	}

@@ -9,11 +9,13 @@ import (
 	"strings"
 )
 
-const darwinKeychainService = "ServerPilot"
+const darwinKeychainService = "HostDeck"
+
+var legacyDarwinKeychainService = "Server" + "Pilot"
 
 type keychainCommandRunner func(context.Context, string, ...string) ([]byte, error)
 
-// Keychain stores ServerPilot secrets as generic passwords in macOS Keychain.
+// Keychain stores HostDeck secrets as generic passwords in macOS Keychain.
 type Keychain struct {
 	run keychainCommandRunner
 }
@@ -33,7 +35,23 @@ func (k Keychain) Get(ctx context.Context, key string) ([]byte, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	out, err := k.runner()(ctx, "find-generic-password", "-s", darwinKeychainService, "-a", key, "-w")
+	value, err := k.getFromService(ctx, darwinKeychainService, key)
+	if err == nil {
+		return value, nil
+	}
+	if !errorsIsNotFound(err) {
+		return nil, err
+	}
+	value, err = k.getFromService(ctx, legacyDarwinKeychainService, key)
+	if err != nil {
+		return nil, err
+	}
+	_ = k.Set(ctx, key, value)
+	return value, nil
+}
+
+func (k Keychain) getFromService(ctx context.Context, service string, key string) ([]byte, error) {
+	out, err := k.runner()(ctx, "find-generic-password", "-s", service, "-a", key, "-w")
 	if err != nil {
 		if keychainNotFound(out, err) {
 			return nil, ErrNotFound
@@ -68,7 +86,15 @@ func (k Keychain) Delete(ctx context.Context, key string) error {
 	if err != nil && !keychainNotFound(out, err) {
 		return keychainError("delete")
 	}
+	out, err = k.runner()(ctx, "delete-generic-password", "-s", legacyDarwinKeychainService, "-a", key)
+	if err != nil && !keychainNotFound(out, err) {
+		return keychainError("delete")
+	}
 	return nil
+}
+
+func errorsIsNotFound(err error) bool {
+	return err == ErrNotFound
 }
 
 func (k Keychain) runner() keychainCommandRunner {

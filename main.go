@@ -3,7 +3,7 @@ package main
 import (
 	"embed"
 	"os"
-	"path/filepath"
+	"runtime"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -11,15 +11,11 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
-
-func serverPilotWebviewUserDataPath(configDir string) string {
-	return filepath.Join(configDir, "ServerPilot", "WebView2")
-}
 
 func stableWindowsWebviewUserDataPath() string {
 	configDir, err := os.UserConfigDir()
@@ -29,7 +25,8 @@ func stableWindowsWebviewUserDataPath() string {
 	if configDir == "" {
 		configDir = os.TempDir()
 	}
-	return serverPilotWebviewUserDataPath(configDir)
+	_ = migrateLegacyAppDataDir(configDir)
+	return hostDeckWebviewUserDataPath(configDir)
 }
 
 func main() {
@@ -38,11 +35,12 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:     "ServerPilot",
+		Title:     "HostDeck",
 		Width:     domain.DefaultWindowWidth,
 		Height:    domain.DefaultWindowHeight,
 		MinWidth:  minWindowWidth,
 		MinHeight: minWindowHeight,
+		Frameless: runtime.GOOS == "windows",
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

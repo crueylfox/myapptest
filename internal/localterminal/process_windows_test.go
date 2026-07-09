@@ -83,7 +83,7 @@ func TestDirectConPTYCmdEchoSmoke(t *testing.T) {
 		t.Fatalf("ResizePseudoConsole failed: %v", err)
 	}
 
-	const marker = "serverpilot-conpty-unit-smoke"
+	const marker = "hostdeck-conpty-unit-smoke"
 	if _, err := term.Write([]byte("echo " + marker + "\r\n")); err != nil {
 		t.Fatalf("write to ConPTY failed: %v", err)
 	}
@@ -119,7 +119,7 @@ func TestDirectConPTYPowershellEchoSmoke(t *testing.T) {
 	}
 	defer term.Close()
 
-	const marker = "serverpilot-conpty-powershell-unit-smoke"
+	const marker = "hostdeck-conpty-powershell-unit-smoke"
 	if _, err := term.Write([]byte("Write-Output " + marker + "\r\n")); err != nil {
 		t.Fatalf("write to ConPTY failed: %v", err)
 	}
@@ -180,7 +180,7 @@ func readUntilMarker(t *testing.T, term PTY, marker string, timeout time.Duratio
 }
 
 func TestLocalTerminalOutputBase64RoundTrip(t *testing.T) {
-	payload := []byte("serverpilot-local-terminal")
+	payload := []byte("hostdeck-local-terminal")
 	encoded := base64.StdEncoding.EncodeToString(payload)
 	decoded, err := base64.StdEncoding.DecodeString(encoded)
 	if err != nil {

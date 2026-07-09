@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func (m *Manager) runDirectoryUpload(ctx context.Context, client Client, item *transfer) error {

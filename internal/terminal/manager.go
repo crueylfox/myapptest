@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/sshclient"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/sshclient"
 )
 
 const (

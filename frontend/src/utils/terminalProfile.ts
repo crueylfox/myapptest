@@ -34,7 +34,7 @@ const fallbackTheme: ThemePreset = {
 }
 
 export const terminalThemePresets: Record<TerminalThemeName, ThemePreset> = {
-  'serverpilot-dark': fallbackTheme,
+  'hostdeck-dark': fallbackTheme,
   'classic-dark': {
     foreground: '#e5e7eb',
     background: '#050505',

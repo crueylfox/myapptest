@@ -1,7 +1,7 @@
 package main
 
 import (
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func (a *App) ListLogs(limit int) ([]domain.LogEntry, error) {

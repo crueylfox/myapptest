@@ -7,6 +7,7 @@ import type { ContextMenuItem, LocalTerminalState, ServerWorkspace, TerminalSess
 import ContextMenu from './ContextMenu.vue'
 import AppIcon from './icons/AppIcon.vue'
 import AppPopover from './primitives/AppPopover.vue'
+import { Quit, WindowMinimise, WindowToggleMaximise } from '../../wailsjs/runtime/runtime'
 
 const TAB_DRAG_THRESHOLD = 6
 type SplitMode = 'single' | 'vertical' | 'horizontal' | 'quad'
@@ -44,7 +45,6 @@ const localStore = useLocalTerminalStore()
 const sftpStore = useSftpStore()
 const addButton = ref<HTMLButtonElement>()
 const tabsHost = ref<HTMLElement>()
-const splitControls = ref<HTMLElement>()
 const navigation = ref<HTMLElement>()
 const navigationOpen = ref(false)
 const splitMenuOpen = ref(false)
@@ -55,7 +55,7 @@ const tabOrder = ref<string[]>([])
 const autoRemovedLocalSessions = new Set<string>()
 let tabDrag: { key: string; startX: number; startY: number; active: boolean } | null = null
 const suppressTabClickKey = ref<string | null>(null)
-const splitLayoutStorageKey = 'serverpilot.workspaceSplitLayout.v1'
+const splitLayoutStorageKey = 'hostdeck.workspaceSplitLayout.v1'
 
 function isSplitMode(value: unknown): value is SplitMode {
   return value === 'single' || value === 'vertical' || value === 'horizontal' || value === 'quad'
@@ -248,8 +248,9 @@ function persistTopbarSplitMode() {
 function setTopbarSplitMode(mode: SplitMode) {
   splitMode.value = mode
   splitMenuOpen.value = false
+  navigationOpen.value = false
   persistTopbarSplitMode()
-  window.dispatchEvent(new CustomEvent('serverpilot:workspace-split-mode-change', {
+  window.dispatchEvent(new CustomEvent('hostdeck:workspace-split-mode-change', {
     detail: { mode },
   }))
 }
@@ -257,12 +258,14 @@ function setTopbarSplitMode(mode: SplitMode) {
 function resetTopbarSplitRatios() {
   if (splitMode.value === 'single') return
   splitMenuOpen.value = false
-  window.dispatchEvent(new CustomEvent('serverpilot:workspace-split-ratio-reset'))
+  navigationOpen.value = false
+  window.dispatchEvent(new CustomEvent('hostdeck:workspace-split-ratio-reset'))
 }
 
 function clearTopbarSplitPanes() {
   splitMenuOpen.value = false
-  window.dispatchEvent(new CustomEvent('serverpilot:workspace-split-clear-panes'))
+  navigationOpen.value = false
+  window.dispatchEvent(new CustomEvent('hostdeck:workspace-split-clear-panes'))
 }
 
 function openMenu(event: MouseEvent, item: DisplayTab) {
@@ -411,42 +414,62 @@ function errorMessage(reason: unknown, fallback: string) {
 
 function navigate(view: 'terminals' | 'monitor' | 'logs' | 'settings') {
   navigationOpen.value = false
+  splitMenuOpen.value = false
   emit('navigate', view)
 }
 
 function openTunnels() {
   navigationOpen.value = false
+  splitMenuOpen.value = false
   emit('tunnels')
 }
 
 function openMonitorPanel() {
   navigationOpen.value = false
+  splitMenuOpen.value = false
   emit('monitorPanel')
 }
 
 function openAlerts() {
   navigationOpen.value = false
+  splitMenuOpen.value = false
   emit('alerts')
 }
 
 function openDocker() {
   navigationOpen.value = false
+  splitMenuOpen.value = false
   emit('docker')
 }
 
 function openProcesses() {
   navigationOpen.value = false
+  splitMenuOpen.value = false
   emit('processes')
 }
 
 function openSystemServices() {
   navigationOpen.value = false
+  splitMenuOpen.value = false
   emit('systemServices')
 }
 
 function openNetworkDiagnostics() {
   navigationOpen.value = false
+  splitMenuOpen.value = false
   emit('networkDiagnostics')
+}
+
+function minimiseWindow() {
+  WindowMinimise()
+}
+
+function toggleMaximiseWindow() {
+  WindowToggleMaximise()
+}
+
+function closeWindow() {
+  Quit()
 }
 
 function reorderTabOrderKey(sourceKey: string, targetKey: string, before: boolean) {
@@ -463,7 +486,7 @@ function tabByKey(key: string) {
 
 function emitExternalTabDrop(key: string, event: PointerEvent) {
   const tab = tabByKey(key)
-  const dropEvent = new CustomEvent('serverpilot:workspace-tab-external-drop', {
+  const dropEvent = new CustomEvent('hostdeck:workspace-tab-external-drop', {
     cancelable: true,
     detail: {
       key,
@@ -638,8 +661,10 @@ function endTabDrag(event: PointerEvent) {
 
 function closeNavigationOnPointer(event: PointerEvent) {
   const target = event.target as Node
-  if (navigationOpen.value && !navigation.value?.contains(target)) navigationOpen.value = false
-  if (splitMenuOpen.value && !splitControls.value?.contains(target)) splitMenuOpen.value = false
+  if (navigationOpen.value && !navigation.value?.contains(target)) {
+    navigationOpen.value = false
+    splitMenuOpen.value = false
+  }
 }
 
 function closeNavigationOnKey(event: KeyboardEvent) {
@@ -734,64 +759,6 @@ onBeforeUnmount(() => {
       </button>
       <button ref="addButton" class="topbar-add" title="服务器" @click="openServers">+</button>
     </div>
-    <div ref="splitControls" class="topbar-split">
-      <button
-        class="split-mode-button"
-        type="button"
-        :aria-expanded="splitMenuOpen"
-        :aria-label="`分屏，当前：${splitModeLabel}`"
-        :title="`分屏，当前：${splitModeLabel}`"
-        @click="splitMenuOpen = !splitMenuOpen"
-      >
-        <span class="topbar-action-inner">
-          <AppIcon name="layout-grid" :size="16" />
-          <span>分屏</span>
-        </span>
-      </button>
-      <AppPopover v-if="splitMenuOpen" :viewport="false" class="split-mode-menu">
-        <button
-          type="button"
-          data-split-mode="single"
-          :class="{ active: splitMode === 'single' }"
-          :aria-current="splitMode === 'single' ? 'true' : undefined"
-          @click="setTopbarSplitMode('single')"
-        >单窗格</button>
-        <button
-          type="button"
-          data-split-mode="vertical"
-          :class="{ active: splitMode === 'vertical' }"
-          :aria-current="splitMode === 'vertical' ? 'true' : undefined"
-          @click="setTopbarSplitMode('vertical')"
-        >左右分屏</button>
-        <button
-          type="button"
-          data-split-mode="horizontal"
-          :class="{ active: splitMode === 'horizontal' }"
-          :aria-current="splitMode === 'horizontal' ? 'true' : undefined"
-          @click="setTopbarSplitMode('horizontal')"
-        >上下分屏</button>
-        <button
-          type="button"
-          data-split-mode="quad"
-          :class="{ active: splitMode === 'quad' }"
-          :aria-current="splitMode === 'quad' ? 'true' : undefined"
-          @click="setTopbarSplitMode('quad')"
-        >四宫格</button>
-        <button type="button" data-split-mode="close" @click="setTopbarSplitMode('single')">关闭分屏</button>
-        <button
-          type="button"
-          data-split-action="reset-ratios"
-          :disabled="splitMode === 'single'"
-          @click="resetTopbarSplitRatios"
-        >重置分割比例</button>
-        <button
-          type="button"
-          data-split-action="clear-panes"
-          @click="clearTopbarSplitPanes"
-        >清空所有窗格</button>
-      </AppPopover>
-    </div>
-    <span class="topbar-action-separator" aria-hidden="true"></span>
     <div ref="navigation" class="topbar-navigation">
       <button class="topbar-navigation-button" :aria-expanded="navigationOpen" @click="navigationOpen = !navigationOpen">
         <span class="topbar-action-inner">
@@ -801,6 +768,71 @@ onBeforeUnmount(() => {
       </button>
       <AppPopover v-if="navigationOpen" :viewport="false" class="topbar-menu">
         <button class="topbar-menu-item active" @click="navigate('terminals')"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="terminal" :size="18" /><span class="topbar-menu-label">SSH 工作区</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
+        <button
+          class="topbar-menu-item topbar-menu-split-toggle"
+          type="button"
+          data-split-menu-toggle
+          :aria-expanded="splitMenuOpen"
+          :aria-label="`分屏，当前：${splitModeLabel}`"
+          @click.stop="splitMenuOpen = !splitMenuOpen"
+        >
+          <span class="topbar-menu-leading" aria-hidden="true"></span>
+          <span class="topbar-menu-content"><AppIcon name="layout-grid" :size="18" /><span class="topbar-menu-label">分屏</span></span>
+          <span class="topbar-menu-trailing">{{ splitMenuOpen ? '收起' : splitModeLabel }}</span>
+        </button>
+        <template v-if="splitMenuOpen">
+          <button
+            type="button"
+            class="topbar-menu-item topbar-menu-subitem"
+            data-split-mode="single"
+            :class="{ active: splitMode === 'single' }"
+            :aria-current="splitMode === 'single' ? 'true' : undefined"
+            @click="setTopbarSplitMode('single')"
+          ><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><span class="topbar-menu-label">单窗格</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
+          <button
+            type="button"
+            class="topbar-menu-item topbar-menu-subitem"
+            data-split-mode="vertical"
+            :class="{ active: splitMode === 'vertical' }"
+            :aria-current="splitMode === 'vertical' ? 'true' : undefined"
+            @click="setTopbarSplitMode('vertical')"
+          ><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><span class="topbar-menu-label">左右分屏</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
+          <button
+            type="button"
+            class="topbar-menu-item topbar-menu-subitem"
+            data-split-mode="horizontal"
+            :class="{ active: splitMode === 'horizontal' }"
+            :aria-current="splitMode === 'horizontal' ? 'true' : undefined"
+            @click="setTopbarSplitMode('horizontal')"
+          ><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><span class="topbar-menu-label">上下分屏</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
+          <button
+            type="button"
+            class="topbar-menu-item topbar-menu-subitem"
+            data-split-mode="quad"
+            :class="{ active: splitMode === 'quad' }"
+            :aria-current="splitMode === 'quad' ? 'true' : undefined"
+            @click="setTopbarSplitMode('quad')"
+          ><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><span class="topbar-menu-label">四宫格</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
+          <button
+            type="button"
+            class="topbar-menu-item topbar-menu-subitem"
+            data-split-mode="close"
+            @click="setTopbarSplitMode('single')"
+          ><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><span class="topbar-menu-label">关闭分屏</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
+          <button
+            type="button"
+            class="topbar-menu-item topbar-menu-subitem"
+            data-split-action="reset-ratios"
+            :disabled="splitMode === 'single'"
+            @click="resetTopbarSplitRatios"
+          ><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><span class="topbar-menu-label">重置分割比例</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
+          <button
+            type="button"
+            class="topbar-menu-item topbar-menu-subitem"
+            data-split-action="clear-panes"
+            @click="clearTopbarSplitPanes"
+          ><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><span class="topbar-menu-label">清空所有窗格</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
+        </template>
         <button class="topbar-menu-item" @click="openTunnels"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="route" :size="18" /><span class="topbar-menu-label">端口转发</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
         <button class="topbar-menu-item" @click="openDocker"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="box" :size="18" /><span class="topbar-menu-label">容器管理</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
         <button class="topbar-menu-item" @click="openProcesses"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="activity" :size="18" /><span class="topbar-menu-label">进程管理</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
@@ -814,6 +846,11 @@ onBeforeUnmount(() => {
         <button class="topbar-menu-item" @click="openMonitorPanel"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="gauge" :size="18" /><span class="topbar-menu-label">监控面板</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
         <button class="topbar-menu-item" @click="navigate('settings')"><span class="topbar-menu-leading" aria-hidden="true"></span><span class="topbar-menu-content"><AppIcon name="gear" :size="18" /><span class="topbar-menu-label">设置</span></span><span class="topbar-menu-trailing" aria-hidden="true"></span></button>
       </AppPopover>
+    </div>
+    <div class="windows-caption-controls" aria-label="窗口控制">
+      <button type="button" class="windows-caption-button" aria-label="最小化" title="最小化" @click="minimiseWindow">−</button>
+      <button type="button" class="windows-caption-button" aria-label="最大化" title="最大化" @click="toggleMaximiseWindow">□</button>
+      <button type="button" class="windows-caption-button windows-caption-close" aria-label="关闭" title="关闭" @click="closeWindow">×</button>
     </div>
     <ContextMenu
       v-if="tabMenu"

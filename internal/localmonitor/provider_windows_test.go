@@ -6,7 +6,7 @@ import (
 	"testing"
 	"unicode/utf16"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func TestClassifyLocalNetworkInterfacesMarksDefaultRouteAndHidesPseudoAdapters(t *testing.T) {

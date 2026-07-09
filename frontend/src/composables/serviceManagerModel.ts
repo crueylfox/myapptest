@@ -221,7 +221,7 @@ export function actionConfirmMessage(action: ServiceAction, service: SystemServi
       disable: `确定取消服务「${unitName}」的开机启动吗？当前正在运行的服务不会自动停止。`,
     }[action]
     if (service.critical && (action === 'stop' || action === 'restart')) {
-      return `${base}\n\n该服务可能影响当前 SSH 连接、网络、防火墙、DNS 或管理界面。继续操作可能导致 ServerPilot 断开连接。`
+      return `${base}\n\n该服务可能影响当前 SSH 连接、网络、防火墙、DNS 或管理界面。继续操作可能导致 HostDeck 断开连接。`
     }
     if (service.critical && action === 'disable') {
       return `${base}\n\n禁用该服务的开机启动可能导致服务器重启后无法远程访问或网络异常。`
@@ -236,7 +236,7 @@ export function actionConfirmMessage(action: ServiceAction, service: SystemServi
     disable: `确定取消「${unitName}」的开机启动吗？当前正在运行的服务不会自动停止。`,
   }[action]
   if (!service.critical || (action !== 'stop' && action !== 'restart')) return base
-  return `${base}\n\n该服务可能影响当前 SSH 连接、网络或正在运行的容器。继续操作可能导致 ServerPilot 断开连接。`
+  return `${base}\n\n该服务可能影响当前 SSH 连接、网络或正在运行的容器。继续操作可能导致 HostDeck 断开连接。`
 }
 
 export function actionDisabled(action: ServiceAction, options: ServiceActionDisabledOptions) {

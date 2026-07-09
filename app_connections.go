@@ -6,12 +6,12 @@ import (
 	"errors"
 	"time"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/credential"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/monitor"
-	"serverpilot/internal/persistence"
-	"serverpilot/internal/sshclient"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/credential"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/monitor"
+	"hostdeck/internal/persistence"
+	"hostdeck/internal/sshclient"
 )
 
 func (a *App) ListGroups() ([]domain.Group, error) {

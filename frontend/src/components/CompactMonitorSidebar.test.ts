@@ -77,7 +77,7 @@ describe('CompactMonitorSidebar', () => {
   beforeEach(() => localStorage.clear())
 
   function render(options: { details?: boolean } = { details: true }) {
-    if (options.details !== false) localStorage.setItem('serverpilot.monitorDetailsExpanded', 'true')
+    if (options.details !== false) localStorage.setItem('hostdeck.monitorDetailsExpanded', 'true')
     return mount(CompactMonitorSidebar, {
       props: {
         connection,
@@ -90,7 +90,7 @@ describe('CompactMonitorSidebar', () => {
   }
 
   function renderWith(nextSnapshot: MonitorSnapshot, options: { details?: boolean } = { details: true }) {
-    if (options.details !== false) localStorage.setItem('serverpilot.monitorDetailsExpanded', 'true')
+    if (options.details !== false) localStorage.setItem('hostdeck.monitorDetailsExpanded', 'true')
     return mount(CompactMonitorSidebar, {
       props: {
         connection,
@@ -163,7 +163,7 @@ describe('CompactMonitorSidebar', () => {
   })
 
   it('treats a zero persisted split height as missing instead of collapsing the monitor pane', () => {
-    localStorage.setItem('serverpilot.monitorPaneHeight', '0')
+    localStorage.setItem('hostdeck.monitorPaneHeight', '0')
     const wrapper = render()
     expect(wrapper.attributes('style')).toContain('430px')
     expect(wrapper.attributes('style')).not.toContain('grid-template-rows: 0px')
@@ -426,7 +426,7 @@ describe('CompactMonitorSidebar', () => {
     wrapper.find('.horizontal-splitter').element.dispatchEvent(down)
     window.dispatchEvent(new MouseEvent('pointermove', { clientY: 350 }))
     window.dispatchEvent(new MouseEvent('pointerup'))
-    expect(Number(localStorage.getItem('serverpilot.monitorPaneHeight'))).toBe(350)
+    expect(Number(localStorage.getItem('hostdeck.monitorPaneHeight'))).toBe(350)
   })
 
   it('renders a plain draggable monitor splitter without arrow controls', () => {
@@ -438,7 +438,7 @@ describe('CompactMonitorSidebar', () => {
   })
 
   it('auto-collapses the monitor pane near the top and restores by dragging back into range', async () => {
-    localStorage.setItem('serverpilot.monitorPaneHeight', '360')
+    localStorage.setItem('hostdeck.monitorPaneHeight', '360')
     const wrapper = render()
     const root = wrapper.element as HTMLElement
     vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({
@@ -451,7 +451,7 @@ describe('CompactMonitorSidebar', () => {
     wrapper.get('.monitor-pane-splitter').element.dispatchEvent(down)
     window.dispatchEvent(new MouseEvent('pointermove', { clientY: 60 }))
     await wrapper.vm.$nextTick()
-    expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('monitorCollapsed')
+    expect(localStorage.getItem('hostdeck.monitorSidebarSplitMode')).toBe('monitorCollapsed')
     expect(wrapper.attributes('style')).toContain('0 minmax(0, 1fr)')
     expect(wrapper.find('.compact-monitor').exists()).toBe(false)
     expect(wrapper.classes()).toContain('split-monitorCollapsed')
@@ -462,12 +462,12 @@ describe('CompactMonitorSidebar', () => {
     window.dispatchEvent(new MouseEvent('pointermove', { clientY: 360 }))
     window.dispatchEvent(new MouseEvent('pointerup'))
     await wrapper.vm.$nextTick()
-    expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('split')
+    expect(localStorage.getItem('hostdeck.monitorSidebarSplitMode')).toBe('split')
     expect(wrapper.attributes('style')).toContain('360px')
   })
 
   it('auto-collapses the mounts pane near the bottom without overwriting the stored split height', async () => {
-    localStorage.setItem('serverpilot.monitorPaneHeight', '390')
+    localStorage.setItem('hostdeck.monitorPaneHeight', '390')
     const wrapper = render()
     const root = wrapper.element as HTMLElement
     vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({
@@ -481,8 +481,8 @@ describe('CompactMonitorSidebar', () => {
     window.dispatchEvent(new MouseEvent('pointermove', { clientY: 660 }))
     window.dispatchEvent(new MouseEvent('pointerup'))
     await wrapper.vm.$nextTick()
-    expect(localStorage.getItem('serverpilot.monitorSidebarSplitMode')).toBe('mountsCollapsed')
-    expect(localStorage.getItem('serverpilot.monitorPaneHeight')).toBe('390')
+    expect(localStorage.getItem('hostdeck.monitorSidebarSplitMode')).toBe('mountsCollapsed')
+    expect(localStorage.getItem('hostdeck.monitorPaneHeight')).toBe('390')
     expect(wrapper.attributes('style')).toContain('minmax(0, 1fr) 0')
     expect(wrapper.find('.mount-panel').exists()).toBe(false)
     expect(wrapper.classes()).toContain('split-mountsCollapsed')

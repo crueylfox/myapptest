@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func TestDefaultSettingsAndMigrationVersion(t *testing.T) {
@@ -407,7 +407,7 @@ func TestKeyVaultPersistenceLifecycle(t *testing.T) {
 	if entry.ID == 0 || !entry.Encrypted || entry.PassphraseSaved {
 		t.Fatalf("created entry = %+v", entry)
 	}
-	if err := store.SetKeyVaultPassphraseRef(ctx, entry.ID, "ServerPilot/keyvault/1/passphrase"); err != nil {
+	if err := store.SetKeyVaultPassphraseRef(ctx, entry.ID, "HostDeck/keyvault/1/passphrase"); err != nil {
 		t.Fatal(err)
 	}
 	entry, err = store.GetKeyVaultEntry(ctx, entry.ID)
@@ -978,7 +978,7 @@ CREATE TABLE terminal_profiles (
     foreground, background, selection_background, cursor_color, created_at, updated_at
 ) VALUES(
     'default', 'Default', 'Consolas, Cascadia Mono, monospace', ?, 1.2, 0,
-    'block', 1, 10000, 'serverpilot-dark',
+    'block', 1, 10000, 'hostdeck-dark',
     ?, ?, ?, ?,
     CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 )`, fixture.fontSize, fixture.foreground, fixture.background, fixture.selectionBackground, fixture.cursorColor)
@@ -997,7 +997,7 @@ func assertGraphiteDefaultTerminalProfile(t *testing.T, profile domain.TerminalP
 		profile.Background != "#15171a" ||
 		profile.SelectionBackground != "#5b8cff47" ||
 		profile.CursorColor != "#dce6f2" ||
-		profile.ThemeName != domain.TerminalThemeServerPilotDark {
+		profile.ThemeName != domain.TerminalThemeHostDeckDark {
 		t.Fatalf("default terminal profile = %+v", profile)
 	}
 }
@@ -1655,7 +1655,7 @@ func TestCredentialReferencesExposeOnlySavedState(t *testing.T) {
 	if connection.PasswordCredentialSaved {
 		t.Fatal("new connection must not report a saved password slot")
 	}
-	if err := store.SetCredentialRef(ctx, connection.ID, "password", "ServerPilot/reference-only"); err != nil {
+	if err := store.SetCredentialRef(ctx, connection.ID, "password", "HostDeck/reference-only"); err != nil {
 		t.Fatal(err)
 	}
 	connection, err = store.GetConnection(ctx, connection.ID)
@@ -1669,7 +1669,7 @@ func TestCredentialReferencesExposeOnlySavedState(t *testing.T) {
 		t.Fatal("password credential reference was not reflected in connection state")
 	}
 	references, err := store.DeleteCredentialRefs(ctx, connection.ID)
-	if err != nil || len(references) != 1 || references[0] != "ServerPilot/reference-only" {
+	if err != nil || len(references) != 1 || references[0] != "HostDeck/reference-only" {
 		t.Fatalf("references=%v err=%v", references, err)
 	}
 }
@@ -1688,20 +1688,20 @@ func TestDeleteCredentialRefOnlyDeletesRequestedKind(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := store.SetCredentialRef(ctx, connection.ID, "password", "ServerPilot/password"); err != nil {
+	if err := store.SetCredentialRef(ctx, connection.ID, "password", "HostDeck/password"); err != nil {
 		t.Fatal(err)
 	}
-	if err := store.SetCredentialRef(ctx, connection.ID, "passphrase", "ServerPilot/passphrase"); err != nil {
+	if err := store.SetCredentialRef(ctx, connection.ID, "passphrase", "HostDeck/passphrase"); err != nil {
 		t.Fatal(err)
 	}
 	reference, err := store.DeleteCredentialRef(ctx, connection.ID, "password")
-	if err != nil || reference != "ServerPilot/password" {
+	if err != nil || reference != "HostDeck/password" {
 		t.Fatalf("reference=%q err=%v", reference, err)
 	}
 	if _, err := store.GetCredentialRef(ctx, connection.ID, "password"); !errors.Is(err, sql.ErrNoRows) {
 		t.Fatalf("password ref remained: %v", err)
 	}
-	if reference, err := store.GetCredentialRef(ctx, connection.ID, "passphrase"); err != nil || reference != "ServerPilot/passphrase" {
+	if reference, err := store.GetCredentialRef(ctx, connection.ID, "passphrase"); err != nil || reference != "HostDeck/passphrase" {
 		t.Fatalf("passphrase ref was changed: reference=%q err=%v", reference, err)
 	}
 }

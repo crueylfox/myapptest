@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type fakeTransport struct {
@@ -708,7 +708,7 @@ func TestEnableRemoteForwardAccessReportsBackupReloadAndErrors(t *testing.T) {
 	transport.mu.Lock()
 	transport.runOutput = strings.Join([]string{
 		"__SP_RESULT=success",
-		"__SP_BACKUP=/etc/ssh/sshd_config.serverpilot.bak.20260618210000",
+		"__SP_BACKUP=/etc/ssh/sshd_config.hostdeck.bak.20260618210000",
 		"__SP_CHANGED=/etc/ssh/sshd_config",
 		"__SP_RELOAD=systemctl reload sshd",
 	}, "\n")
@@ -725,7 +725,7 @@ func TestEnableRemoteForwardAccessReportsBackupReloadAndErrors(t *testing.T) {
 	transport.runOutput = strings.Join([]string{
 		"__SP_RESULT=validation_failed",
 		"__SP_MESSAGE=sshd -t 验证失败，已回滚 sshd_config。",
-		"__SP_BACKUP=/etc/ssh/sshd_config.serverpilot.bak.20260618210001",
+		"__SP_BACKUP=/etc/ssh/sshd_config.hostdeck.bak.20260618210001",
 	}, "\n")
 	transport.mu.Unlock()
 	_, err = manager.EnableRemoteForwardAccess(domain.RemoteForwardAccessRequest{ServerID: 1, TunnelID: state.TunnelID})
@@ -759,7 +759,7 @@ func TestEnableRemoteForwardAccessAndStopStopsBeforeGatewayPorts(t *testing.T) {
 			}
 			return strings.Join([]string{
 				"__SP_RESULT=success",
-				"__SP_BACKUP=/etc/ssh/sshd_config.serverpilot.bak.20260618210000",
+				"__SP_BACKUP=/etc/ssh/sshd_config.hostdeck.bak.20260618210000",
 				"__SP_CHANGED=/etc/ssh/sshd_config",
 				"__SP_RELOAD=systemctl reload sshd",
 			}, "\n"), nil

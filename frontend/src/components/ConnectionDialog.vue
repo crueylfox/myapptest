@@ -77,7 +77,7 @@ watch(() => [props.open, props.connection] as const, () => {
     clearSecrets()
     return
   }
-  ;(window as Window & { __serverpilotConnectionDialogEscapeOwner?: symbol }).__serverpilotConnectionDialogEscapeOwner = escapeOwnerKey
+  ;(window as Window & { __hostdeckConnectionDialogEscapeOwner?: symbol }).__hostdeckConnectionDialogEscapeOwner = escapeOwnerKey
   browseError.value = ''
   Object.assign(form, props.connection ? {
     id: props.connection.id, groupId: props.connection.groupId, name: props.connection.name,
@@ -228,7 +228,7 @@ async function requestClose() {
 
 function handleGlobalKeydown(event: KeyboardEvent) {
   if (!props.open || event.key !== 'Escape') return
-  if ((window as Window & { __serverpilotConnectionDialogEscapeOwner?: symbol }).__serverpilotConnectionDialogEscapeOwner !== escapeOwnerKey) return
+  if ((window as Window & { __hostdeckConnectionDialogEscapeOwner?: symbol }).__hostdeckConnectionDialogEscapeOwner !== escapeOwnerKey) return
   event.preventDefault()
   event.stopPropagation()
   event.stopImmediatePropagation?.()
@@ -243,9 +243,9 @@ window.addEventListener('keydown', handleGlobalKeydown)
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleGlobalKeydown)
-  const ownerWindow = window as Window & { __serverpilotConnectionDialogEscapeOwner?: symbol }
-  if (ownerWindow.__serverpilotConnectionDialogEscapeOwner === escapeOwnerKey) {
-    delete ownerWindow.__serverpilotConnectionDialogEscapeOwner
+  const ownerWindow = window as Window & { __hostdeckConnectionDialogEscapeOwner?: symbol }
+  if (ownerWindow.__hostdeckConnectionDialogEscapeOwner === escapeOwnerKey) {
+    delete ownerWindow.__hostdeckConnectionDialogEscapeOwner
   }
 })
 

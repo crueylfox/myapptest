@@ -12,7 +12,11 @@ withDefaults(defineProps<{
 <template>
   <div
     class="app-shell"
-    :class="{ 'terminal-layout': terminalLayout, 'platform-macos': platform === 'darwin' }"
+    :class="{
+      'terminal-layout': terminalLayout,
+      'platform-macos': platform === 'darwin',
+      'platform-windows': platform === 'windows',
+    }"
     :data-platform="platform"
   >
     <div class="app-visual-root" data-testid="app-visual-root" :data-platform="platform">

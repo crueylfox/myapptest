@@ -15,10 +15,10 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/sshclient"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/sshclient"
 )
 
 const (

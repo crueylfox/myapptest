@@ -3,8 +3,8 @@ package connectionstate
 import (
 	"testing"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
 )
 
 func TestTrackerConnectionLifecycle(t *testing.T) {

@@ -1,6 +1,6 @@
 package sftpmanager
 
-import "serverpilot/internal/domain"
+import "hostdeck/internal/domain"
 
 func (m *Manager) emitState(state domain.SFTPState) {
 	if m.emitter != nil {

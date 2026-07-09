@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/credential"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/persistence"
-	"serverpilot/internal/settings"
-	"serverpilot/internal/sshclient"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/credential"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/persistence"
+	"hostdeck/internal/settings"
+	"hostdeck/internal/sshclient"
 )
 
 type routeHostKeyError interface {

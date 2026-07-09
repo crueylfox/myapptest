@@ -261,19 +261,9 @@ test('split-pane 2 empty centers each selector without hint/action overlap', asy
     expect(Math.abs((paneBox.y + paneBox.height / 2) - (emptyBox.y + emptyBox.height / 2))).toBeLessThanOrEqual(3)
     expect(Math.abs(actionsCenterY - bodyCenterY)).toBeLessThanOrEqual(8)
     expectNoOverlap(messageBox, actionsBox)
-    await expect(actionButtons).toHaveCount(3)
-    await expect(actions.locator('.app-icon')).toHaveCount(3)
-    await expect(actionSeparators).toHaveCount(2)
-    for (let separatorIndex = 0; separatorIndex < 2; separatorIndex += 1) {
-      const separatorBox = await box(actionSeparators.nth(separatorIndex))
-      expect(separatorBox.width).toBeGreaterThan(separatorBox.height)
-    }
-    const yPositions = []
-    for (let actionIndex = 0; actionIndex < 3; actionIndex += 1) {
-      yPositions.push((await box(actionButtons.nth(actionIndex))).y)
-    }
-    expect(yPositions[0]).toBeLessThan(yPositions[1])
-    expect(yPositions[1]).toBeLessThan(yPositions[2])
+    await expect(actionButtons).toHaveCount(2)
+    await expect(actions.locator('.app-icon')).toHaveCount(2)
+    await expect(actionSeparators).toHaveCount(0)
     expect(await empty.evaluate((element) => window.getComputedStyle(element).borderStyle)).not.toMatch(/dashed|dotted/)
   }
 })
@@ -298,17 +288,12 @@ test('split-pane 4 empty narrow keeps all selectors inside their panes', async (
     expectInside(bodyBox, actionsBox)
     expect(Math.abs(actionsCenterY - bodyCenterY)).toBeLessThanOrEqual(8)
     expect(Math.abs((actionsBox.x + actionsBox.width / 2) - (bodyBox.x + bodyBox.width / 2))).toBeLessThanOrEqual(8)
-    await expect(actions.locator('.action-separator')).toHaveCount(2)
-    for (let separatorIndex = 0; separatorIndex < 2; separatorIndex += 1) {
-      const separatorBox = await box(actions.locator('.action-separator').nth(separatorIndex))
-      expect(separatorBox.height).toBeGreaterThan(separatorBox.width)
-    }
+    await expect(actions.locator('.action-separator')).toHaveCount(0)
     const xPositions = []
-    for (let actionIndex = 0; actionIndex < 3; actionIndex += 1) {
+    for (let actionIndex = 0; actionIndex < 2; actionIndex += 1) {
       xPositions.push((await box(actionButtons.nth(actionIndex))).x)
     }
     expect(xPositions[0]).toBeLessThan(xPositions[1])
-    expect(xPositions[1]).toBeLessThan(xPositions[2])
     expect(actionsBox.y).toBeGreaterThan(paneBox.y + 20)
     expect(await actions.evaluate((element) => window.getComputedStyle(element).borderStyle)).not.toMatch(/dashed|dotted/)
     expect(await actions.evaluate((element) => element.scrollWidth <= element.clientWidth + 2)).toBe(true)
@@ -826,8 +811,8 @@ test('topbar menu uses icon option items without dropdown separators', async ({ 
 
   await page.locator('.topbar-navigation > button').click()
   const splitButton = page.locator('.topbar-split .split-mode-button')
+  const splitToggle = page.locator('[data-split-menu-toggle]')
   const menuButton = page.locator('.topbar-navigation > button')
-  const splitInner = splitButton.locator('.topbar-action-inner')
   const menuInner = menuButton.locator('.topbar-action-inner')
   const topbarSeparator = page.locator('.topbar-action-separator')
   const menu = page.locator('.topbar-menu')
@@ -836,28 +821,22 @@ test('topbar menu uses icon option items without dropdown separators', async ({ 
   const labels = menu.locator('.topbar-menu-label')
   const icons = menu.locator('.app-icon')
   const separators = menu.locator('.topbar-menu-separator')
-  await expect(splitButton.locator('.app-icon')).toHaveCount(1)
+  await expect(splitButton).toHaveCount(0)
+  await expect(splitToggle.locator('.app-icon')).toHaveCount(1)
   await expect(menuButton.locator('.app-icon')).toHaveCount(1)
-  await expect(splitInner).toBeVisible()
+  await expect(splitToggle).toBeVisible()
   await expect(menuInner).toBeVisible()
-  await splitButton.hover()
-  expect((await box(splitInner)).height).toBeLessThan((await box(splitButton)).height)
-  expect((await box(splitInner)).width).toBeLessThan((await box(splitButton)).width)
-  expect(await splitInner.evaluate((element) => window.getComputedStyle(element).borderRadius)).toBe('8px')
   await menuButton.hover()
   expect((await box(menuInner)).height).toBeLessThan((await box(menuButton)).height)
   expect((await box(menuInner)).width).toBeLessThan((await box(menuButton)).width)
   expect(await menuInner.evaluate((element) => window.getComputedStyle(element).borderRadius)).toBe('8px')
-  await expect(topbarSeparator).toHaveCount(1)
-  const topbarSeparatorBox = await box(topbarSeparator)
-  expect(topbarSeparatorBox.height).toBeGreaterThan(topbarSeparatorBox.width)
-  expect((await box(splitInner)).x + (await box(splitInner)).width).toBeLessThanOrEqual(topbarSeparatorBox.x - 2)
-  expect((await box(menuInner)).x).toBeGreaterThanOrEqual(topbarSeparatorBox.x + topbarSeparatorBox.width + 2)
-  await expect(items).toHaveCount(9)
-  await expect(icons).toHaveCount(9)
-  await expect(centeredContent).toHaveCount(9)
+  await expect(topbarSeparator).toHaveCount(0)
+  await expect(items).toHaveCount(10)
+  await expect(icons).toHaveCount(10)
+  await expect(centeredContent).toHaveCount(10)
   await expect(labels).toHaveText([
     'SSH 工作区',
+    '分屏',
     '端口转发',
     '容器管理',
     '进程管理',
@@ -871,11 +850,12 @@ test('topbar menu uses icon option items without dropdown separators', async ({ 
   await expect(separators).toHaveCount(0)
   await expect(menu.locator('.topbar-menu-badge')).toBeVisible()
   const menuBox = await box(menu)
-  expect(menuBox.width).toBeGreaterThanOrEqual(141)
-  expect(menuBox.width).toBeLessThanOrEqual(149)
-  await expect(menu).toHaveCSS('min-width', '145px')
-  await expect(menu).toHaveCSS('max-width', '145px')
+  expect(menuBox.width).toBeGreaterThanOrEqual(176)
+  expect(menuBox.width).toBeLessThanOrEqual(184)
+  await expect(menu).toHaveCSS('min-width', '180px')
+  await expect(menu).toHaveCSS('max-width', '180px')
   for (let index = 0; index < await items.count(); index += 1) {
+    if ((await labels.nth(index).textContent()) === '分屏') continue
     const itemBox = await box(items.nth(index))
     const contentBox = await box(centeredContent.nth(index))
     const label = labels.nth(index)
@@ -885,7 +865,7 @@ test('topbar menu uses icon option items without dropdown separators', async ({ 
     expect(await label.evaluate((element) => window.getComputedStyle(element).textOverflow)).not.toBe('ellipsis')
     expect(await label.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
   }
-  const alertItem = items.nth(6)
+  const alertItem = items.nth(7)
   const alertContent = alertItem.locator('.topbar-menu-content')
   const alertBadge = alertItem.locator('.topbar-menu-badge')
   expect((await box(alertBadge)).x).toBeGreaterThan((await box(alertContent)).x + (await box(alertContent)).width)
@@ -1112,7 +1092,7 @@ test('SSH command completion closes with Escape and stays on the focused split p
 
 test('SSH command completion offers richer sys suggestions near the cursor', async ({ page }) => {
   await openFixture(page, 'ssh-command-completion', { width: 980, height: 620 })
-  await page.evaluate(() => localStorage.removeItem('serverpilot.sshCommandCompletion.enabled'))
+  await page.evaluate(() => localStorage.removeItem('hostdeck.sshCommandCompletion.enabled'))
 
   const shell = page.locator('[data-testid="ssh-command-completion"]')
   const input = shell.locator('[data-testid="ssh-completion-input"]')
@@ -1162,9 +1142,9 @@ test('SSH command completion offers richer sys suggestions near the cursor', asy
 test('SSH command completion offers docker compose subcommands without executing them', async ({ page }) => {
   await openFixture(page, 'ssh-command-completion', { width: 980, height: 620 })
   await page.evaluate(() => {
-    localStorage.removeItem('serverpilot.sshCommandCompletion.enabled')
-    localStorage.removeItem('serverpilot.sshCommandCompletion.maxSuggestions')
-    localStorage.removeItem('serverpilot.sshCommandCompletion.showDescriptions')
+    localStorage.removeItem('hostdeck.sshCommandCompletion.enabled')
+    localStorage.removeItem('hostdeck.sshCommandCompletion.maxSuggestions')
+    localStorage.removeItem('hostdeck.sshCommandCompletion.showDescriptions')
   })
 
   const input = page.locator('[data-testid="ssh-completion-input"]')
@@ -1184,7 +1164,7 @@ test('SSH command completion offers docker compose subcommands without executing
 
 test('SSH command completion can be disabled from overlay and re-enabled in terminal settings', async ({ page }) => {
   await openFixture(page, 'ssh-command-completion', { width: 980, height: 620 })
-  await page.evaluate(() => localStorage.removeItem('serverpilot.sshCommandCompletion.enabled'))
+  await page.evaluate(() => localStorage.removeItem('hostdeck.sshCommandCompletion.enabled'))
 
   const input = page.locator('[data-testid="ssh-completion-input"]')
   await input.fill('sys')

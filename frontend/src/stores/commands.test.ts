@@ -39,9 +39,9 @@ const connection: Connection = {
   createdAt: '',
   updatedAt: '',
 }
-const localCmdHistoryKey = 'serverpilot.commandHistory.local.cmd'
-const localPowerShellHistoryKey = 'serverpilot.commandHistory.local.powershell'
-const localFavoritesKey = 'serverpilot.commandFavorites.local'
+const localCmdHistoryKey = 'hostdeck.commandHistory.local.cmd'
+const localPowerShellHistoryKey = 'hostdeck.commandHistory.local.powershell'
+const localFavoritesKey = 'hostdeck.commandFavorites.local'
 
 describe('commands store', () => {
   beforeEach(() => {
@@ -137,7 +137,7 @@ describe('commands store', () => {
     expect(store.historyByServer[-1002].map((item) => item.command)).toEqual(['Get-Date'])
     expect(apiMock.recordCommandHistory).not.toHaveBeenCalled()
     expect(apiMock.listCommandHistory).not.toHaveBeenCalled()
-    expect(localStorage.getItem('serverpilot.commandScope')).toBeNull()
+    expect(localStorage.getItem('hostdeck.commandScope')).toBeNull()
     expect(localStorage.getItem(localCmdHistoryKey)).toContain('dir')
     expect(localStorage.getItem(localPowerShellHistoryKey)).toContain('Get-Date')
 

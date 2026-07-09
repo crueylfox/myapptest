@@ -14,12 +14,12 @@ import (
 	"strings"
 	"testing"
 
-	"serverpilot/internal/commands"
-	"serverpilot/internal/credential"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/keyvault"
-	"serverpilot/internal/persistence"
-	"serverpilot/internal/secretstore"
+	"hostdeck/internal/commands"
+	"hostdeck/internal/credential"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/keyvault"
+	"hostdeck/internal/persistence"
+	"hostdeck/internal/secretstore"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -94,7 +94,7 @@ func TestExportEncryptsBusinessDataAndInspectRejectsWrongPassword(t *testing.T) 
 	store := newBackupStore(t)
 	seedBackupData(t, ctx, store)
 	service := New(store)
-	path := filepath.Join(t.TempDir(), "serverpilot.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck.spbackup")
 
 	result, err := service.Export(ctx, domain.BackupExportRequest{
 		Path: path, Password: "correct horse battery", ConfirmPassword: "correct horse battery",
@@ -107,7 +107,7 @@ func TestExportEncryptsBusinessDataAndInspectRejectsWrongPassword(t *testing.T) 
 	}
 	contents := string(readFile(t, path))
 	for _, forbidden := range []string{
-		"prod-server", "192.0.2.55", "deploy", "/tmp/serverpilot-id_ed25519",
+		"prod-server", "192.0.2.55", "deploy", "/tmp/hostdeck-id_ed25519",
 		"credential-ref", "passphrase-ref", "test-password", "test-passphrase",
 	} {
 		if strings.Contains(contents, forbidden) {
@@ -124,7 +124,7 @@ func TestBackupPayloadDoesNotIncludeProcessRuntimeState(t *testing.T) {
 	store := newBackupStore(t)
 	seedBackupData(t, ctx, store)
 	service := New(store)
-	path := filepath.Join(t.TempDir(), "serverpilot.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck.spbackup")
 	password := "correct horse battery"
 	if _, err := service.Export(ctx, domain.BackupExportRequest{
 		Path: path, Password: password, ConfirmPassword: password,
@@ -202,7 +202,7 @@ func TestStandardBackupExportsOnlyKeyVaultMetadataAndRebindsByFingerprint(t *tes
 		t.Fatal(err)
 	}
 
-	path := filepath.Join(t.TempDir(), "serverpilot-keyvault.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck-keyvault.spbackup")
 	password := "correct horse battery"
 	if _, err := New(source, newMemorySecrets()).Export(ctx, domain.BackupExportRequest{
 		Path: path, Password: password, ConfirmPassword: password,
@@ -274,7 +274,7 @@ func TestStandardBackupImportsKeyVaultMetadataWhenNoLocalFingerprintExists(t *te
 		t.Fatal(err)
 	}
 
-	path := filepath.Join(t.TempDir(), "serverpilot-keyvault-metadata.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck-keyvault-metadata.spbackup")
 	password := "correct horse battery"
 	if _, err := New(source, newMemorySecrets()).Export(ctx, domain.BackupExportRequest{
 		Path: path, Password: password, ConfirmPassword: password,
@@ -322,7 +322,7 @@ func TestBackupTamperingAndKDFLimitsAreRejected(t *testing.T) {
 	store := newBackupStore(t)
 	seedBackupData(t, ctx, store)
 	service := New(store)
-	path := filepath.Join(t.TempDir(), "serverpilot.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck.spbackup")
 	password := "correct horse battery"
 	if _, err := service.Export(ctx, domain.BackupExportRequest{Path: path, Password: password, ConfirmPassword: password}); err != nil {
 		t.Fatal(err)
@@ -381,7 +381,7 @@ func TestImportPreviewAndTransactionalImportSanitizeCredentials(t *testing.T) {
 	source := newBackupStore(t)
 	seedBackupData(t, ctx, source)
 	service := New(source)
-	path := filepath.Join(t.TempDir(), "serverpilot.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck.spbackup")
 	password := "correct horse battery"
 	if _, err := service.Export(ctx, domain.BackupExportRequest{Path: path, Password: password, ConfirmPassword: password}); err != nil {
 		t.Fatal(err)
@@ -483,7 +483,7 @@ func TestFullBackupRestoresSavedSecrets(t *testing.T) {
 	}
 
 	service := New(source, sourceSecrets)
-	path := filepath.Join(t.TempDir(), "serverpilot-full.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck-full.spbackup")
 	password := "correct horse battery"
 	result, err := service.Export(ctx, domain.BackupExportRequest{
 		Path: path, Password: password, ConfirmPassword: password, Mode: string(domain.BackupModeFull),
@@ -576,7 +576,7 @@ func TestFullBackupImportsUnrestorableWindowsKeyVaultMetadataWithWarning(t *test
 	if err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(t.TempDir(), "serverpilot-windows-keyvault.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck-windows-keyvault.spbackup")
 	if err := os.WriteFile(path, contents, 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -637,7 +637,7 @@ func TestFullBackupRestoresEncryptedKeyVaultMaterialAndPassphrase(t *testing.T) 
 		t.Fatal(err)
 	}
 
-	path := filepath.Join(t.TempDir(), "serverpilot-full-keyvault.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck-full-keyvault.spbackup")
 	password := "correct horse battery"
 	sourceService := New(source, sourceSecrets)
 	sourceService.protector = backupTestProtector{}
@@ -963,7 +963,7 @@ func TestFullBackupKeepsConfigWhenSecretStoreCannotSave(t *testing.T) {
 	if err := sourceSecrets.Set(ctx, "credential-ref", []byte("saved-password")); err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(t.TempDir(), "serverpilot-full-secret-failure.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck-full-secret-failure.spbackup")
 	password := "correct horse battery"
 	if _, err := New(source, sourceSecrets).Export(ctx, domain.BackupExportRequest{
 		Path: path, Password: password, ConfirmPassword: password, Mode: string(domain.BackupModeFull),
@@ -1045,7 +1045,7 @@ func TestBackupExcludesCommandHistoryAndFavorites(t *testing.T) {
 	if err := secrets.Set(ctx, "passphrase-ref", []byte("saved-passphrase")); err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(t.TempDir(), "serverpilot.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck.spbackup")
 	password := "correct horse battery"
 	if _, err := New(store, secrets).Export(ctx, domain.BackupExportRequest{
 		Path: path, Password: password, ConfirmPassword: password, Mode: string(domain.BackupModeFull),
@@ -1078,7 +1078,7 @@ func TestRepeatedImportUpsertsConnectionsAndPreservesCredentialRefs(t *testing.T
 	source := newBackupStore(t)
 	seedBackupData(t, ctx, source)
 	service := New(source)
-	path := filepath.Join(t.TempDir(), "serverpilot.spbackup")
+	path := filepath.Join(t.TempDir(), "hostdeck.spbackup")
 	password := "correct horse battery"
 	if _, err := service.Export(ctx, domain.BackupExportRequest{Path: path, Password: password, ConfirmPassword: password}); err != nil {
 		t.Fatal(err)
@@ -1209,7 +1209,7 @@ func generatedBackupTestPrivateKeyPEM(t *testing.T) []byte {
 	if err != nil {
 		t.Fatal(err)
 	}
-	block, err := ssh.MarshalPrivateKey(privateKey, "serverpilot-test")
+	block, err := ssh.MarshalPrivateKey(privateKey, "hostdeck-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1222,7 +1222,7 @@ func pemEncodeToMemory(block *pem.Block) []byte {
 
 func newBackupStore(t *testing.T) *persistence.Store {
 	t.Helper()
-	store, err := persistence.Open(context.Background(), filepath.Join(t.TempDir(), "serverpilot.db"))
+	store, err := persistence.Open(context.Background(), filepath.Join(t.TempDir(), "HostDeck.db"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1274,7 +1274,7 @@ func seedBackupData(t *testing.T, ctx context.Context, store *persistence.Store)
 		t.Fatal(err)
 	}
 	key, err := store.CreateKeyVaultEntry(ctx, domain.SaveKeyVaultEntryRequest{
-		Name: "deploy", PrivateKeyPath: "/tmp/serverpilot-id_ed25519", Notes: "metadata only",
+		Name: "deploy", PrivateKeyPath: "/tmp/hostdeck-id_ed25519", Notes: "metadata only",
 	}, domain.PrivateKeyValidationResult{Algorithm: "ssh-ed25519", FingerprintSHA256: "SHA256:key", Encrypted: true, Valid: true})
 	if err != nil {
 		t.Fatal(err)

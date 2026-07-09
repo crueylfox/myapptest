@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func TestQuotePOSIXArgEscapesUnsafeNames(t *testing.T) {

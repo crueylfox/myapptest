@@ -20,7 +20,7 @@ export type HostKeyPolicy = 'auto_update' | 'strict'
 export type ThemeMode = 'dark' | 'light' | 'system'
 export type UIFontSize = 'tiny' | 'small' | 'standard' | 'large' | 'extra_large' | 'huge' | 'max'
 export type TerminalCursorStyle = 'block' | 'underline' | 'bar'
-export type TerminalThemeName = 'serverpilot-dark' | 'classic-dark' | 'light' | 'custom'
+export type TerminalThemeName = 'hostdeck-dark' | 'classic-dark' | 'light' | 'custom'
 
 export interface TerminalProfile {
   id: string

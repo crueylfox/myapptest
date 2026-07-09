@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"serverpilot/internal/credential"
-	"serverpilot/internal/domain"
+	"hostdeck/internal/credential"
+	"hostdeck/internal/domain"
 )
 
 const (

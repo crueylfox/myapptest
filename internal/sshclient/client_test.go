@@ -9,8 +9,8 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
 )
 
 func testPublicKey(t *testing.T) ssh.PublicKey {

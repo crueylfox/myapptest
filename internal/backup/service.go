@@ -15,13 +15,13 @@ import (
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/chacha20poly1305"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/keyvault"
-	"serverpilot/internal/secretstore"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/keyvault"
+	"hostdeck/internal/secretstore"
 )
 
 const (
-	formatName    = "serverpilot-backup"
+	formatName    = "hostdeck-backup"
 	envelopeVer   = 1
 	payloadSchema = 1
 
@@ -396,7 +396,7 @@ func encryptPayload(payload domain.BackupPayload, password string) ([]byte, stri
 		Format:    formatName,
 		Version:   envelopeVer,
 		CreatedAt: createdAt,
-		App:       "ServerPilot",
+		App:       "HostDeck",
 		KDF: kdfEnvelope{
 			Name:        kdfName,
 			Time:        defaultArgonTime,

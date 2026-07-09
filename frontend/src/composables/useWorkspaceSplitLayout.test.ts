@@ -13,7 +13,7 @@ function storage(initial: Record<string, string> = {}) {
   }
 }
 
-const key = 'serverpilot.workspaceSplitLayout.v1'
+const key = 'hostdeck.workspaceSplitLayout.v1'
 
 describe('useWorkspaceSplitLayout', () => {
   it('loads valid layout with old SSH string assignments and typed Local assignments', () => {

@@ -19,7 +19,7 @@ function importResult(values: Partial<BackupImportResult> = {}): BackupImportRes
 
 function exportResult(values: Partial<BackupExportResult> = {}): BackupExportResult {
   return {
-    path: 'C:/fake/serverpilot.spbackup',
+    path: 'C:/fake/hostdeck.spbackup',
     createdAt: '2026-07-03T00:00:00Z',
     mode: 'standard',
     groups: 1,
@@ -35,9 +35,9 @@ function exportResult(values: Partial<BackupExportResult> = {}): BackupExportRes
 function createFlow(initialImportOptions?: Partial<BackupImportOptions>) {
   const deps = {
     initialImportOptions,
-    selectExportPath: vi.fn(async () => 'C:/fake/serverpilot.spbackup'),
+    selectExportPath: vi.fn(async () => 'C:/fake/hostdeck.spbackup'),
     exportBackup: vi.fn(async () => exportResult()),
-    selectImportFile: vi.fn(async () => 'C:/fake/serverpilot.spbackup'),
+    selectImportFile: vi.fn(async () => 'C:/fake/hostdeck.spbackup'),
     importBackup: vi.fn(async () => importResult()),
     confirmImport: vi.fn(async () => true),
     confirmFullExport: vi.fn(async () => true),
@@ -64,7 +64,7 @@ describe('useSettingsBackupRestoreFlow', () => {
     flow.setImportOption('importHostTrust', false)
     await flow.chooseImportFile()
 
-    expect(flow.importPath.value).toBe('C:/fake/serverpilot.spbackup')
+    expect(flow.importPath.value).toBe('C:/fake/hostdeck.spbackup')
     expect(flow.importResult.value).toBeNull()
     expect(flow.importOptions.importGroups).toBe(false)
     expect(flow.importOptions.importKeyVault).toBe(false)
@@ -88,7 +88,7 @@ describe('useSettingsBackupRestoreFlow', () => {
 
     expect(deps.selectExportPath).toHaveBeenCalled()
     expect(deps.exportBackup).toHaveBeenCalledWith({
-      path: 'C:/fake/serverpilot.spbackup',
+      path: 'C:/fake/hostdeck.spbackup',
       password: '123456',
       confirmPassword: '123456',
       mode: 'standard',
@@ -124,7 +124,7 @@ describe('useSettingsBackupRestoreFlow', () => {
 
     expect(deps.confirmImport).toHaveBeenCalledTimes(1)
     expect(deps.importBackup).toHaveBeenCalledWith({
-      path: 'C:/fake/serverpilot.spbackup',
+      path: 'C:/fake/hostdeck.spbackup',
       password: '123456',
       options: {
         importSettings: false,

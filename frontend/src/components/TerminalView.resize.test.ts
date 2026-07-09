@@ -531,7 +531,7 @@ describe('TerminalView resize', () => {
           cursorStyle: 'block',
           cursorBlink: true,
           scrollback: 10000,
-          themeName: 'serverpilot-dark',
+          themeName: 'hostdeck-dark',
           foreground: '#eceff4',
           background: '#1f2023',
           selectionBackground: '#3f7dff66',

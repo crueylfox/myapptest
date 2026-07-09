@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const KeepaliveRequestName = "keepalive@openssh.com"

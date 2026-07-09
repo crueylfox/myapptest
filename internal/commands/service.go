@@ -14,7 +14,7 @@ import (
 	"time"
 	"unicode"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const (

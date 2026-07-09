@@ -85,7 +85,7 @@ func (WindowsCredentialManager) Set(ctx context.Context, key string, value []byt
 	if err != nil {
 		return err
 	}
-	username, err := windows.UTF16PtrFromString("ServerPilot")
+	username, err := windows.UTF16PtrFromString("HostDeck")
 	if err != nil {
 		return err
 	}

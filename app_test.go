@@ -21,17 +21,17 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/credential"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/localterminal"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/monitor"
-	"serverpilot/internal/persistence"
-	"serverpilot/internal/secretstore"
-	"serverpilot/internal/settings"
-	"serverpilot/internal/sshclient"
-	terminalservice "serverpilot/internal/terminal"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/credential"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/localterminal"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/monitor"
+	"hostdeck/internal/persistence"
+	"hostdeck/internal/secretstore"
+	"hostdeck/internal/settings"
+	"hostdeck/internal/sshclient"
+	terminalservice "hostdeck/internal/terminal"
 )
 
 type memorySecretStore struct {
@@ -62,7 +62,7 @@ func (s *memorySecretStore) Set(_ context.Context, key string, value []byte) err
 func setupConnectionConfigApp(t *testing.T, secrets *memorySecretStore) (*App, *persistence.Store) {
 	t.Helper()
 	ctx := context.Background()
-	store, err := persistence.Open(ctx, filepath.Join(t.TempDir(), "serverpilot.db"))
+	store, err := persistence.Open(ctx, filepath.Join(t.TempDir(), "HostDeck.db"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -119,8 +119,8 @@ func TestGetAppVersionReturnsCurrentReleaseVersion(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := strings.TrimSpace(string(raw))
-	if want != "0.5.0-beta.60" {
-		t.Fatalf("VERSION=%q, want %q", want, "0.5.0-beta.60")
+	if want != "0.5.0-beta.61" {
+		t.Fatalf("VERSION=%q, want %q", want, "0.5.0-beta.61")
 	}
 
 	info := app.GetAppVersion()
@@ -156,12 +156,42 @@ func TestMainConfiguresStableWindowsWebviewDataPath(t *testing.T) {
 	if !strings.Contains(text, `Windows: &windows.Options{`) || !strings.Contains(text, `WebviewUserDataPath: stableWindowsWebviewUserDataPath()`) {
 		t.Fatal("main.go must configure a stable Windows WebView2 user data path")
 	}
-	path := serverPilotWebviewUserDataPath(filepath.Join("C:\\Users\\Administrator\\AppData\\Roaming"))
-	if path != filepath.Join("C:\\Users\\Administrator\\AppData\\Roaming", "ServerPilot", "WebView2") {
+	path := hostDeckWebviewUserDataPath(filepath.Join("C:\\Users\\Administrator\\AppData\\Roaming"))
+	if path != filepath.Join("C:\\Users\\Administrator\\AppData\\Roaming", "HostDeck", "WebView2") {
 		t.Fatalf("webview data path = %q", path)
 	}
 	if strings.Contains(path, ".exe") || strings.Contains(path, "beta") {
 		t.Fatalf("webview data path must not depend on executable or version name: %q", path)
+	}
+}
+
+func TestEnsureHostDeckDataDirMigratesLegacyDirectoryAndDatabase(t *testing.T) {
+	configDir := t.TempDir()
+	legacyDir := filepath.Join(configDir, legacyAppDataDirName)
+	if err := os.MkdirAll(filepath.Join(legacyDir, "logs"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	legacyDB := filepath.Join(legacyDir, legacyDatabaseFilename)
+	if err := os.WriteFile(legacyDB, []byte("legacy database"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	dataDir, err := ensureHostDeckDataDir(configDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if dataDir != filepath.Join(configDir, "HostDeck") {
+		t.Fatalf("data dir = %q", dataDir)
+	}
+	if _, err := os.Stat(filepath.Join(configDir, legacyAppDataDirName)); !os.IsNotExist(err) {
+		t.Fatalf("legacy data dir still exists or stat failed: %v", err)
+	}
+	if _, err := os.Stat(hostDeckDatabasePath(dataDir)); err != nil {
+		t.Fatalf("HostDeck database was not migrated: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(dataDir, legacyDatabaseFilename)); !os.IsNotExist(err) {
+		t.Fatalf("legacy database file still exists or stat failed: %v", err)
 	}
 }
 
@@ -557,7 +587,7 @@ func (s *memorySecretStore) Delete(_ context.Context, key string) error {
 
 func TestCredentialLifecycleDoesNotPersistSecretInSQLite(t *testing.T) {
 	ctx := context.Background()
-	path := filepath.Join(t.TempDir(), "serverpilot.db")
+	path := filepath.Join(t.TempDir(), "HostDeck.db")
 	store, err := persistence.Open(ctx, path)
 	if err != nil {
 		t.Fatal(err)
@@ -688,7 +718,7 @@ func TestSSHRouteDialerReportsJumpCredentialStage(t *testing.T) {
 
 func TestChangingPrivateKeyPathAndDeletingConnectionRemoveSystemCredential(t *testing.T) {
 	ctx := context.Background()
-	store, err := persistence.Open(ctx, filepath.Join(t.TempDir(), "serverpilot.db"))
+	store, err := persistence.Open(ctx, filepath.Join(t.TempDir(), "HostDeck.db"))
 	if err != nil {
 		t.Fatal(err)
 	}

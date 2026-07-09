@@ -351,8 +351,8 @@ const compactNetworkFixtureInterfaces = computed(() => [{
 
 const remoteTextEntry: SFTPEntry = {
   name: 'fixture.conf',
-  path: '/etc/serverpilot/fixture.conf',
-  parentPath: '/etc/serverpilot',
+  path: '/etc/hostdeck/fixture.conf',
+  parentPath: '/etc/hostdeck',
   size: 86,
   isDir: false,
   isSymlink: false,
@@ -483,8 +483,8 @@ let fixtureBottomPanelResizeRoot: HTMLElement | null = null
 const localCommandPaletteOpen = ref(false)
 const localTerminalFixtureInput = ref('')
 const localCommandHistoryStorageKeys = {
-  cmd: 'serverpilot.commandHistory.local.cmd',
-  powershell: 'serverpilot.commandHistory.local.powershell',
+  cmd: 'hostdeck.commandHistory.local.cmd',
+  powershell: 'hostdeck.commandHistory.local.powershell',
 } as const
 const localCommandHistory = ref<Record<'cmd' | 'powershell', string[]>>({
   cmd: readLocalFixtureCommandHistory('cmd'),
@@ -822,7 +822,7 @@ const processRows = Array.from({ length: 18 }, (_, index) => ({
   mem: (index * 0.9 + 1.4).toFixed(1),
   state: index % 5 === 0 ? 'sleeping' : 'running',
   command: index === 0
-    ? 'node /opt/serverpilot-fixture/current/dist/worker-with-very-long-command-and-many-arguments.js --queue layout-regression --mode synthetic'
+    ? 'node /opt/hostdeck-fixture/current/dist/worker-with-very-long-command-and-many-arguments.js --queue layout-regression --mode synthetic'
     : `fixture-process-${index + 1}`,
 }))
 const processFixtureColumns = [
@@ -1593,7 +1593,7 @@ function shouldRender(name: FixtureName | string) {
 }
 
 if (shouldRender('compact-network-card-stats') || shouldRender('compact-network-card-stats-ens192')) {
-  localStorage.setItem('serverpilot.monitorDetailsExpanded', 'true')
+  localStorage.setItem('hostdeck.monitorDetailsExpanded', 'true')
 }
 
 const appBlurOverlayFixture = computed(() =>
@@ -1619,7 +1619,7 @@ const appBlurOverlayFixture = computed(() =>
         data-testid="app-visual-root"
       >
         <header>
-          <strong>ServerPilot fixture workspace</strong>
+          <strong>HostDeck fixture workspace</strong>
           <span>macOS modal blur background</span>
         </header>
         <section>
@@ -1668,10 +1668,7 @@ const appBlurOverlayFixture = computed(() =>
               <span class="terminal-pane-empty-message">将标签拖到这里</span>
               <div class="terminal-pane-empty-actions terminal-empty-actions terminal-empty-actions--vertical centered concept-c-action-stack">
                 <button type="button"><AppIcon name="server-plus" :size="30" /><span>新建服务器</span></button>
-                <span class="action-separator action-separator--horizontal-stack" aria-hidden="true"></span>
                 <button type="button"><AppIcon name="link" :size="30" /><span>连接已保存</span></button>
-                <span class="action-separator action-separator--horizontal-stack" aria-hidden="true"></span>
-                <button type="button"><AppIcon name="terminal-check" :size="30" /><span>选择已连接</span></button>
               </div>
             </div>
           </div>
@@ -1695,10 +1692,7 @@ const appBlurOverlayFixture = computed(() =>
               <span class="terminal-pane-empty-message">将标签拖到这里</span>
               <div class="terminal-pane-empty-actions terminal-empty-actions terminal-empty-actions--horizontal centered concept-c-action-stack">
                 <button type="button"><AppIcon name="server-plus" :size="30" /><span>新建服务器</span></button>
-                <span class="action-separator action-separator--vertical-stack" aria-hidden="true"></span>
                 <button type="button"><AppIcon name="link" :size="30" /><span>连接已保存</span></button>
-                <span class="action-separator action-separator--vertical-stack" aria-hidden="true"></span>
-                <button type="button"><AppIcon name="terminal-check" :size="30" /><span>选择已连接</span></button>
               </div>
             </div>
           </div>
@@ -2005,7 +1999,7 @@ const appBlurOverlayFixture = computed(() =>
         <header class="settings-page-header">
           <div>
             <h1>Settings</h1>
-            <p class="settings-app-version">ServerPilot v0.5.0-beta.28</p>
+            <p class="settings-app-version">HostDeck v0.5.0-beta.28</p>
           </div>
           <div class="settings-header-actions" data-testid="settings-scroll-action-bar">
             <button class="secondary settings-save-button" type="button">Save</button>
@@ -2247,7 +2241,7 @@ const appBlurOverlayFixture = computed(() =>
         <header class="settings-page-header">
           <div>
             <h1>Settings</h1>
-            <p class="settings-app-version">ServerPilot v0.5.0-beta.28</p>
+            <p class="settings-app-version">HostDeck v0.5.0-beta.28</p>
           </div>
           <div class="settings-header-actions" data-testid="settings-action-bar">
             <button class="secondary settings-reset-defaults-button" type="button">Reset</button>
@@ -2284,21 +2278,11 @@ const appBlurOverlayFixture = computed(() =>
             </button>
             <button class="topbar-add" type="button">+</button>
           </div>
-          <div class="topbar-split">
-            <button class="split-mode-button" type="button">
-              <span class="topbar-action-inner">
-                <AppIcon name="layout-grid" :size="16" />
-                <span>分屏</span>
-              </span>
-            </button>
-          </div>
-          <span class="topbar-action-separator" aria-hidden="true"></span>
           <div class="topbar-navigation">
             <button type="button" :aria-expanded="topbarMenuOpen" @click="topbarMenuOpen = !topbarMenuOpen">
               <span class="topbar-action-inner">
                 <AppIcon name="menu" :size="16" />
                 <span>菜单</span>
-                <span aria-hidden="true">▾</span>
               </span>
             </button>
             <div v-if="topbarMenuOpen" class="topbar-menu">
@@ -2316,6 +2300,19 @@ const appBlurOverlayFixture = computed(() =>
                   <span class="topbar-menu-trailing">
                     <span v-if="item.badge > 0" class="topbar-menu-badge">{{ item.badge }}</span>
                   </span>
+                </button>
+                <button
+                  v-if="item.label === 'SSH 工作区'"
+                  type="button"
+                  class="topbar-menu-item topbar-menu-split-toggle"
+                  data-split-menu-toggle
+                >
+                  <span class="topbar-menu-leading" aria-hidden="true"></span>
+                  <span class="topbar-menu-content">
+                    <AppIcon name="layout-grid" :size="18" />
+                    <span class="topbar-menu-label">分屏</span>
+                  </span>
+                  <span class="topbar-menu-trailing">单窗格</span>
                 </button>
               </template>
             </div>
@@ -3688,7 +3685,7 @@ const appBlurOverlayFixture = computed(() =>
                   <div><dt>Threads</dt><dd>18</dd></div>
                 </dl>
                 <section class="process-paths">
-                  <p><strong>CWD</strong><span>/opt/serverpilot-fixture/current</span></p>
+                  <p><strong>CWD</strong><span>/opt/hostdeck-fixture/current</span></p>
                   <p><strong>EXE</strong><span>/usr/bin/node</span></p>
                 </section>
                 <section class="process-cmdline">

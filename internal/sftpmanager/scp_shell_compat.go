@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const scpShellOutputLimit = 8 * 1024 * 1024

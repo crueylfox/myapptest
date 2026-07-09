@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/keyvault"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/keyvault"
 )
 
 var backupImportPlatform = runtime.GOOS
@@ -708,11 +708,11 @@ func backupKeyVaultProtectedBlobs(secrets []domain.BackupSecret) map[int64][]byt
 }
 
 func connectionSecretReference(connectionID int64, kind string) string {
-	return fmt.Sprintf("ServerPilot/connection/%d/%s", connectionID, kind)
+	return fmt.Sprintf("HostDeck/connection/%d/%s", connectionID, kind)
 }
 
 func keyVaultPassphraseReference(keyID int64) string {
-	return fmt.Sprintf("ServerPilot/keyvault/%d/passphrase", keyID)
+	return fmt.Sprintf("HostDeck/keyvault/%d/passphrase", keyID)
 }
 
 func (s *Store) exportBackupGroups(ctx context.Context) ([]domain.BackupGroup, error) {

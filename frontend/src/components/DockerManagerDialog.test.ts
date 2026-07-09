@@ -73,7 +73,7 @@ const longContainer: DockerContainer = {
   id: 'long999',
   shortID: 'long999',
   name: 'very-long-container-name-that-should-never-push-actions-out-of-view',
-  image: 'registry.example.com/namespace/very-long-image-name-with-many-segments/serverpilot-test-image:2026.06.19-long-tag',
+  image: 'registry.example.com/namespace/very-long-image-name-with-many-segments/hostdeck-test-image:2026.06.19-long-tag',
   status: 'Up 12 days (healthy) with a deliberately long status string',
   ports: '0.0.0.0:12345->12345/tcp, [::]:12345->12345/tcp',
 }

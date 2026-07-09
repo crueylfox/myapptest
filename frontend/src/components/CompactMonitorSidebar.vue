@@ -46,19 +46,19 @@ const MONITOR_AUTO_COLLAPSE_HEIGHT = 96
 const MOUNTS_AUTO_COLLAPSE_HEIGHT = 72
 const DEFAULT_MONITOR_HEIGHT = 430
 const NETWORK_DISPLAY_WINDOW_MS = 180_000
-const storedMonitorHeightValue = localStorage.getItem('serverpilot.monitorPaneHeight')
+const storedMonitorHeightValue = localStorage.getItem('hostdeck.monitorPaneHeight')
 const storedMonitorHeight = storedMonitorHeightValue === null
   ? Number.NaN
   : Number(storedMonitorHeightValue)
 const monitorHeight = ref(clampStoredMonitorHeight(storedMonitorHeight))
 type SplitMode = 'split' | 'monitorCollapsed' | 'mountsCollapsed'
-const storedSplitMode = localStorage.getItem('serverpilot.monitorSidebarSplitMode') as SplitMode | null
+const storedSplitMode = localStorage.getItem('hostdeck.monitorSidebarSplitMode') as SplitMode | null
 const splitMode = ref<SplitMode>(
   storedSplitMode === 'monitorCollapsed' || storedSplitMode === 'mountsCollapsed'
     ? storedSplitMode
     : 'split',
 )
-const monitorDetailsExpanded = ref(localStorage.getItem('serverpilot.monitorDetailsExpanded') === 'true')
+const monitorDetailsExpanded = ref(localStorage.getItem('hostdeck.monitorDetailsExpanded') === 'true')
 let dragging = false
 
 const status = computed(() => {
@@ -242,7 +242,7 @@ function toggleSystemInfo() {
 
 function toggleMonitorDetails() {
   monitorDetailsExpanded.value = !monitorDetailsExpanded.value
-  localStorage.setItem('serverpilot.monitorDetailsExpanded', String(monitorDetailsExpanded.value))
+  localStorage.setItem('hostdeck.monitorDetailsExpanded', String(monitorDetailsExpanded.value))
   void nextTick(() => emit('layout'))
 }
 
@@ -284,7 +284,7 @@ function startSplit(event: PointerEvent) {
 function applySplitMode(mode: SplitMode) {
   if (splitMode.value === mode) return
   splitMode.value = mode
-  localStorage.setItem('serverpilot.monitorSidebarSplitMode', mode)
+  localStorage.setItem('hostdeck.monitorSidebarSplitMode', mode)
 }
 
 function moveSplit(event: PointerEvent) {
@@ -310,7 +310,7 @@ function moveSplit(event: PointerEvent) {
 
 function stopSplit() {
   dragging = false
-  localStorage.setItem('serverpilot.monitorPaneHeight', String(Math.round(monitorHeight.value)))
+  localStorage.setItem('hostdeck.monitorPaneHeight', String(Math.round(monitorHeight.value)))
   window.removeEventListener('pointermove', moveSplit)
 }
 

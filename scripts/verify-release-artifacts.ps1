@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ArtifactDirectory,
 
-    [string]$ArtifactName = 'ServerPilot-macos-unsigned'
+    [string]$ArtifactName = 'HostDeck-macos-unsigned'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,10 +35,10 @@ function Assert-FileHash([string]$FilePath, [string]$HashPath) {
 
 $artifactRoot = Resolve-Path -LiteralPath $ArtifactDirectory
 $expectedFiles = @(
-    'ServerPilot-macos-universal-unsigned.zip',
-    'ServerPilot-macos-universal-unsigned.dmg',
-    'ServerPilot-macos-universal-unsigned.zip.sha256',
-    'ServerPilot-macos-universal-unsigned.dmg.sha256'
+    'HostDeck-macos-universal-unsigned.zip',
+    'HostDeck-macos-universal-unsigned.dmg',
+    'HostDeck-macos-universal-unsigned.zip.sha256',
+    'HostDeck-macos-universal-unsigned.dmg.sha256'
 )
 
 # Mirrors GitHub upload-artifact if-no-files-found: error behavior without downloading artifacts.
@@ -51,8 +51,8 @@ foreach ($file in $expectedFiles) {
 
 Write-Output "Artifact: $ArtifactName"
 Assert-FileHash `
-    (Join-Path $artifactRoot 'ServerPilot-macos-universal-unsigned.zip') `
-    (Join-Path $artifactRoot 'ServerPilot-macos-universal-unsigned.zip.sha256')
+    (Join-Path $artifactRoot 'HostDeck-macos-universal-unsigned.zip') `
+    (Join-Path $artifactRoot 'HostDeck-macos-universal-unsigned.zip.sha256')
 Assert-FileHash `
-    (Join-Path $artifactRoot 'ServerPilot-macos-universal-unsigned.dmg') `
-    (Join-Path $artifactRoot 'ServerPilot-macos-universal-unsigned.dmg.sha256')
+    (Join-Path $artifactRoot 'HostDeck-macos-universal-unsigned.dmg') `
+    (Join-Path $artifactRoot 'HostDeck-macos-universal-unsigned.dmg.sha256')

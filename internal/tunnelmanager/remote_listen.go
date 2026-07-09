@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const remoteListenProbeCommand = "if command -v ss >/dev/null 2>&1; then echo __SERVERPILOT_LISTEN_TOOL:ss; ss -ltn; elif command -v netstat >/dev/null 2>&1; then echo __SERVERPILOT_LISTEN_TOOL:netstat; netstat -ltn; else echo __SERVERPILOT_LISTEN_TOOL:missing; fi"

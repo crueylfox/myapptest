@@ -132,7 +132,7 @@ describe('terminal store', () => {
     expect(live).toEqual(['cHJvbXB0PiA='])
     expect(replayed).toEqual([{ chunk: 'cHJvbXB0PiA=', replay: true }])
     expect(localStorage.getItem('terminal:output')).toBeNull()
-    expect(localStorage.getItem('serverpilot.terminalReplay')).toBeNull()
+    expect(localStorage.getItem('hostdeck.terminalReplay')).toBeNull()
   })
 
   it('clears in-memory terminal replay output when a session closes', async () => {
@@ -192,7 +192,7 @@ describe('terminal store', () => {
       unreadCount: 99,
     })
     expect(store.outputActivityLabel(first.sessionId)).toBe('99+')
-    expect(localStorage.getItem('serverpilot.terminalActivity')).toBeNull()
+    expect(localStorage.getItem('hostdeck.terminalActivity')).toBeNull()
   })
 
   it('does not mark active SSH output or replay chunks as unread activity', async () => {

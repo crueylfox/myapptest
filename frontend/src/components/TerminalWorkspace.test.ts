@@ -79,7 +79,7 @@ const defaultProfile: TerminalProfile = {
   cursorStyle: 'block',
   cursorBlink: true,
   scrollback: 10000,
-  themeName: 'serverpilot-dark',
+  themeName: 'hostdeck-dark',
   foreground: '#eceff4',
   background: '#1f2023',
   selectionBackground: '#3f7dff66',
@@ -206,14 +206,14 @@ async function setSplitMode(
   wrapper: ReturnType<typeof mountWorkspace>['wrapper'],
   mode: 'single' | 'vertical' | 'horizontal' | 'quad',
 ) {
-  window.dispatchEvent(new CustomEvent('serverpilot:workspace-split-mode-change', {
+  window.dispatchEvent(new CustomEvent('hostdeck:workspace-split-mode-change', {
     detail: { mode },
   }))
   await wrapper.vm.$nextTick()
 }
 
 function splitLayout() {
-  return JSON.parse(localStorage.getItem('serverpilot.workspaceSplitLayout.v1') ?? '{}') as {
+  return JSON.parse(localStorage.getItem('hostdeck.workspaceSplitLayout.v1') ?? '{}') as {
     splitMode?: string
     activePaneId?: string
     paneAssignments?: Record<string, string | { kind?: string; sessionId?: string } | null>
@@ -544,7 +544,7 @@ describe('TerminalWorkspace server states', () => {
   })
 
   it('auto-expands and auto-hides SFTP from the plain horizontal splitter', async () => {
-    localStorage.setItem('serverpilot.sftpExpanded', 'false')
+    localStorage.setItem('hostdeck.sftpExpanded', 'false')
     const { wrapper } = mountWorkspace(state())
     const root = wrapper.get('.workspace-shell').element as HTMLElement
     vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({
@@ -558,12 +558,12 @@ describe('TerminalWorkspace server states', () => {
     await dragSplitter(wrapper, '.horizontal-splitter', { x: 500, y: 670 }, { x: 500, y: 420 })
     expect(wrapper.find('.sftp-panel').classes()).toContain('expanded')
     expect(wrapper.find('.right-workspace').attributes('style')).toContain('0 252px 28px')
-    expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('true')
-    expect(localStorage.getItem('serverpilot.sftpHeight')).toBe('252')
+    expect(localStorage.getItem('hostdeck.sftpExpanded')).toBe('true')
+    expect(localStorage.getItem('hostdeck.sftpHeight')).toBe('252')
 
     await dragSplitter(wrapper, '.horizontal-splitter', { x: 500, y: 420 }, { x: 500, y: 620 })
     expect(wrapper.find('.sftp-panel').classes()).not.toContain('expanded')
-    expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('false')
+    expect(localStorage.getItem('hostdeck.sftpExpanded')).toBe('false')
   })
 
   it('auto-collapses and restores the monitor sidebar from the plain vertical splitter', async () => {
@@ -578,17 +578,17 @@ describe('TerminalWorkspace server states', () => {
 
     await dragSplitter(wrapper, '.vertical-splitter', { x: 300, y: 300 }, { x: 120, y: 300 })
     expect(wrapper.find('.workspace-shell').classes()).toContain('sidebar-collapsed')
-    expect(localStorage.getItem('serverpilot.monitorSidebarCollapsed')).toBe('true')
+    expect(localStorage.getItem('hostdeck.monitorSidebarCollapsed')).toBe('true')
     expect(wrapper.find('.right-workspace').exists()).toBe(true)
 
     await dragSplitter(wrapper, '.vertical-splitter', { x: 12, y: 300 }, { x: 360, y: 300 })
     expect(wrapper.find('.workspace-shell').classes()).not.toContain('sidebar-collapsed')
-    expect(localStorage.getItem('serverpilot.monitorSidebarCollapsed')).toBe('false')
-    expect(localStorage.getItem('serverpilot.monitorSidebarWidth')).toBe('360')
+    expect(localStorage.getItem('hostdeck.monitorSidebarCollapsed')).toBe('false')
+    expect(localStorage.getItem('hostdeck.monitorSidebarWidth')).toBe('360')
   })
 
   it('shows a compact topbar restore button when the monitor sidebar is hidden', async () => {
-    localStorage.setItem('serverpilot.monitorSidebarCollapsed', 'true')
+    localStorage.setItem('hostdeck.monitorSidebarCollapsed', 'true')
     const { wrapper } = mountWorkspace(state())
 
     expect(wrapper.find('.workspace-shell').classes()).toContain('sidebar-collapsed')
@@ -600,7 +600,7 @@ describe('TerminalWorkspace server states', () => {
     await restore.trigger('click')
 
     expect(wrapper.find('.workspace-shell').classes()).not.toContain('sidebar-collapsed')
-    expect(localStorage.getItem('serverpilot.monitorSidebarCollapsed')).toBe('false')
+    expect(localStorage.getItem('hostdeck.monitorSidebarCollapsed')).toBe('false')
     expect(wrapper.find('.sidebar-restore-button').exists()).toBe(false)
   })
 
@@ -611,7 +611,7 @@ describe('TerminalWorkspace server states', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.workspace-shell').classes()).toContain('sidebar-collapsed')
-    expect(localStorage.getItem('serverpilot.monitorSidebarCollapsed')).toBe('true')
+    expect(localStorage.getItem('hostdeck.monitorSidebarCollapsed')).toBe('true')
     expect(wrapper.find('.sidebar-restore-button').exists()).toBe(true)
   })
 
@@ -631,7 +631,7 @@ describe('TerminalWorkspace server states', () => {
     window.dispatchEvent(new MouseEvent('pointermove', { clientX: 360 }))
     window.dispatchEvent(new MouseEvent('pointerup'))
     expect(wrapper.find('.workspace-shell').classes()).not.toContain('sidebar-collapsed')
-    expect(localStorage.getItem('serverpilot.monitorSidebarWidth')).toBe('360')
+    expect(localStorage.getItem('hostdeck.monitorSidebarWidth')).toBe('360')
   })
 
   it('omits the redundant connected label and terminal rows and columns', () => {
@@ -667,7 +667,7 @@ describe('TerminalWorkspace server states', () => {
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(true)
     expect(wrapper.get('.right-workspace').attributes('style')).toContain('0 140px 28px')
 
-    localStorage.setItem('serverpilot.sftpExpanded', 'false')
+    localStorage.setItem('hostdeck.sftpExpanded', 'false')
     const collapsed = mountWorkspace(state()).wrapper
     await collapsed.vm.$nextTick()
 
@@ -731,7 +731,7 @@ describe('TerminalWorkspace server states', () => {
   })
 
   it('toggles the remote SFTP panel from the left side of the bottom status bar', async () => {
-    localStorage.setItem('serverpilot.sftpExpanded', 'false')
+    localStorage.setItem('hostdeck.sftpExpanded', 'false')
     const { wrapper } = mountWorkspace(state({
       status: 'online',
       terminalActive: true,
@@ -747,12 +747,12 @@ describe('TerminalWorkspace server states', () => {
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(false)
 
     await toggle.trigger('click')
-    expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('true')
+    expect(localStorage.getItem('hostdeck.sftpExpanded')).toBe('true')
     expect(toggle.attributes('aria-pressed')).toBe('true')
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(true)
 
     await toggle.trigger('click')
-    expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('false')
+    expect(localStorage.getItem('hostdeck.sftpExpanded')).toBe('false')
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(false)
   })
 
@@ -999,7 +999,7 @@ describe('TerminalWorkspace server states', () => {
   })
 
   it('restores missing, corrupt, and persisted split ratios safely from localStorage', async () => {
-    localStorage.setItem('serverpilot.workspaceSplitLayout.v1', JSON.stringify({
+    localStorage.setItem('hostdeck.workspaceSplitLayout.v1', JSON.stringify({
       splitMode: 'quad',
       columnRatio: 'bad',
       rowRatio: 2,
@@ -1061,7 +1061,7 @@ describe('TerminalWorkspace server states', () => {
     const beforeAssignments = splitLayout().paneAssignments
     const beforeRevisions = paneLayoutRevisions(wrapper)
 
-    window.dispatchEvent(new CustomEvent('serverpilot:workspace-split-ratio-reset'))
+    window.dispatchEvent(new CustomEvent('hostdeck:workspace-split-ratio-reset'))
     await wrapper.vm.$nextTick()
 
     expect(splitLayout()).toMatchObject({ columnRatio: 0.5, rowRatio: 0.5 })
@@ -1083,7 +1083,7 @@ describe('TerminalWorkspace server states', () => {
     await wrapper.vm.$nextTick()
     const before = splitLayout().paneAssignments
 
-    window.dispatchEvent(new CustomEvent('serverpilot:workspace-split-clear-panes'))
+    window.dispatchEvent(new CustomEvent('hostdeck:workspace-split-clear-panes'))
     await wrapper.vm.$nextTick()
     expect(useAppDialog().dialog.value).toMatchObject({
       title: '清空所有窗格',
@@ -1096,7 +1096,7 @@ describe('TerminalWorkspace server states', () => {
     expect(splitLayout().paneAssignments).toEqual(before)
     expect(wrapper.get('.terminal-split-workspace').classes()).toContain('pane-maximized')
 
-    window.dispatchEvent(new CustomEvent('serverpilot:workspace-split-clear-panes'))
+    window.dispatchEvent(new CustomEvent('hostdeck:workspace-split-clear-panes'))
     await wrapper.vm.$nextTick()
     resolveAppDialog(true)
     await Promise.resolve()
@@ -1661,7 +1661,7 @@ describe('TerminalWorkspace server states', () => {
 
     expect(wrapper.findAll('.terminal-pane')).toHaveLength(1)
     expect(wrapper.find('[data-pane-id="pane-2"] [data-terminal-activity-badge]').exists()).toBe(false)
-    expect(localStorage.getItem('serverpilot.terminalActivity')).toBeNull()
+    expect(localStorage.getItem('hostdeck.terminalActivity')).toBeNull()
 
     await wrapper.get('[data-pane-id="pane-1"] .terminal-pane-maximize').trigger('click')
     await wrapper.vm.$nextTick()
@@ -2000,7 +2000,7 @@ describe('TerminalWorkspace server states', () => {
       bottom: 340, left: 400, toJSON: () => undefined,
     })
 
-    const drop = new CustomEvent('serverpilot:workspace-tab-external-drop', {
+    const drop = new CustomEvent('hostdeck:workspace-tab-external-drop', {
       cancelable: true,
       detail: { kind: 'terminal', key: 'terminal-term-2', sessionId: 'term-2', clientX: 520, clientY: 120 },
     })
@@ -2041,7 +2041,7 @@ describe('TerminalWorkspace server states', () => {
       bottom: 340, left: 400, toJSON: () => undefined,
     })
 
-    const drop = new CustomEvent('serverpilot:workspace-tab-external-drop', {
+    const drop = new CustomEvent('hostdeck:workspace-tab-external-drop', {
       cancelable: true,
       detail: { kind: 'local', key: 'local-local-cmd', localSessionId: 'local-cmd', clientX: 520, clientY: 120 },
     })
@@ -2114,7 +2114,7 @@ describe('TerminalWorkspace server states', () => {
       x: 0, y: 40, width: 360, height: 300, top: 40, right: 360,
       bottom: 340, left: 0, toJSON: () => undefined,
     })
-    window.dispatchEvent(new CustomEvent('serverpilot:workspace-tab-external-drop', {
+    window.dispatchEvent(new CustomEvent('hostdeck:workspace-tab-external-drop', {
       cancelable: true,
       detail: { kind: 'local', key: 'local-local-clear', localSessionId: 'local-clear', clientX: 100, clientY: 120 },
     }))
@@ -2229,7 +2229,7 @@ describe('TerminalWorkspace server states', () => {
   })
 
   it('shares the bottom panel expanded state between local Explorer and remote SFTP', async () => {
-    localStorage.setItem('serverpilot.sftpExpanded', 'true')
+    localStorage.setItem('hostdeck.sftpExpanded', 'true')
     const { wrapper, store, localStore } = mountWorkspace(state({
       status: 'online',
       terminalActive: true,
@@ -2410,16 +2410,16 @@ describe('TerminalWorkspace server states', () => {
     expect(commandStore.historyByServer[-1001].map((item) => item.command)).toEqual(['dir'])
     expect(commandStore.historyByServer[-1002].map((item) => item.command)).toEqual(['Get-ChildItem'])
     expect(commandStore.historyByServer[-1002].map((item) => item.command)).not.toContain('set TOKEN=secret-value')
-    expect(localStorage.getItem('serverpilot.commandHistory.local.cmd')).toContain('dir')
-    expect(localStorage.getItem('serverpilot.commandHistory.local.powershell')).toContain('Get-ChildItem')
-    expect(localStorage.getItem('serverpilot.commandHistory.local.powershell') ?? '').not.toContain('TOKEN')
+    expect(localStorage.getItem('hostdeck.commandHistory.local.cmd')).toContain('dir')
+    expect(localStorage.getItem('hostdeck.commandHistory.local.powershell')).toContain('Get-ChildItem')
+    expect(localStorage.getItem('hostdeck.commandHistory.local.powershell') ?? '').not.toContain('TOKEN')
     expect(window.go?.main?.App?.RecordCommandHistory).not.toHaveBeenCalledWith(expect.objectContaining({
       command: 'dir',
     }))
   })
 
   it('restores old SSH-only layout and typed Local assignments while discarding stale sessions', async () => {
-    localStorage.setItem('serverpilot.workspaceSplitLayout.v1', JSON.stringify({
+    localStorage.setItem('hostdeck.workspaceSplitLayout.v1', JSON.stringify({
       splitMode: 'quad',
       activePaneId: 'pane-2',
       paneAssignments: {
@@ -2468,7 +2468,7 @@ describe('TerminalWorkspace server states', () => {
       x: 400, y: 40, width: 360, height: 300, top: 40, right: 760,
       bottom: 340, left: 400, toJSON: () => undefined,
     })
-    window.dispatchEvent(new CustomEvent('serverpilot:workspace-tab-external-drop', {
+    window.dispatchEvent(new CustomEvent('hostdeck:workspace-tab-external-drop', {
       cancelable: true,
       detail: { kind: 'terminal', key: 'terminal-term-2', sessionId: 'term-2', clientX: 520, clientY: 120 },
     }))
@@ -2609,7 +2609,7 @@ describe('TerminalWorkspace server states', () => {
   })
 
   it('restores split layout from localStorage and discards stale sessions', async () => {
-    localStorage.setItem('serverpilot.workspaceSplitLayout.v1', JSON.stringify({
+    localStorage.setItem('hostdeck.workspaceSplitLayout.v1', JSON.stringify({
       splitMode: 'vertical',
       activePaneId: 'pane-2',
       paneAssignments: {
@@ -2858,7 +2858,7 @@ describe('TerminalWorkspace server states', () => {
   })
 
   it('keeps the transfer queue popover anchored to the workspace bottom-right when SFTP is expanded', async () => {
-    localStorage.setItem('serverpilot.sftpExpanded', 'true')
+    localStorage.setItem('hostdeck.sftpExpanded', 'true')
     const { wrapper } = mountWorkspace(state({
       status: 'online',
       terminalActive: true,

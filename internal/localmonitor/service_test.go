@@ -3,7 +3,7 @@ package localmonitor
 import (
 	"testing"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type fakeProvider struct {

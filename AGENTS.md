@@ -1,4 +1,4 @@
-# ServerPilot Agent Instructions
+# HostDeck Agent Instructions
 
 中文主文档：`Codex开发规则.md`。
 
@@ -84,7 +84,7 @@ Large refactor mode:
 
 Version bump rule:
 
-- Any development round that produces a new `build/bin/ServerPilot.exe` must bump the application version in the same commit.
+- Any development round that produces a new `build/bin/HostDeck.exe` must bump the application version in the same commit.
 - Any development round that produces a new user-deliverable package or
   installer must bump the application version in the same commit before
   packaging. This includes Windows EXE builds and GitHub Actions macOS

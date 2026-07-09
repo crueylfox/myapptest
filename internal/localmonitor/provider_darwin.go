@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type darwinCommandRunner func(context.Context, string, ...string) (string, error)

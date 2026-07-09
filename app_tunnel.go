@@ -6,9 +6,9 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/tunnelmanager"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/tunnelmanager"
 )
 
 func (a *App) ListTunnelProfiles() ([]domain.TunnelProfile, error) {

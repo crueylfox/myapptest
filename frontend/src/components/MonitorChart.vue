@@ -79,12 +79,12 @@ onMounted(() => {
   render()
   observer = new ResizeObserver(() => void scheduleResize())
   if (root.value) observer.observe(root.value)
-  window.addEventListener('serverpilot:appearance', handleAppearanceChange)
+  window.addEventListener('hostdeck:appearance', handleAppearanceChange)
   void scheduleResize()
 })
 onBeforeUnmount(() => {
   destroyed = true
-  window.removeEventListener('serverpilot:appearance', handleAppearanceChange)
+  window.removeEventListener('hostdeck:appearance', handleAppearanceChange)
   observer?.disconnect()
   observer = null
   if (resizeFrame) window.cancelAnimationFrame(resizeFrame)

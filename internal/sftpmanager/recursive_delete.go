@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type deleteTarget struct {

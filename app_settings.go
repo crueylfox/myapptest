@@ -3,9 +3,9 @@ package main
 import (
 	"errors"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/settings"
-	"serverpilot/internal/version"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/settings"
+	"hostdeck/internal/version"
 )
 
 func (a *App) GetSettings() (domain.AppSettings, error) {

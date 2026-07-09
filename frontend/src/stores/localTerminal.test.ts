@@ -253,7 +253,7 @@ describe('local terminal store', () => {
       unreadCount: 99,
     })
     expect(store.outputActivityLabel('local-1')).toBe('99+')
-    expect(localStorage.getItem('serverpilot.localTerminalActivity')).toBeNull()
+    expect(localStorage.getItem('hostdeck.localTerminalActivity')).toBeNull()
   })
 
   it('does not mark active Local output or replay chunks as unread activity', () => {

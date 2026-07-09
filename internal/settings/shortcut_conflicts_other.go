@@ -2,7 +2,7 @@
 
 package settings
 
-import "serverpilot/internal/domain"
+import "hostdeck/internal/domain"
 
 func probeShortcutConflict(shortcutHotkey) domain.ShortcutConflictStatus {
 	return domain.ShortcutConflictUnknown

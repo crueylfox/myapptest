@@ -21,7 +21,7 @@ export function applyTheme(mode: ThemePreviewMode): 'dark' | 'light' {
   if (mode === 'macos_gray_dark') {
     document.documentElement.dataset.theme = 'dark'
     document.documentElement.style.colorScheme = 'dark'
-    window.dispatchEvent(new Event('serverpilot:appearance'))
+    window.dispatchEvent(new Event('hostdeck:appearance'))
     return 'dark'
   }
   const query = window.matchMedia('(prefers-color-scheme: dark)')
@@ -29,7 +29,7 @@ export function applyTheme(mode: ThemePreviewMode): 'dark' | 'light' {
     const theme = resolvedTheme(mode, systemDark)
     document.documentElement.dataset.theme = theme
     document.documentElement.style.colorScheme = theme
-    window.dispatchEvent(new Event('serverpilot:appearance'))
+    window.dispatchEvent(new Event('hostdeck:appearance'))
     return theme
   }
   const current = apply(query.matches)

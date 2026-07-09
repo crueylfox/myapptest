@@ -22,7 +22,7 @@ type TerminalActivityState = {
   unreadCount: number
   lastActivityAt: number
 }
-const workspaceOrderStorageKey = 'serverpilot.workspaceTabOrder'
+const workspaceOrderStorageKey = 'hostdeck.workspaceTabOrder'
 const maxReplayOutputBytes = 1024 * 1024
 const maxUnreadActivityCount = 99
 

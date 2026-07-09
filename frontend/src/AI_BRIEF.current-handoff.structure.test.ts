@@ -11,17 +11,17 @@ const aiBrief = readFileSync(new URL('../../AI_BRIEF.md', import.meta.url), 'utf
 
 describe('AI_BRIEF current handoff summary contract', () => {
   it('keeps AI_BRIEF focused on the current handoff instead of historical large-refactor records', () => {
-    expect(aiBrief).toContain('# AI_BRIEF - ServerPilot Current Handoff')
+    expect(aiBrief).toContain('# AI_BRIEF - HostDeck Current Handoff')
     expect(aiBrief).toContain('Previous delivery version: `0.5.0-beta.28` PASS')
-    expect(aiBrief).toContain('Current VERSION: `0.5.0-beta.60`')
-    expect(aiBrief).toContain('Recommended delivery version: `0.5.0-beta.60` user-smoke-required')
+    expect(aiBrief).toContain('Current VERSION: `0.5.0-beta.61`')
+    expect(aiBrief).toContain('Recommended delivery version: `0.5.0-beta.61` user-smoke-required')
     expect(aiBrief).toContain('beta31 cross-platform Key Vault backup')
     expect(aiBrief).toContain('macOS SecretStore uses Keychain')
     expect(aiBrief).toContain('macOS KeyVault protector stores the application master key in Keychain')
     expect(aiBrief).toContain('Windows backup restore keeps non-sensitive config')
     expect(aiBrief).toContain('macOS local terminal is a single `本地终端` entry')
     expect(aiBrief).toContain('Dark radio checked state and macOS WebView menu/settings blur surfaces')
-    expect(aiBrief).toContain('ServerPilot-macos-unsigned')
+    expect(aiBrief).toContain('HostDeck-macos-unsigned')
     expect(aiBrief).toContain('No Windows DPAPI behavior change')
     expect(aiBrief).toContain('No Windows CMD/PowerShell behavior removal')
     expect(aiBrief).toContain('No command completion enhancement')

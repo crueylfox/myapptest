@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func TestOpenWriteResizeAndCloseLocalTerminal(t *testing.T) {

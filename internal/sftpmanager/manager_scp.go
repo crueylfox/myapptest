@@ -2,9 +2,9 @@ package sftpmanager
 
 import (
 	"context"
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/sshclient"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/sshclient"
 )
 
 func (m *Manager) openSCPFallback(

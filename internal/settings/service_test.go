@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type memoryStore struct {

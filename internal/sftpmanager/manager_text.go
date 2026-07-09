@@ -7,10 +7,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"hostdeck/internal/domain"
 	"io"
 	"io/fs"
 	"os"
-	"serverpilot/internal/domain"
 	"strings"
 	"time"
 	"unicode/utf16"
@@ -301,7 +301,7 @@ func tempSavePath(remotePath string) string {
 	if name == "" || name == "." || name == "/" {
 		name = "file"
 	}
-	return joinRemotePath(parentRemotePath(remotePath), fmt.Sprintf(".serverpilot-save-%s-%s.tmp", name, randomID()))
+	return joinRemotePath(parentRemotePath(remotePath), fmt.Sprintf(".hostdeck-save-%s-%s.tmp", name, randomID()))
 }
 
 func writeAll(writer io.Writer, data []byte) error {

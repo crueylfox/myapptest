@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func TestParseSSSnapshotAggregatesListenersConnectionsAndBytes(t *testing.T) {

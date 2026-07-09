@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const (

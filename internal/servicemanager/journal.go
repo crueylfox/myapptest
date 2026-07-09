@@ -9,7 +9,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const maxJournalMessageBytes = 256 * 1024

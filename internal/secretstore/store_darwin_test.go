@@ -30,24 +30,58 @@ func TestDarwinKeychainRoundTripUsesBase64GenericPassword(t *testing.T) {
 	})
 
 	want := []byte{0x00, 0x01, 0x02, 0xff}
-	if err := store.Set(context.Background(), "ServerPilot/test", want); err != nil {
+	if err := store.Set(context.Background(), "HostDeck/test", want); err != nil {
 		t.Fatal(err)
 	}
 	if encoded != base64.StdEncoding.EncodeToString(want) {
 		t.Fatalf("stored value was not base64 encoded: %q", encoded)
 	}
-	got, err := store.Get(context.Background(), "ServerPilot/test")
+	got, err := store.Get(context.Background(), "HostDeck/test")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !bytes.Equal(got, want) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
-	if err := store.Delete(context.Background(), "ServerPilot/test"); err != nil {
+	if err := store.Delete(context.Background(), "HostDeck/test"); err != nil {
 		t.Fatal(err)
 	}
-	if len(commands) != 3 {
+	if len(commands) != 4 {
 		t.Fatalf("commands=%v", commands)
+	}
+}
+
+func TestDarwinKeychainMigratesLegacyServiceOnRead(t *testing.T) {
+	encodedWant := base64.StdEncoding.EncodeToString([]byte("secret"))
+	var wroteNewService bool
+	store := NewKeychainWithRunner(func(_ context.Context, command string, args ...string) ([]byte, error) {
+		service := ""
+		for index := 0; index < len(args)-1; index++ {
+			if args[index] == "-s" {
+				service = args[index+1]
+			}
+		}
+		switch command {
+		case "find-generic-password":
+			if service == legacyDarwinKeychainService {
+				return []byte(encodedWant), nil
+			}
+			return []byte("The specified item could not be found in the keychain."), errors.New("exit status 44")
+		case "add-generic-password":
+			wroteNewService = service == darwinKeychainService
+			return nil, nil
+		default:
+			t.Fatalf("unexpected security command: %s %v", command, args)
+			return nil, nil
+		}
+	})
+
+	got, err := store.Get(context.Background(), "HostDeck/test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != "secret" || !wroteNewService {
+		t.Fatalf("got=%q wroteNewService=%v", got, wroteNewService)
 	}
 }
 

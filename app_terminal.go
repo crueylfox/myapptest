@@ -6,10 +6,10 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/connectionstate"
-	"serverpilot/internal/domain"
-	terminalservice "serverpilot/internal/terminal"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/connectionstate"
+	"hostdeck/internal/domain"
+	terminalservice "hostdeck/internal/terminal"
 )
 
 func (a *App) ListTerminalProfiles() ([]domain.TerminalProfile, error) {

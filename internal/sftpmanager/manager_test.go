@@ -17,8 +17,8 @@ import (
 
 	pkgsftp "github.com/pkg/sftp"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
 )
 
 type fakeEmitter struct {

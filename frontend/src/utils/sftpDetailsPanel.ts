@@ -1,5 +1,5 @@
-export const SFTP_DETAILS_WIDTH_KEY = 'serverpilot.sftpDetailsWidth'
-export const SFTP_DETAILS_COLLAPSED_KEY = 'serverpilot.sftpDetailsCollapsed'
+export const SFTP_DETAILS_WIDTH_KEY = 'hostdeck.sftpDetailsWidth'
+export const SFTP_DETAILS_COLLAPSED_KEY = 'hostdeck.sftpDetailsCollapsed'
 export const SFTP_DETAILS_DEFAULT_WIDTH = 280
 export const SFTP_DETAILS_MIN_WIDTH = 240
 export const SFTP_DETAILS_MAX_WIDTH = 320

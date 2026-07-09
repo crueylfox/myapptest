@@ -381,7 +381,7 @@ describe('CommandPalette', () => {
 
   it('filters favorites and common commands by the local shell type', async () => {
     const localCmd = { ...connection, id: -1001, name: 'CMD' }
-    localStorage.setItem('serverpilot.commandFavorites.local', JSON.stringify([
+    localStorage.setItem('hostdeck.commandFavorites.local', JSON.stringify([
       { id: 'fav-cmd', title: 'CMD dir', command: 'dir', description: '', scope: 'server', serverId: -1001, groupId: null, tags: ['shell:cmd'], sortOrder: 0, useCount: 0, createdAt: '', updatedAt: '', lastUsedAt: '' },
       { id: 'fav-ssh', title: 'SSH uptime', command: 'uptime', description: '', scope: 'global', serverId: null, groupId: null, tags: ['shell:ssh'], sortOrder: 0, useCount: 0, createdAt: '', updatedAt: '', lastUsedAt: '' },
     ]))

@@ -71,7 +71,7 @@ func TestReadLogreadSnapshotMapsTimeoutAndRemoteErrors(t *testing.T) {
 	transport = &fakeTransport{
 		responses: map[string]string{},
 		errors: map[string]error{
-			logreadSnapshotCommand(100): errors.New("remote command failed: serverpilot-logread-missing"),
+			logreadSnapshotCommand(100): errors.New("remote command failed: hostdeck-logread-missing"),
 		},
 	}
 	_, _, err = readLogreadSnapshot(context.Background(), transport, "dropbear", 100)

@@ -7,9 +7,9 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/connectionstate"
-	"serverpilot/internal/domain"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/connectionstate"
+	"hostdeck/internal/domain"
 )
 
 type sftpEmitter struct {

@@ -3,10 +3,10 @@ package main
 import (
 	"errors"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/networkinspect"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/networkinspect"
 )
 
 func (a *App) StartNetworkDiagnostic(

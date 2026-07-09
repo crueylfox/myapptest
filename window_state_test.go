@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func TestAdaptiveDefaultWindowSizeUsesDisplayRatio(t *testing.T) {

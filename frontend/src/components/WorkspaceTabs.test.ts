@@ -108,36 +108,38 @@ describe('WorkspaceTabs', () => {
     expect(anchor).toBe(wrapper.get('.topbar-add').element)
   })
 
-  it('renders the split menu in the fixed topbar area immediately before the global menu', () => {
+  it('keeps split controls inside the global menu without a topbar separator', async () => {
     const { wrapper } = render()
     const topbarChildren = Array.from(wrapper.get('.workspace-topbar').element.children)
-    const splitButton = wrapper.get('.topbar-split .split-mode-button')
 
-    expect(wrapper.find('.topbar-split .split-mode-button').exists()).toBe(true)
-    expect(splitButton.text()).toBe('分屏')
-    expect(splitButton.find('.app-icon').exists()).toBe(true)
-    expect(splitButton.text()).not.toContain('：')
-    expect(splitButton.attributes('aria-label')).toBe('分屏，当前：单窗格')
-    expect(topbarChildren.at(-3)).toBe(wrapper.get('.topbar-split').element)
-    expect(topbarChildren.at(-2)).toBe(wrapper.get('.topbar-action-separator').element)
-    expect(topbarChildren.at(-1)).toBe(wrapper.get('.topbar-navigation').element)
-    expect(wrapper.get('.topbar-action-separator').attributes('aria-hidden')).toBe('true')
+    expect(wrapper.find('.topbar-split').exists()).toBe(false)
+    expect(wrapper.find('.topbar-action-separator').exists()).toBe(false)
+    expect(topbarChildren.at(-2)).toBe(wrapper.get('.topbar-navigation').element)
+    expect(topbarChildren.at(-1)).toBe(wrapper.get('.windows-caption-controls').element)
     expect(wrapper.find('.topbar-navigation > button .app-icon').exists()).toBe(true)
     expect(wrapper.find('.topbar-navigation-chevron').exists()).toBe(false)
     expect(wrapper.get('.workspace-tabs').find('.split-mode-button').exists()).toBe(false)
+
+    await wrapper.get('.topbar-navigation > button').trigger('click')
+    const splitToggle = wrapper.get('[data-split-menu-toggle]')
+    expect(splitToggle.text()).toContain('分屏')
+    expect(splitToggle.find('.app-icon').exists()).toBe(true)
+    expect(splitToggle.attributes('aria-label')).toBe('分屏，当前：单窗格')
+    await splitToggle.trigger('click')
+    expect(wrapper.find('.topbar-menu [data-split-mode="single"]').exists()).toBe(true)
   })
 
   it('marks the current split layout in the dropdown without adding it to the button label', async () => {
-    localStorage.setItem('serverpilot.workspaceSplitLayout.v1', JSON.stringify({ splitMode: 'quad' }))
+    localStorage.setItem('hostdeck.workspaceSplitLayout.v1', JSON.stringify({ splitMode: 'quad' }))
     const { wrapper } = render()
 
-    expect(wrapper.get('.topbar-split .split-mode-button').text()).toBe('分屏')
-    expect(wrapper.get('.topbar-split .split-mode-button').text()).not.toContain('四宫格')
-    expect(wrapper.get('.topbar-split .split-mode-button').attributes('aria-label')).toBe('分屏，当前：四宫格')
+    await wrapper.get('.topbar-navigation > button').trigger('click')
+    expect(wrapper.get('[data-split-menu-toggle]').text()).toContain('分屏')
+    expect(wrapper.get('[data-split-menu-toggle]').text()).toContain('四宫格')
+    expect(wrapper.get('[data-split-menu-toggle]').attributes('aria-label')).toBe('分屏，当前：四宫格')
+    await wrapper.get('[data-split-menu-toggle]').trigger('click')
 
-    await wrapper.get('.topbar-split .split-mode-button').trigger('click')
-
-    const quad = wrapper.get('.topbar-split [data-split-mode="quad"]')
+    const quad = wrapper.get('.topbar-menu [data-split-mode="quad"]')
     expect(quad.classes()).toContain('active')
     expect(quad.attributes('aria-current')).toBe('true')
   })
@@ -148,50 +150,53 @@ describe('WorkspaceTabs', () => {
     const listener = (event: Event) => {
       events.push((event as CustomEvent<{ mode?: string }>).detail.mode)
     }
-    window.addEventListener('serverpilot:workspace-split-mode-change', listener)
+    window.addEventListener('hostdeck:workspace-split-mode-change', listener)
 
-    await wrapper.get('.topbar-split .split-mode-button').trigger('click')
-    await wrapper.get('.topbar-split [data-split-mode="quad"]').trigger('click')
+    await wrapper.get('.topbar-navigation > button').trigger('click')
+    await wrapper.get('[data-split-menu-toggle]').trigger('click')
+    await wrapper.get('.topbar-menu [data-split-mode="quad"]').trigger('click')
 
-    window.removeEventListener('serverpilot:workspace-split-mode-change', listener)
+    window.removeEventListener('hostdeck:workspace-split-mode-change', listener)
     expect(events).toEqual(['quad'])
-    expect(localStorage.getItem('serverpilot.workspaceSplitLayout.v1')).toContain('"splitMode":"quad"')
-    expect(wrapper.get('.topbar-split .split-mode-button').text()).toBe('分屏')
-    expect(wrapper.get('.topbar-split .split-mode-button').text()).not.toContain('四宫格')
+    expect(localStorage.getItem('hostdeck.workspaceSplitLayout.v1')).toContain('"splitMode":"quad"')
+    expect(wrapper.find('.topbar-menu [data-split-mode="quad"]').exists()).toBe(false)
   })
 
   it('adds split layout management actions to the topbar split menu', async () => {
-    localStorage.setItem('serverpilot.workspaceSplitLayout.v1', JSON.stringify({ splitMode: 'quad' }))
+    localStorage.setItem('hostdeck.workspaceSplitLayout.v1', JSON.stringify({ splitMode: 'quad' }))
     const { wrapper } = render()
     const events: string[] = []
     const reset = () => events.push('reset')
     const clear = () => events.push('clear')
-    window.addEventListener('serverpilot:workspace-split-ratio-reset', reset)
-    window.addEventListener('serverpilot:workspace-split-clear-panes', clear)
+    window.addEventListener('hostdeck:workspace-split-ratio-reset', reset)
+    window.addEventListener('hostdeck:workspace-split-clear-panes', clear)
 
-    await wrapper.get('.topbar-split .split-mode-button').trigger('click')
-    const resetButton = wrapper.get('.topbar-split [data-split-action="reset-ratios"]')
-    const clearButton = wrapper.get('.topbar-split [data-split-action="clear-panes"]')
+    await wrapper.get('.topbar-navigation > button').trigger('click')
+    await wrapper.get('[data-split-menu-toggle]').trigger('click')
+    const resetButton = wrapper.get('.topbar-menu [data-split-action="reset-ratios"]')
+    const clearButton = wrapper.get('.topbar-menu [data-split-action="clear-panes"]')
     expect(resetButton.text()).toBe('重置分割比例')
     expect(clearButton.text()).toBe('清空所有窗格')
     expect(resetButton.attributes('disabled')).toBeUndefined()
 
     await resetButton.trigger('click')
-    await wrapper.get('.topbar-split .split-mode-button').trigger('click')
-    await wrapper.get('.topbar-split [data-split-action="clear-panes"]').trigger('click')
+    await wrapper.get('.topbar-navigation > button').trigger('click')
+    await wrapper.get('[data-split-menu-toggle]').trigger('click')
+    await wrapper.get('.topbar-menu [data-split-action="clear-panes"]').trigger('click')
 
-    window.removeEventListener('serverpilot:workspace-split-ratio-reset', reset)
-    window.removeEventListener('serverpilot:workspace-split-clear-panes', clear)
+    window.removeEventListener('hostdeck:workspace-split-ratio-reset', reset)
+    window.removeEventListener('hostdeck:workspace-split-clear-panes', clear)
     expect(events).toEqual(['reset', 'clear'])
   })
 
   it('disables ratio reset in single-pane mode while leaving clear layout available', async () => {
     const { wrapper } = render()
 
-    await wrapper.get('.topbar-split .split-mode-button').trigger('click')
+    await wrapper.get('.topbar-navigation > button').trigger('click')
+    await wrapper.get('[data-split-menu-toggle]').trigger('click')
 
-    expect(wrapper.get('.topbar-split [data-split-action="reset-ratios"]').attributes('disabled')).toBeDefined()
-    expect(wrapper.get('.topbar-split [data-split-action="clear-panes"]').attributes('disabled')).toBeUndefined()
+    expect(wrapper.get('.topbar-menu [data-split-action="reset-ratios"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.get('.topbar-menu [data-split-action="clear-panes"]').attributes('disabled')).toBeUndefined()
   })
 
   it('keeps the split menu available while a local terminal tab is active', async () => {
@@ -203,9 +208,10 @@ describe('WorkspaceTabs', () => {
       global: { plugins: [pinia], stubs: { ContextMenu: true } },
     })
 
-    expect(wrapper.find('.topbar-split .split-mode-button').exists()).toBe(true)
-    await wrapper.get('.topbar-split .split-mode-button').trigger('click')
-    expect(wrapper.find('.topbar-split [data-split-mode="quad"]').exists()).toBe(true)
+    expect(wrapper.find('.topbar-split').exists()).toBe(false)
+    await wrapper.get('.topbar-navigation > button').trigger('click')
+    await wrapper.get('[data-split-menu-toggle]').trigger('click')
+    expect(wrapper.find('.topbar-menu [data-split-mode="quad"]').exists()).toBe(true)
   })
 
   it('scrolls overflowing tabs horizontally with the mouse wheel', async () => {
@@ -377,7 +383,8 @@ describe('WorkspaceTabs', () => {
     await wrapper.setProps({ alertUnreadCount: 2 })
     await wrapper.get('.topbar-navigation > button').trigger('click')
 
-    expect(wrapper.find('.topbar-split .topbar-action-inner').exists()).toBe(true)
+    expect(wrapper.find('.topbar-split').exists()).toBe(false)
+    expect(wrapper.find('[data-split-menu-toggle] .topbar-menu-content').exists()).toBe(true)
     expect(wrapper.find('.topbar-navigation > button .topbar-action-inner').exists()).toBe(true)
 
     const menu = wrapper.get('.topbar-menu')
@@ -385,11 +392,12 @@ describe('WorkspaceTabs', () => {
     const separators = menu.findAll('.topbar-menu-separator')
     const labels = menu.findAll('.topbar-menu-label').map((label) => label.text())
 
-    expect(items).toHaveLength(9)
-    expect(menu.findAll('.app-icon')).toHaveLength(9)
+    expect(items).toHaveLength(10)
+    expect(menu.findAll('.app-icon')).toHaveLength(10)
     expect(separators).toHaveLength(0)
     expect(labels).toEqual([
       'SSH 工作区',
+      '分屏',
       '端口转发',
       '容器管理',
       '进程管理',
@@ -428,7 +436,7 @@ describe('WorkspaceTabs', () => {
 
     expect(store.workspaceOrder).toEqual([2, 1])
     expect(store.activeWorkspaceServerId).toBe(1)
-    expect(localStorage.getItem('serverpilot.workspaceTabOrder')).toBe('[2,1]')
+    expect(localStorage.getItem('hostdeck.workspaceTabOrder')).toBe('[2,1]')
   })
 
   it('reorders SSH terminal tabs in the same window without recreating sessions', async () => {
@@ -534,7 +542,7 @@ describe('WorkspaceTabs', () => {
     store.tabs.push({ sessionId: 'ssh-1', connectionId: 1, title: 'one', status: 'online', code: '', message: '' })
     await wrapper.vm.$nextTick()
     const listener = vi.fn((event: Event) => event.preventDefault())
-    window.addEventListener('serverpilot:workspace-tab-external-drop', listener)
+    window.addEventListener('hostdeck:workspace-tab-external-drop', listener)
 
     const tab = wrapper.find('[data-session-id="ssh-1"]')
     mockTabRect(tab.element, 0)
@@ -542,7 +550,7 @@ describe('WorkspaceTabs', () => {
     window.dispatchEvent(pointer('pointermove', 10, -60))
     window.dispatchEvent(pointer('pointerup', 10, -60))
     await wrapper.vm.$nextTick()
-    window.removeEventListener('serverpilot:workspace-tab-external-drop', listener)
+    window.removeEventListener('hostdeck:workspace-tab-external-drop', listener)
 
     expect(listener).toHaveBeenCalledTimes(1)
     expect((listener.mock.calls[0][0] as CustomEvent).detail).toMatchObject({
@@ -565,7 +573,7 @@ describe('WorkspaceTabs', () => {
     })
     await wrapper.vm.$nextTick()
     const listener = vi.fn((event: Event) => event.preventDefault())
-    window.addEventListener('serverpilot:workspace-tab-external-drop', listener)
+    window.addEventListener('hostdeck:workspace-tab-external-drop', listener)
 
     const tab = wrapper.find('[data-local-session-id="local-drag"]')
     mockTabRect(tab.element, 0)
@@ -573,7 +581,7 @@ describe('WorkspaceTabs', () => {
     window.dispatchEvent(pointer('pointermove', 10, -60))
     window.dispatchEvent(pointer('pointerup', 10, -60))
     await wrapper.vm.$nextTick()
-    window.removeEventListener('serverpilot:workspace-tab-external-drop', listener)
+    window.removeEventListener('hostdeck:workspace-tab-external-drop', listener)
 
     expect(listener).toHaveBeenCalledTimes(1)
     expect((listener.mock.calls[0][0] as CustomEvent).detail).toMatchObject({

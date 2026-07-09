@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 type Store interface {

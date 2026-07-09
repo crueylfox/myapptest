@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 const (
@@ -18,7 +18,7 @@ const (
 	logreadPermissionMessage         = "permission denied reading OpenWrt logread logs."
 	logreadTimeoutMessage            = "OpenWrt logread request timed out."
 	logreadFollowUnsupportedMessage  = "OpenWrt logread snapshot refresh is supported, but realtime follow is not supported."
-	logreadMissingSentinel           = "serverpilot-logread-missing"
+	logreadMissingSentinel           = "hostdeck-logread-missing"
 	logreadSourceFallbackDescription = "OpenWrt logread"
 )
 

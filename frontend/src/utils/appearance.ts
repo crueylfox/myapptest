@@ -20,6 +20,6 @@ export function applyUIFontSize(size: UIFontSize): number {
   const pixels = uiFontPixels(size)
   document.documentElement.dataset.uiFont = size
   document.documentElement.style.setProperty('--ui-font-size', `${pixels}px`)
-  window.dispatchEvent(new Event('serverpilot:appearance'))
+  window.dispatchEvent(new Event('hostdeck:appearance'))
   return pixels
 }

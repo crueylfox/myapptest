@@ -14,7 +14,7 @@ import (
 
 func TestWindowsCredentialManagerRoundTrip(t *testing.T) {
 	store := WindowsCredentialManager{}
-	key := fmt.Sprintf("ServerPilot/test/%d/%d", os.Getpid(), time.Now().UnixNano())
+	key := fmt.Sprintf("HostDeck/test/%d/%d", os.Getpid(), time.Now().UnixNano())
 	ctx := context.Background()
 	defer store.Delete(ctx, key)
 

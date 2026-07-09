@@ -1,8 +1,8 @@
-export const sshCommandCompletionEnabledKey = 'serverpilot.sshCommandCompletion.enabled'
-export const sshCommandCompletionShowDescriptionsKey = 'serverpilot.sshCommandCompletion.showDescriptions'
-export const sshCommandCompletionMaxSuggestionsKey = 'serverpilot.sshCommandCompletion.maxSuggestions'
-export const sshCommandCompletionTriggerCharsKey = 'serverpilot.sshCommandCompletion.triggerChars'
-export const sshCommandCompletionPreferenceEvent = 'serverpilot:ssh-command-completion-preference'
+export const sshCommandCompletionEnabledKey = 'hostdeck.sshCommandCompletion.enabled'
+export const sshCommandCompletionShowDescriptionsKey = 'hostdeck.sshCommandCompletion.showDescriptions'
+export const sshCommandCompletionMaxSuggestionsKey = 'hostdeck.sshCommandCompletion.maxSuggestions'
+export const sshCommandCompletionTriggerCharsKey = 'hostdeck.sshCommandCompletion.triggerChars'
+export const sshCommandCompletionPreferenceEvent = 'hostdeck:ssh-command-completion-preference'
 
 export interface SshCommandCompletionPreferences {
   enabled: boolean

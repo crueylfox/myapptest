@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import AppIcon from './icons/AppIcon.vue'
 
 defineProps<{
@@ -15,10 +15,6 @@ const root = ref<HTMLElement | null>(null)
 const orientation = ref<'vertical' | 'horizontal'>('horizontal')
 let resizeObserver: ResizeObserver | null = null
 const MIN_HORIZONTAL_ACTION_WIDTH = 260
-
-const separatorClass = computed(() => orientation.value === 'horizontal'
-  ? 'action-separator--vertical-stack'
-  : 'action-separator--horizontal-stack')
 
 function updateOrientation() {
   const rect = root.value?.getBoundingClientRect()
@@ -55,7 +51,6 @@ onBeforeUnmount(() => {
         @pointerdown.stop
         @click.stop="$emit('addServer')"
       ><AppIcon name="server-plus" :size="30" /><span>新建服务器</span></button>
-      <span class="action-separator" :class="separatorClass" aria-hidden="true"></span>
       <button
         type="button"
         class="terminal-pane-connect-saved-trigger"

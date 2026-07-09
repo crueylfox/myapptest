@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func (m *Manager) scpUploadFile(current *session, request domain.SFTPTransferRequest, info fs.FileInfo) (domain.SFTPTransferState, error) {

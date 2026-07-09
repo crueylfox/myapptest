@@ -71,10 +71,10 @@ const apiMock = vi.hoisted(() => ({
     currentShellPreference: 'auto',
     unsupportedMessage: 'LOCAL_TERMINAL_DISABLED: 本地终端暂未启用',
   })),
-  selectBackupExportPath: vi.fn(() => Promise.resolve('C:/tmp/serverpilot.spbackup')),
-  selectBackupImportFile: vi.fn(() => Promise.resolve('C:/tmp/serverpilot.spbackup')),
+  selectBackupExportPath: vi.fn(() => Promise.resolve('C:/tmp/hostdeck.spbackup')),
+  selectBackupImportFile: vi.fn(() => Promise.resolve('C:/tmp/hostdeck.spbackup')),
   exportBackup: vi.fn(() => Promise.resolve({
-    path: 'C:/tmp/serverpilot.spbackup',
+    path: 'C:/tmp/hostdeck.spbackup',
     createdAt: '2026-06-17T00:00:00Z',
     mode: 'standard',
     groups: 1,
@@ -105,7 +105,7 @@ const apiMock = vi.hoisted(() => ({
     cursorStyle: 'block',
     cursorBlink: true,
     scrollback: 10000,
-    themeName: 'serverpilot-dark',
+    themeName: 'hostdeck-dark',
     foreground: '#eceff4',
     background: '#1f2023',
     selectionBackground: '#3f7dff66',
@@ -134,7 +134,7 @@ const apiMock = vi.hoisted(() => ({
     cursorStyle: 'block',
     cursorBlink: true,
     scrollback: 10000,
-    themeName: 'serverpilot-dark',
+    themeName: 'hostdeck-dark',
     foreground: '#eceff4',
     background: '#1f2023',
     selectionBackground: '#3f7dff66',
@@ -238,7 +238,7 @@ function terminalProfile(id: string, name: string): TerminalProfile {
     cursorStyle: 'block',
     cursorBlink: true,
     scrollback: 10000,
-    themeName: 'serverpilot-dark',
+    themeName: 'hostdeck-dark',
     foreground: '#eceff4',
     background: '#1f2023',
     selectionBackground: '#3f7dff66',
@@ -309,8 +309,8 @@ describe('connection settings', () => {
     localStorage.clear()
     apiMock.listKeyVaultEntries.mockResolvedValue([])
     apiMock.getLocalTerminalCapabilities.mockResolvedValue(localTerminalCapabilities())
-    apiMock.selectBackupExportPath.mockResolvedValue('C:/tmp/serverpilot.spbackup')
-    apiMock.selectBackupImportFile.mockResolvedValue('C:/tmp/serverpilot.spbackup')
+    apiMock.selectBackupExportPath.mockResolvedValue('C:/tmp/hostdeck.spbackup')
+    apiMock.selectBackupImportFile.mockResolvedValue('C:/tmp/hostdeck.spbackup')
     apiMock.createTerminalProfile.mockImplementation((request) => Promise.resolve({
       ...request,
       id: 'tp-new',
@@ -334,7 +334,7 @@ describe('connection settings', () => {
       cursorStyle: 'block',
       cursorBlink: true,
       scrollback: 10000,
-      themeName: 'serverpilot-dark',
+      themeName: 'hostdeck-dark',
       foreground: '#eceff4',
       background: '#1f2023',
       selectionBackground: '#3f7dff66',
@@ -369,7 +369,7 @@ describe('connection settings', () => {
     await flushSettingsView()
 
     expect(apiMock.appVersion).toHaveBeenCalledTimes(1)
-    expect(wrapper.get('[data-testid="settings-app-version"]').text()).toBe('ServerPilot v0.5.0-beta.28')
+    expect(wrapper.get('[data-testid="settings-app-version"]').text()).toBe('HostDeck v0.5.0-beta.28')
   })
 
   it('keeps the save settings action in the sticky top action area and preserves save behavior', async () => {
@@ -640,7 +640,7 @@ describe('connection settings', () => {
       .find((button) => button.text() === '告警')!
       .trigger('click')
 
-    expect(wrapper.get('[data-testid="settings-alerts-category"]').text()).toContain('告警仅在 ServerPilot 运行')
+    expect(wrapper.get('[data-testid="settings-alerts-category"]').text()).toContain('告警仅在 HostDeck 运行')
     expect((wrapper.get<HTMLInputElement>('[data-testid="alert-enabled"]').element).checked).toBe(true)
     expect((wrapper.get<HTMLInputElement>('[data-testid="alert-latency-enabled"]').element).checked).toBe(false)
     expect((wrapper.get<HTMLInputElement>('[data-testid="alert-native-notifications-enabled"]').element).checked).toBe(false)
@@ -728,7 +728,7 @@ describe('connection settings', () => {
 
     const card = wrapper.get('[data-testid="settings-alerts-category"]')
     const header = card.get('.alert-settings-header')
-    expect(header.text()).toContain('告警仅在 ServerPilot 运行')
+    expect(header.text()).toContain('告警仅在 HostDeck 运行')
     expect(header.find('[data-testid="alert-test-button"]').exists()).toBe(true)
 
     expect(card.find('.alert-global-options').exists()).toBe(false)
@@ -924,14 +924,14 @@ describe('connection settings', () => {
   })
 
   it('lets terminal settings re-enable SSH command completion after the overlay disables it', async () => {
-    localStorage.setItem('serverpilot.sshCommandCompletion.enabled', 'false')
+    localStorage.setItem('hostdeck.sshCommandCompletion.enabled', 'false')
     const wrapper = mount(SettingsView, { props: { settings } })
 
     const toggle = wrapper.get<HTMLInputElement>('[data-testid="ssh-command-completion-enabled"]')
     expect(toggle.element.checked).toBe(false)
 
     await toggle.setValue(true)
-    expect(localStorage.getItem('serverpilot.sshCommandCompletion.enabled')).toBe('true')
+    expect(localStorage.getItem('hostdeck.sshCommandCompletion.enabled')).toBe('true')
   })
 
   it('persists SSH command completion description, limit, and trigger settings', async () => {
@@ -950,9 +950,9 @@ describe('connection settings', () => {
     await maxSuggestions.setValue(18)
     await triggerChars.setValue(3)
 
-    expect(localStorage.getItem('serverpilot.sshCommandCompletion.showDescriptions')).toBe('false')
-    expect(localStorage.getItem('serverpilot.sshCommandCompletion.maxSuggestions')).toBe('18')
-    expect(localStorage.getItem('serverpilot.sshCommandCompletion.triggerChars')).toBe('3')
+    expect(localStorage.getItem('hostdeck.sshCommandCompletion.showDescriptions')).toBe('false')
+    expect(localStorage.getItem('hostdeck.sshCommandCompletion.maxSuggestions')).toBe('18')
+    expect(localStorage.getItem('hostdeck.sshCommandCompletion.triggerChars')).toBe('3')
   })
 
   it('cancels resetting settings defaults without changing the draft', async () => {
@@ -1015,7 +1015,7 @@ describe('connection settings', () => {
       entries: [{
         shortcut: 'ctrl+space',
         status: 'unknown',
-        message: 'Ctrl+Space 可能已被 Windows、输入法或其他应用注册，ServerPilot 可能无法收到该按键。仍可保存。',
+        message: 'Ctrl+Space 可能已被 Windows、输入法或其他应用注册，HostDeck 可能无法收到该按键。仍可保存。',
       }],
     })
     const wrapper = mount(SettingsView, { props: { settings } })
@@ -1354,7 +1354,7 @@ describe('connection settings', () => {
 
     expect(apiMock.selectBackupExportPath).toHaveBeenCalled()
     expect(apiMock.exportBackup).toHaveBeenCalledWith({
-      path: 'C:/tmp/serverpilot.spbackup',
+      path: 'C:/tmp/hostdeck.spbackup',
       password: 'correct horse battery',
       confirmPassword: 'correct horse battery',
       mode: 'standard',
@@ -1385,7 +1385,7 @@ describe('connection settings', () => {
       await Promise.resolve()
       await Promise.resolve()
       expect(apiMock.exportBackup).toHaveBeenCalledWith({
-        path: 'C:/tmp/serverpilot.spbackup',
+        path: 'C:/tmp/hostdeck.spbackup',
         password,
         confirmPassword: password,
         mode: 'standard',
@@ -1395,7 +1395,7 @@ describe('connection settings', () => {
 
   it('requires confirmation before exporting a full backup with saved secrets', async () => {
     apiMock.exportBackup.mockResolvedValueOnce({
-      path: 'C:/tmp/serverpilot.spbackup',
+      path: 'C:/tmp/hostdeck.spbackup',
       createdAt: '2026-06-17T00:00:00Z',
       mode: 'full',
       groups: 1,
@@ -1423,7 +1423,7 @@ describe('connection settings', () => {
       danger: true,
     }))
     expect(apiMock.exportBackup).toHaveBeenCalledWith({
-      path: 'C:/tmp/serverpilot.spbackup',
+      path: 'C:/tmp/hostdeck.spbackup',
       password: 'correct horse battery',
       confirmPassword: 'correct horse battery',
       mode: 'full',
@@ -1446,9 +1446,9 @@ describe('connection settings', () => {
     await Promise.resolve()
     await Promise.resolve()
 
-    expect(consoleLogMock.mock.calls.some((call) => String(call[0]).includes('[ServerPilot backup]'))).toBe(false)
+    expect(consoleLogMock.mock.calls.some((call) => String(call[0]).includes('[HostDeck backup]'))).toBe(false)
     expect(apiMock.importBackup).toHaveBeenCalledWith({
-      path: 'C:/tmp/serverpilot.spbackup',
+      path: 'C:/tmp/hostdeck.spbackup',
       password: 'correct horse battery',
       options: {
         importSettings: true,
@@ -1525,7 +1525,7 @@ describe('connection settings', () => {
     await wrapper.vm.$nextTick()
     await Promise.resolve()
 
-    apiMock.selectBackupImportFile.mockResolvedValueOnce('C:/tmp/serverpilot.spbackup')
+    apiMock.selectBackupImportFile.mockResolvedValueOnce('C:/tmp/hostdeck.spbackup')
     await importBrowseButton.trigger('click')
     await wrapper.vm.$nextTick()
     await Promise.resolve()
@@ -1659,7 +1659,7 @@ describe('connection settings', () => {
     await Promise.resolve()
 
     expect(apiMock.importBackup).toHaveBeenCalledWith(expect.objectContaining({
-      path: 'C:/tmp/serverpilot.spbackup',
+      path: 'C:/tmp/hostdeck.spbackup',
       password: 'correct horse battery',
       options: expect.objectContaining({ importHostTrust: true }),
     }))

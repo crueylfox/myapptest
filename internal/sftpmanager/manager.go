@@ -12,9 +12,9 @@ import (
 
 	pkgsftp "github.com/pkg/sftp"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/logging"
-	"serverpilot/internal/sshclient"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/logging"
+	"hostdeck/internal/sshclient"
 )
 
 const (

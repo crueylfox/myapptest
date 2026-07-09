@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"serverpilot/internal/domain"
-	"serverpilot/internal/keyvault"
+	"hostdeck/internal/domain"
+	"hostdeck/internal/keyvault"
 )
 
 func TestProtectedKeyBlobRestorableForPlatform(t *testing.T) {

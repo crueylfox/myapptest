@@ -55,7 +55,7 @@ describe('sftp file column layout utilities', () => {
   })
 
   it('loads corrupt storage as the default layout and persists valid layout JSON', () => {
-    const storage = memoryStorage({ 'serverpilot.sftpColumnLayout.v1': '{bad json' })
+    const storage = memoryStorage({ 'hostdeck.sftpColumnLayout.v1': '{bad json' })
 
     expect(loadFileColumnLayout(storage)).toEqual(defaultFileColumnLayout())
 
@@ -64,6 +64,6 @@ describe('sftp file column layout utilities', () => {
       columnWidths: { type: 70, name: 180 },
     })
     expect(persistFileColumnLayout(layout, storage)).toBe(true)
-    expect(JSON.parse(storage.values['serverpilot.sftpColumnLayout.v1'])).toEqual(layout)
+    expect(JSON.parse(storage.values['hostdeck.sftpColumnLayout.v1'])).toEqual(layout)
   })
 })

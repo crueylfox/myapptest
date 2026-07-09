@@ -14,7 +14,7 @@ export const defaultTerminalProfile: TerminalProfile = {
   cursorStyle: 'block',
   cursorBlink: true,
   scrollback: 10000,
-  themeName: 'serverpilot-dark',
+  themeName: 'hostdeck-dark',
   foreground: '#d7dde5',
   background: '#15171a',
   selectionBackground: '#3f7dff47',

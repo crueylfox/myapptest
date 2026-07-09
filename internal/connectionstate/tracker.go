@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"serverpilot/internal/connectionerror"
-	"serverpilot/internal/domain"
+	"hostdeck/internal/connectionerror"
+	"hostdeck/internal/domain"
 )
 
 type Emitter func(domain.ConnectionRuntimeState)

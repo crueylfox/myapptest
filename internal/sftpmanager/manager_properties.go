@@ -10,7 +10,7 @@ import (
 
 	pkgsftp "github.com/pkg/sftp"
 
-	"serverpilot/internal/domain"
+	"hostdeck/internal/domain"
 )
 
 func (m *Manager) Stat(ctx context.Context, request domain.SFTPStatRequest) (domain.SFTPEntry, error) {
