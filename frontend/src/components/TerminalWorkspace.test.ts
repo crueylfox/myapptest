@@ -658,6 +658,48 @@ describe('TerminalWorkspace server states', () => {
     expect(statusbar.text()).not.toContain('↑')
   })
 
+  it('keeps the monitor sidebar visually default when a server connection fails', async () => {
+    const { wrapper } = mountWorkspace(state({
+      status: 'auth_failed',
+      lastError: connectionError,
+    }))
+    await wrapper.vm.$nextTick()
+
+    const sidebar = wrapper.getComponent({ name: 'CompactMonitorSidebar' })
+    expect(sidebar.props('connection')).toBeNull()
+    expect(sidebar.props('state')).toBeNull()
+    expect(sidebar.props('snapshot')).toBeNull()
+    expect(sidebar.props('history')).toEqual([])
+    expect(sidebar.props('workspaceStatus')).toBeUndefined()
+    expect(wrapper.get('.workspace-state').text()).toContain('SSH authentication failed')
+    expect(wrapper.getComponent({ name: 'SftpPanel' }).props('connection')).toMatchObject({ id: 7 })
+  })
+
+  it('toggles the remote SFTP panel from the left side of the bottom status bar', async () => {
+    localStorage.setItem('serverpilot.sftpExpanded', 'false')
+    const { wrapper } = mountWorkspace(state({
+      status: 'online',
+      terminalActive: true,
+      sftpActive: true,
+      hasActiveSession: true,
+    }))
+    await wrapper.vm.$nextTick()
+
+    const toggle = wrapper.get('[data-testid="status-sftp-toggle"]')
+    expect(toggle.element.nextElementSibling).toBe(wrapper.get('.status-monitor-region').element)
+    expect(toggle.attributes('aria-pressed')).toBe('false')
+    expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(false)
+
+    await toggle.trigger('click')
+    expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('true')
+    expect(toggle.attributes('aria-pressed')).toBe('true')
+    expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(true)
+
+    await toggle.trigger('click')
+    expect(localStorage.getItem('serverpilot.sftpExpanded')).toBe('false')
+    expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(false)
+  })
+
   it('seeds the active TerminalView draft before executing command palette commands', async () => {
     const { wrapper, store } = mountWorkspace(state({
       status: 'online',

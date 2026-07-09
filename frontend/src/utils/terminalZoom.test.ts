@@ -106,7 +106,7 @@ describe('terminal zoom', () => {
 
     expect(options.fontSize).toBe(18)
     expect(options.lineHeight).toBeCloseTo(1.406, 3)
-    expect(options.letterSpacing).toBeCloseTo(0.9, 3)
+    expect(options.letterSpacing).toBeCloseTo(1.22, 3)
     expect(options.fontWeight).toBe('normal')
     expect(options.fontWeightBold).toBe('bold')
 
@@ -129,6 +129,35 @@ describe('terminal zoom', () => {
     })
     expect(terminal.refresh).toHaveBeenCalledWith(0, 9)
     clearTerminalZoomDelta('ssh-proportional')
+  })
+
+  it('adds zoom tracking when the saved terminal letter spacing is zero', () => {
+    clearTerminalZoomDelta('ssh-zero-tracking')
+    nextTerminalZoomDeltaForSession('ssh-zero-tracking', 16, -100)
+    nextTerminalZoomDeltaForSession('ssh-zero-tracking', 16, -100)
+
+    const zoomedIn = effectiveTerminalZoomedProfileOptions('ssh-zero-tracking', {
+      fontSize: 16,
+      lineHeight: 1.25,
+      letterSpacing: 0,
+    })
+
+    expect(zoomedIn.fontSize).toBe(18)
+    expect(zoomedIn.letterSpacing).toBeGreaterThan(0)
+
+    clearTerminalZoomDelta('ssh-zero-tracking')
+    nextTerminalZoomDeltaForSession('ssh-zero-tracking', 16, 100)
+    nextTerminalZoomDeltaForSession('ssh-zero-tracking', 16, 100)
+
+    const zoomedOut = effectiveTerminalZoomedProfileOptions('ssh-zero-tracking', {
+      fontSize: 16,
+      lineHeight: 1.25,
+      letterSpacing: 0,
+    })
+
+    expect(zoomedOut.fontSize).toBe(14)
+    expect(zoomedOut.letterSpacing).toBeLessThan(0)
+    clearTerminalZoomDelta('ssh-zero-tracking')
   })
 
   it('dispatches wheel zoom to the registered session handler only', () => {

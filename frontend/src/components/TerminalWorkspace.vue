@@ -396,6 +396,7 @@ const activeWorkspaceConnection = computed(() =>
     : (!localTerminalActive.value ? props.connection : null))
 const hasRemoteStatusSummary = computed(() =>
   Boolean(activeWorkspaceConnection.value || store.activeWorkspace || props.snapshot))
+const monitorSidebarProps = computed(() => !localTerminalActive.value && store.activeWorkspace?.status === 'failed' ? { connection: null, state: null, snapshot: null, history: [], workspaceStatus: undefined } : { connection: props.connection, state: props.state, snapshot: props.snapshot, history: props.history, workspaceStatus: store.activeWorkspace?.status })
 const activeServerId = computed(() => activeCommandTab.value?.connectionId ?? (!localTerminalActive.value ? props.connection?.id ?? null : null))
 const activeSftpTerminalSessionId = computed(() => activeCommandTab.value?.sessionId ?? '')
 const latestTransfer = computed(() => sftpStore.lastTransfer(activeServerId.value, activeSftpContextId.value))
@@ -813,11 +814,7 @@ onBeforeUnmount(() => {
   <section ref="root" class="workspace-shell" :class="{ 'sidebar-collapsed': collapsed }" :style="shellStyle">
     <CompactMonitorSidebar
       v-if="!collapsed && !localTerminalActive"
-      :connection="connection"
-      :state="state"
-      :snapshot="snapshot"
-      :history="history"
-      :workspace-status="store.activeWorkspace?.status"
+      v-bind="monitorSidebarProps"
       :network-interfaces="networkInterfaces"
       :network-preference="networkInterfacePreference"
       :network-interfaces-loading="networkInterfacesLoading"
@@ -1003,6 +1000,7 @@ onBeforeUnmount(() => {
         @notify="(message, type) => emit('notify', message, type)"
       />
       <div class="terminal-statusbar">
+        <button v-if="!localTerminalActive" class="status-sftp-toggle" data-testid="status-sftp-toggle" type="button" :aria-pressed="bottomPanelExpanded" :title="bottomPanelExpanded ? 'Hide SFTP panel' : 'Show SFTP panel'" @click.stop="toggleSFTP"><AppIcon :name="bottomPanelExpanded ? 'chevron-down' : 'chevron-up'" :size="13" /><span>SFTP</span></button>
         <button v-if="localTerminalActive" class="status-monitor-region">
           <span>本地终端</span>
           <span>{{ localTerminalStore.activeSession?.shell || 'Shell' }}</span>
