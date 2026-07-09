@@ -6,10 +6,10 @@ Updated: 2026-07-09
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.57`.
-- Recommended delivery version: `0.5.0-beta.57` user-smoke-required.
-- Current round: beta57 SFTP status icon active-state polish and reconnect monitor recovery after beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.56` -> `0.5.0-beta.57` before repackaging.
+- Current VERSION: `0.5.0-beta.58`.
+- Recommended delivery version: `0.5.0-beta.58` user-smoke-required.
+- Current round: beta58 SFTP/monitor edge polish after beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.57` -> `0.5.0-beta.58` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -88,7 +88,7 @@ Updated: 2026-07-09
 - Beta51 keeps the default no-server workspace visually quiet by hiding empty monitor metrics/status details, uses a single adjacent-pane hairline when the monitor sidebar is collapsed, and reduces empty-pane center actions to New Server / Connect Saved with one separator.
 - Beta52 removes the no-server sidebar placeholder dash and keeps the empty-pane New Server / Connect Saved actions side-by-side with a vertical separator at normal split-pane widths.
 - Beta53 removes the SSH scroll-to-bottom button, defaults the floating command button to bottom-right dock, reconnects edited failed tabs in place, adds ConnectionDialog Escape discard prompting, uses larger terminal Profile number steppers, and makes Ctrl/Meta wheel scale terminal font metrics without font-weight drift.
-- Beta57 keeps the SFTP status toggle borderless/transparent even when expanded, restores monitor/sidebar status after reconnect when SSH/runtime/snapshot are online, and leaves SSH/SFTP runtime behavior unchanged.
+- Beta58 narrows the SFTP status toggle spacing, makes monitor-sidebar toggle buttons borderless with hover-only feedback, and draws the collapsed monitor edge as a single inset hairline without changing SSH/SFTP runtime behavior.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `ServerPilot-macos-unsigned`.
@@ -109,13 +109,13 @@ Updated: 2026-07-09
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1723 tests, 89 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1728 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta57 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.57.exe`.
-- Beta57 Windows EXE SHA-256: `12B4495056DC4F96E22FD7B2F9751B46E446528A487E2F4A6805C99E4CD9B513`.
+- Beta58 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.58.exe`.
+- Beta58 Windows EXE SHA-256: `723F8B976B55754F204829056C33DEA775C408D727F4861C93F4D1D105E5B106`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions beta57 `Build macOS`: passed for commit `30dd70a`, run `29022973355`.
+- GitHub Actions beta58 `Build macOS`: pending until the beta58 code commit is pushed.
 - Artifact: `ServerPilot-macos-unsigned` produced by the macOS runner.
 - Artifact SHA-256: pending local/user download.
 - macOS artifact came from the GitHub Actions macOS runner.

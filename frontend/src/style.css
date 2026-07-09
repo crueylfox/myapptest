@@ -1047,8 +1047,8 @@ button { border: 0; cursor: pointer; background: transparent; }
 .compact-server-header small { font-size: var(--ui-font-size-small); color: var(--muted); }
 .compact-state { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: var(--ui-font-size-small); white-space: nowrap; }
 .compact-state .status-dot { flex: 0 0 auto; }
-.monitor-sidebar-toggle-button { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); background: var(--control-bg); }
-.monitor-sidebar-toggle-button:hover, .monitor-sidebar-toggle-button:focus-visible { color: var(--text); border-color: var(--accent-border); background: var(--state-selected-soft-bg); outline: none; }
+.monitor-sidebar-toggle-button { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 8px; color: var(--muted); background: transparent; }
+.monitor-sidebar-toggle-button:hover, .monitor-sidebar-toggle-button:focus-visible { color: var(--text); background: var(--state-hover-bg); outline: none; }
 .app-shell.platform-macos.terminal-layout .compact-monitor-sidebar .monitor-sidebar-toggle-button,
 .app-shell.platform-macos.terminal-layout .local-monitor-sidebar .monitor-sidebar-toggle-button { position: absolute; top: calc((var(--macos-titlebar-height) - 26px) / 2); right: 10px; }
 .last-update { margin: -2px 0 8px; color: #f2aa4c; font-size: var(--ui-font-size-small); }
@@ -1250,6 +1250,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .workspace-shell.sidebar-collapsed .vertical-splitter { width: 0; min-width: 0; cursor: default; background: transparent; }
 .workspace-shell.sidebar-collapsed .vertical-splitter::before { display: none; }
 .workspace-shell > .workspace-topbar, .workspace-shell > .right-workspace { border-left: 1px solid var(--splitter-line); }
+.workspace-shell.sidebar-collapsed > .workspace-topbar, .workspace-shell.sidebar-collapsed > .right-workspace { border-left: 0; box-shadow: inset 1px 0 0 var(--splitter-line); }
 .mount-panel { min-height: 120px; display: grid; grid-template-rows: 24px minmax(0, 1fr); gap: 6px; overflow: hidden; padding: 9px 10px; background: var(--sidebar); }
 .compact-monitor-sidebar.split-split > .mount-panel { border-top: 1px solid var(--splitter-line); }
 .split-monitorCollapsed .mount-panel, .split-mountsCollapsed .compact-monitor { min-height: 0; height: 100%; }
@@ -1617,9 +1618,9 @@ button { border: 0; cursor: pointer; background: transparent; }
 .workspace-state summary { cursor: pointer; color: var(--muted); }
 .workspace-state code { display: block; margin-top: 9px; overflow-wrap: anywhere; white-space: pre-wrap; color: var(--text); font-size: 11px; }
 .workspace-actions { display: flex; gap: 9px; margin-top: 8px; }
-.terminal-statusbar { grid-row: 4; position: relative; display: flex; align-items: center; gap: 10px; padding: 0 10px; overflow: visible; white-space: nowrap; border-top: 1px solid var(--border); background: var(--sidebar); color: var(--muted); font-size: var(--ui-font-size-small); text-align: left; }
+.terminal-statusbar { grid-row: 4; position: relative; display: flex; align-items: center; gap: 6px; padding: 0 8px; overflow: visible; white-space: nowrap; border-top: 1px solid var(--border); background: var(--sidebar); color: var(--muted); font-size: var(--ui-font-size-small); text-align: left; }
 .right-workspace.bottom-panel-collapsed .terminal-statusbar { border-top: 0; }
-.status-sftp-toggle { flex: 0 0 auto; width: 28px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 7px; background: transparent; color: var(--muted); line-height: 1; }
+.status-sftp-toggle { flex: 0 0 auto; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--muted); line-height: 1; }
 .status-sftp-toggle:hover { background: var(--state-hover-bg); color: var(--text); }
 .status-sftp-toggle[aria-pressed="true"] { background: transparent; color: var(--state-info-text); }
 .status-sftp-toggle[aria-pressed="true"]:hover { background: var(--state-hover-bg); color: var(--text); }

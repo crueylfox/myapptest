@@ -1596,6 +1596,9 @@ describe('theme and overlay tokens', () => {
     const tunnel = block('.status-tunnel')
 
     expect(statusbar).toContain('display: flex')
+    expect(statusbar).toContain('gap: 6px')
+    expect(statusbar).toContain('padding: 0 8px')
+    expect(sftpToggle).toContain('width: 22px')
     expect(sftpToggle).toContain('border: 0')
     expect(sftpToggle).toContain('background: transparent')
     expect(block('.status-sftp-toggle[aria-pressed="true"]')).toContain('background: transparent')
@@ -1703,6 +1706,8 @@ describe('theme and overlay tokens', () => {
     expect(verticalSplitter).toContain('width: var(--workspace-splitter-hit-size)')
     expect(verticalSplitter).toContain('min-width: 0')
     expect(workspacePaneEdges).toContain('border-left: 1px solid var(--splitter-line)')
+    expect(block('.workspace-shell.sidebar-collapsed > .workspace-topbar, .workspace-shell.sidebar-collapsed > .right-workspace')).toContain('border-left: 0')
+    expect(block('.workspace-shell.sidebar-collapsed > .workspace-topbar, .workspace-shell.sidebar-collapsed > .right-workspace')).toContain('box-shadow: inset 1px 0 0 var(--splitter-line)')
     expect(rightWorkspace).toContain('overflow: hidden')
     expect(monitorRestoreSplitter).toContain('background: transparent')
     expect(monitorMountPanel).toContain('border-top: 1px solid var(--splitter-line)')
@@ -1936,6 +1941,8 @@ describe('theme and overlay tokens', () => {
 
     expect(toggleStyles).toContain('width: 26px')
     expect(toggleStyles).toContain('height: 26px')
+    expect(toggleStyles).toContain('border: 0')
+    expect(toggleStyles).toContain('background: transparent')
     expect(stepperStyles).toContain('grid-template-columns: minmax(0, 1fr) 32px')
     expect(stepperButtonStyles).toContain('min-height: 19px')
     expect(stepperButtonStyles).toContain('font-size: 13px')
