@@ -634,14 +634,15 @@ describe('TerminalWorkspace server states', () => {
     expect(localStorage.getItem('serverpilot.monitorSidebarWidth')).toBe('360')
   })
 
-  it('uses Chinese status text and omits terminal rows and columns', () => {
+  it('omits the redundant connected label and terminal rows and columns', () => {
     const { wrapper, store } = mountWorkspace(state({
       status: 'online',
       terminalActive: true,
       hasActiveSession: true,
     }))
     store.workspaces[connection.id].status = 'connected'
-    expect(wrapper.get('.terminal-statusbar').text()).toContain('已连接')
+    expect(wrapper.get('.terminal-statusbar').text()).not.toContain('已连接')
+    expect(wrapper.get('.terminal-statusbar').text()).toContain('延迟')
     expect(wrapper.get('.terminal-statusbar').text()).not.toMatch(/\d+\s*脳\s*\d+/)
   })
 
@@ -726,7 +727,7 @@ describe('TerminalWorkspace server states', () => {
     expect(sidebar.props('connection')).toMatchObject({ id: 7 })
     expect(sidebar.props('state')).toMatchObject({ status: 'online' })
     expect(sidebar.props('workspaceStatus')).toBe('connected')
-    expect(wrapper.get('.status-connection-state').text()).toBe('已连接')
+    expect(wrapper.find('.status-connection-state').exists()).toBe(false)
   })
 
   it('toggles the remote SFTP panel from the left side of the bottom status bar', async () => {
@@ -766,9 +767,21 @@ describe('TerminalWorkspace server states', () => {
 
     const status = wrapper.get('.status-monitor-region')
     expect(status.get('.status-server-name').text()).toContain('server')
-    expect(status.get('.status-connection-state').text()).toContain('已连接')
+    expect(status.find('.status-connection-state').exists()).toBe(false)
     expect(status.get('.status-latency').text()).toContain('延迟')
     expect(status.findAll('.status-rate')).toHaveLength(2)
+  })
+
+  it('keeps non-success connection state visible in the bottom status bar', () => {
+    const { wrapper, store } = mountWorkspace(state({
+      status: 'connecting',
+      terminalActive: true,
+      sftpActive: true,
+      hasActiveSession: true,
+    }))
+    store.workspaces[connection.id].status = 'connecting'
+
+    expect(wrapper.get('.status-connection-state').text()).toContain('正在连接')
   })
 
   it('seeds the active TerminalView draft before executing command palette commands', async () => {
