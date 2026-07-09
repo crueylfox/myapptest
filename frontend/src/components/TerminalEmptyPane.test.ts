@@ -31,7 +31,8 @@ describe('TerminalEmptyPane', () => {
     expect(wrapper.get('.terminal-pane-empty-actions').classes()).toContain('centered')
     expect(wrapper.get('.terminal-pane-empty-actions').classes()).not.toContain('inline')
     expect(wrapper.get('.terminal-pane-empty-actions').classes()).toContain('concept-c-action-stack')
-    expect(wrapper.get('.terminal-pane-empty-actions').classes()).toContain('terminal-empty-actions--vertical')
+    expect(wrapper.get('.terminal-pane-empty-actions').classes()).toContain('terminal-empty-actions--horizontal')
+    expect(wrapper.get('.terminal-pane-empty-actions').classes()).not.toContain('terminal-empty-actions--vertical')
     expect(wrapper.text()).toContain('新建服务器')
     expect(wrapper.text()).toContain('连接已保存')
     expect(wrapper.text()).not.toContain('选择已连接')
@@ -42,8 +43,8 @@ describe('TerminalEmptyPane', () => {
     expect(separators).toHaveLength(1)
     for (const separator of separators) {
       expect(separator.attributes('aria-hidden')).toBe('true')
-      expect(separator.classes()).toContain('action-separator--horizontal-stack')
-      expect(separator.classes()).not.toContain('action-separator--vertical-stack')
+      expect(separator.classes()).toContain('action-separator--vertical-stack')
+      expect(separator.classes()).not.toContain('action-separator--horizontal-stack')
     }
     expect(wrapper.find('.terminal-pane-empty-actions .action-separator:first-child').exists()).toBe(false)
     expect(wrapper.find('.terminal-pane-empty-actions .action-separator:last-child').exists()).toBe(false)
@@ -76,7 +77,7 @@ describe('TerminalEmptyPane', () => {
     expect(wrapper.text()).not.toContain('选择已连接')
   })
 
-  it('switches to horizontal actions with vertical separators when pane height is tight', async () => {
+  it('keeps horizontal actions with vertical separators at normal split-pane sizes', async () => {
     const wrapper = mount(TerminalEmptyPane, {
       props: { showDropMessage: true },
     })

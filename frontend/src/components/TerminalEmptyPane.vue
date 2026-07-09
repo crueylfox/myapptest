@@ -12,8 +12,9 @@ defineEmits<{
 }>()
 
 const root = ref<HTMLElement | null>(null)
-const orientation = ref<'vertical' | 'horizontal'>('vertical')
+const orientation = ref<'vertical' | 'horizontal'>('horizontal')
 let resizeObserver: ResizeObserver | null = null
+const MIN_HORIZONTAL_ACTION_WIDTH = 260
 
 const separatorClass = computed(() => orientation.value === 'horizontal'
   ? 'action-separator--vertical-stack'
@@ -22,10 +23,10 @@ const separatorClass = computed(() => orientation.value === 'horizontal'
 function updateOrientation() {
   const rect = root.value?.getBoundingClientRect()
   if (!rect || rect.width <= 0 || rect.height <= 0) {
-    orientation.value = 'vertical'
+    orientation.value = 'horizontal'
     return
   }
-  orientation.value = rect.height < 190 && rect.width >= 320 ? 'horizontal' : 'vertical'
+  orientation.value = rect.width < MIN_HORIZONTAL_ACTION_WIDTH ? 'vertical' : 'horizontal'
 }
 
 onMounted(() => {

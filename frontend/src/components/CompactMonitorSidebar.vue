@@ -329,7 +329,7 @@ onBeforeUnmount(() => {
             <strong>{{ connection?.name ?? '未连接服务器' }}</strong>
             <span class="compact-state"><i class="status-dot" :class="status"></i>{{ statusLabel(status) }}</span>
           </span>
-          <small>{{ connection ? `${connection.username}@${connection.host}:${connection.port}` : '—' }}</small>
+          <small v-if="connection">{{ `${connection.username}@${connection.host}:${connection.port}` }}</small>
         </div>
         <button
           type="button"

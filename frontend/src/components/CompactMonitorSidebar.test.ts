@@ -124,6 +124,7 @@ describe('CompactMonitorSidebar', () => {
     })
 
     expect(wrapper.get('.compact-server-header').text()).toContain('未连接服务器')
+    expect(wrapper.find('.compact-server-header small').exists()).toBe(false)
     expect(wrapper.find('.system-info').exists()).toBe(false)
     expect(wrapper.find('.compact-resource').exists()).toBe(false)
     expect(wrapper.find('.metric-progress').exists()).toBe(false)

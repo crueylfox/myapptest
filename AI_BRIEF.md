@@ -6,10 +6,10 @@ Updated: 2026-07-09
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.51`.
-- Recommended delivery version: `0.5.0-beta.51` user-smoke-required.
-- Current round: beta51 default-empty workspace and empty-pane action polish after beta50 macOS sidebar/shortcut/terminal UI package and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.50` -> `0.5.0-beta.51` before repackaging.
+- Current VERSION: `0.5.0-beta.52`.
+- Recommended delivery version: `0.5.0-beta.52` user-smoke-required.
+- Current round: beta52 no-server sidebar dash removal and horizontal empty-pane action layout after beta51 default-empty workspace polish and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.51` -> `0.5.0-beta.52` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -86,6 +86,7 @@ Updated: 2026-07-09
 - Beta49 removes visible splitter gutter bands: splitter hit areas are transparent, 0px layout tracks; visible hairlines are drawn by adjacent pane borders.
 - Beta50 adjusts the visible monitor-sidebar toggle placement, removes the top-right menu chevron, accepts macOS shortcut bindings with a disable-and-save conflict fallback, stabilizes the command-history floating button size, enlarges macOS terminal Profile number spinners, and forces Ctrl/Meta wheel to terminal font-size zoom without xterm font-weight drift.
 - Beta51 keeps the default no-server workspace visually quiet by hiding empty monitor metrics/status details, uses a single adjacent-pane hairline when the monitor sidebar is collapsed, and reduces empty-pane center actions to New Server / Connect Saved with one separator.
+- Beta52 removes the no-server sidebar placeholder dash and keeps the empty-pane New Server / Connect Saved actions side-by-side with a vertical separator at normal split-pane widths.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `ServerPilot-macos-unsigned`.
@@ -109,12 +110,12 @@ Updated: 2026-07-09
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1717 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta51 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.51.exe`.
-- Beta51 Windows EXE SHA-256: `A9426467A677C3BCB7F726BD5B2EB5B6BED779AA3E43747BDFA0BE05A58BA02C`.
+- Beta52 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.52.exe`.
+- Beta52 Windows EXE SHA-256: `5039F91C5F54435DE240229F0434B6A6545C69C11334CFFFBE7CF953D2B09AC9`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions beta51 `Build macOS` run `28965658888`: success for commit `b37786d3128b0b8faf70155a8894f731f233c17c`.
-- Artifact: `ServerPilot-macos-unsigned`, size `31523770` bytes.
-- Artifact SHA-256: not calculated because the artifact was not downloaded in this run.
+- GitHub Actions beta52 `Build macOS`: pending until the beta52 code commit is pushed.
+- Artifact: `ServerPilot-macos-unsigned` expected from the macOS runner.
+- Artifact SHA-256: pending.
 - macOS artifact came from the GitHub Actions macOS runner.
 
 ## 5. Next
