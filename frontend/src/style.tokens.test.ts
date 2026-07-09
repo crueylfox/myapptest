@@ -1895,9 +1895,8 @@ describe('theme and overlay tokens', () => {
     expect(profileTitle).not.toContain('border-top: 1px')
   })
 
-  it('stacks terminal command and scroll-to-bottom actions without adding xterm padding', () => {
+  it('keeps terminal command docked without restoring the removed scroll-to-bottom action', () => {
     const commandStyles = block('.terminal-command-button')
-    const scrollStyles = block('.terminal-scroll-bottom')
     const terminalHostStyles = block('.terminal-view')
     const xtermStyles = block('.terminal-view .xterm')
 
@@ -1906,24 +1905,21 @@ describe('theme and overlay tokens', () => {
     expect(commandStyles).toContain('min-width: 54px')
     expect(commandStyles).toContain('height: 32px')
     expect(commandStyles).toContain('white-space: nowrap')
-    expect(scrollStyles).toContain('right: 18px')
-    expect(scrollStyles).toContain('bottom: 56px')
-    expect(scrollStyles).toContain('z-index: 5')
+    expect(css).not.toContain('.terminal-scroll-bottom')
     expect(terminalHostStyles).not.toContain('padding:')
     expect(xtermStyles).toContain('padding: 0')
   })
 
-  it('keeps visible monitor-sidebar toggle and macOS profile number controls usable', () => {
+  it('keeps visible monitor-sidebar toggle and profile number stepper controls usable', () => {
     const toggleStyles = block('.monitor-sidebar-toggle-button')
-    const macNumberInput = block('.app-shell.platform-macos .terminal-profile-number-input')
-    const macSpinButton = block('.app-shell.platform-macos .terminal-profile-number-input::-webkit-inner-spin-button,\n.app-shell.platform-macos .terminal-profile-number-input::-webkit-outer-spin-button')
+    const stepperStyles = block('.terminal-profile-number-stepper')
+    const stepperButtonStyles = block('.terminal-profile-number-stepper-button')
 
     expect(toggleStyles).toContain('width: 26px')
     expect(toggleStyles).toContain('height: 26px')
-    expect(macNumberInput).toContain('min-height: 38px')
-    expect(macNumberInput).toContain('padding-right: 18px')
-    expect(macSpinButton).toContain('width: 18px')
-    expect(macSpinButton).toContain('min-height: 30px')
+    expect(stepperStyles).toContain('grid-template-columns: minmax(0, 1fr) 32px')
+    expect(stepperButtonStyles).toContain('min-height: 19px')
+    expect(stepperButtonStyles).toContain('font-size: 13px')
   })
 
   it('keeps collapsed monitor restore splitters visible as a real row', () => {

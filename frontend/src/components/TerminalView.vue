@@ -57,9 +57,8 @@ import {
   terminalContextMenuTriggerMatches,
 } from '../utils/shortcutSettings'
 import {
-  applyTerminalFontSizeOption,
+  applyTerminalZoomedProfileOptions,
   clearTerminalZoomDelta,
-  effectiveTerminalFontSizeForSession,
   registerTerminalWheelZoomHandler,
   nextTerminalZoomDeltaForSession,
   unregisterTerminalWheelZoomHandler,
@@ -125,7 +124,6 @@ let sensitivePromptPending = false
 let imeComposing = false
 let suppressNativePasteUntil = 0
 const maxHistoryCommandLength = 32 * 1024
-const showScrollToBottom = ref(false)
 const completionOpen = ref(false)
 const completionBusy = ref(false)
 const completionSelectedIndex = ref(0)
@@ -167,7 +165,6 @@ function isAtBottom(): boolean {
 
 function scrollToBottom() {
   terminal?.scrollToBottom()
-  showScrollToBottom.value = false
 }
 
 async function fitStableLayout(generation: number) {
@@ -217,8 +214,11 @@ function applyCurrentProfile(profile = props.profile) {
 
 function applyZoomedFontSize(baseFontSize = props.profile.fontSize) {
   if (!terminal) return
-  const nextFontSize = effectiveTerminalFontSizeForSession(props.sessionId, baseFontSize)
-  applyTerminalFontSizeOption(terminal, nextFontSize)
+  applyTerminalZoomedProfileOptions(terminal, props.sessionId, {
+    fontSize: baseFontSize,
+    lineHeight: props.profile.lineHeight,
+    letterSpacing: props.profile.letterSpacing,
+  })
   viewportHighlighter?.schedule()
   scheduleFit(0)
 }
@@ -790,7 +790,6 @@ onMounted(async () => {
       })
   })
   terminal.onScroll(() => {
-    showScrollToBottom.value = !isAtBottom()
     updateCompletionPosition()
     viewportHighlighter?.schedule()
   })
@@ -835,7 +834,6 @@ onMounted(async () => {
     terminal.write(decodeTerminalBase64ToBytes(dataBase64), () => {
       if (!terminal || destroyed) return
       if (followOutput) scrollToBottom()
-      else showScrollToBottom.value = true
       viewportHighlighter?.schedule()
     })
   })
@@ -924,12 +922,6 @@ onBeforeUnmount(() => {
       @keydown.capture="handleKeydownCapture"
       @paste.capture="handlePasteCapture"
     ></div>
-    <button
-      v-if="showScrollToBottom"
-      class="terminal-scroll-bottom"
-      type="button"
-      @click="scrollToBottom"
-    >回到底部</button>
     <ContextMenu
       v-if="terminalMenu"
       :x="terminalMenu.x"

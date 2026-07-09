@@ -370,7 +370,9 @@ const connectionDialogFlow = useConnectionDialogFlow({
   connectionState: (connectionId) => store.connectionState(connectionId),
   hasWorkspace: (connectionId) => terminalStore.hasWorkspace(connectionId),
   sessionsByServerId: (connectionId) => terminalStore.sessionsByServerId[connectionId] ?? [],
+  terminalTabByConnection: (connectionId) => terminalStore.findByConnection(connectionId),
   openTerminalForSavedConnection: ensureMonitorAndOpenTerminal,
+  reconnectTerminalForSavedConnection: reconnectTerminalAndSyncFiles,
   showToast,
   run,
 })

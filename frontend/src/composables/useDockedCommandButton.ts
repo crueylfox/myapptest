@@ -1,9 +1,11 @@
 import { computed, ref, type CSSProperties, type Ref } from 'vue'
 
 export type CommandButtonDockEdge = 'top' | 'right' | 'bottom' | 'left'
+export type CommandButtonDockAlign = 'start' | 'end'
 export interface CommandButtonDock {
   edge: CommandButtonDockEdge
   offset: number
+  align: CommandButtonDockAlign
 }
 export interface CommandButtonRect {
   left: number
@@ -21,11 +23,12 @@ export interface CommandButtonPoint {
 }
 
 export const COMMAND_BUTTON_DOCK_STORAGE_KEY = 'serverpilot.commandButtonDock'
-export const DEFAULT_COMMAND_BUTTON_DOCK: CommandButtonDock = { edge: 'bottom', offset: 18 }
+export const DEFAULT_COMMAND_BUTTON_DOCK: CommandButtonDock = { edge: 'bottom', offset: 18, align: 'end' }
 export const COMMAND_BUTTON_MARGIN = 12
 export const COMMAND_BUTTON_DRAG_THRESHOLD = 6
 
 const validEdges = new Set<CommandButtonDockEdge>(['top', 'right', 'bottom', 'left'])
+const validAligns = new Set<CommandButtonDockAlign>(['start', 'end'])
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
@@ -33,10 +36,14 @@ function clamp(value: number, min: number, max: number) {
 
 function normalizeDock(value: unknown): CommandButtonDock | null {
   if (!value || typeof value !== 'object') return null
-  const candidate = value as { edge?: unknown; offset?: unknown }
+  const candidate = value as { edge?: unknown; offset?: unknown; align?: unknown }
   if (typeof candidate.edge !== 'string' || !validEdges.has(candidate.edge as CommandButtonDockEdge)) return null
   if (typeof candidate.offset !== 'number' || !Number.isFinite(candidate.offset)) return null
-  return { edge: candidate.edge as CommandButtonDockEdge, offset: candidate.offset }
+  const edge = candidate.edge as CommandButtonDockEdge
+  const align = typeof candidate.align === 'string' && validAligns.has(candidate.align as CommandButtonDockAlign)
+    ? candidate.align as CommandButtonDockAlign
+    : edge === 'bottom' ? 'end' : 'start'
+  return { edge, offset: candidate.offset, align }
 }
 
 export function commandButtonMovedPastThreshold(
@@ -76,8 +83,12 @@ export function dockedCommandButtonPosition(
 ) {
   const maxLeft = Math.max(margin, container.width - button.width - margin)
   const maxTop = Math.max(margin, container.height - button.height - margin)
-  const offsetX = clamp(dock.offset, margin, maxLeft)
-  const offsetY = clamp(dock.offset, margin, maxTop)
+  const offsetX = dock.align === 'end'
+    ? container.width - button.width - clamp(dock.offset, margin, maxLeft)
+    : clamp(dock.offset, margin, maxLeft)
+  const offsetY = dock.align === 'end'
+    ? container.height - button.height - clamp(dock.offset, margin, maxTop)
+    : clamp(dock.offset, margin, maxTop)
 
   if (dock.edge === 'top') return { left: container.left + offsetX, top: container.top + margin }
   if (dock.edge === 'left') return { left: container.left + margin, top: container.top + offsetY }
@@ -99,14 +110,20 @@ export function snapCommandButtonDock(
   }
   const edge = (Object.entries(distances) as Array<[CommandButtonDockEdge, number]>)
     .sort((first, second) => first[1] - second[1])[0][0]
-  const rawOffset = edge === 'left' || edge === 'right'
-    ? center.y - container.top - button.height / 2
-    : center.x - container.left - button.width / 2
+  const verticalEdge = edge === 'left' || edge === 'right'
+  const alongCenter = verticalEdge ? center.y - container.top : center.x - container.left
+  const alongSize = verticalEdge ? container.height : container.width
+  const buttonAlongSize = verticalEdge ? button.height : button.width
+  const align: CommandButtonDockAlign = alongCenter > alongSize / 2 ? 'end' : 'start'
+  const rawOffset = align === 'end'
+    ? alongSize - alongCenter - buttonAlongSize / 2
+    : alongCenter - buttonAlongSize / 2
   const maxOffset = edge === 'left' || edge === 'right'
     ? container.height - button.height - margin
     : container.width - button.width - margin
   return {
     edge,
+    align,
     offset: clamp(rawOffset, margin, Math.max(margin, maxOffset)),
   }
 }

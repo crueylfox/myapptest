@@ -346,6 +346,8 @@ describe('LocalTerminalView', () => {
 
     expect(event.defaultPrevented).toBe(true)
     expect(terminalState.options.fontSize).toBe(14)
+    expect(Number(terminalState.options.lineHeight)).toBeGreaterThan(1.2)
+    expect(terminalState.options.fontWeight).toBe('normal')
     expect(terminalState.disposeCalls).toBe(0)
     expect(wrapper.get('[data-terminal-surface="true"]').attributes('data-terminal-kind')).toBe('local')
     expect(wrapper.get('[data-terminal-surface="true"]').attributes('data-terminal-session-id')).toBe('local-1')
@@ -377,6 +379,7 @@ describe('LocalTerminalView', () => {
 
     expect(event.defaultPrevented).toBe(true)
     expect(terminalState.options.fontSize).toBe(14)
+    expect(Number(terminalState.options.lineHeight)).toBeGreaterThan(1.2)
     expect(terminalState.disposeCalls).toBe(0)
     expect(wrapper.get('.local-terminal-view-host').attributes('data-terminal-surface')).toBeUndefined()
     wrapper.unmount()
@@ -397,6 +400,7 @@ describe('LocalTerminalView', () => {
     expect(event.defaultPrevented).toBe(true)
     expect(stopPropagation).toHaveBeenCalled()
     expect(terminalState.options.fontSize).toBe(14)
+    expect(terminalState.options.fontWeight).toBe('normal')
     expect(terminalState.disposeCalls).toBe(0)
     wrapper.unmount()
     vi.useRealTimers()

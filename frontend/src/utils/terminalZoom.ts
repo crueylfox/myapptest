@@ -4,6 +4,15 @@ const terminalFontZoomDeltaBySessionID = new Map<string, number>()
 const terminalWheelZoomHandlers = new Map<string, (wheelDeltaY: number) => void>()
 
 export type TerminalZoomKind = 'ssh' | 'local'
+export type TerminalZoomProfileMetrics = {
+  fontSize: number
+  lineHeight: number
+  letterSpacing: number
+}
+export type TerminalZoomedProfileOptions = TerminalZoomProfileMetrics & {
+  fontWeight: 'normal'
+  fontWeightBold: 'bold'
+}
 
 export function clampTerminalFontSize(value: number) {
   if (!Number.isFinite(value)) return terminalZoomMinFontSize
@@ -31,6 +40,26 @@ export function effectiveTerminalFontSizeForSession(sessionID: string, baseFontS
   return clampTerminalFontSize(baseFontSize + terminalZoomDeltaForSession(sessionID))
 }
 
+function roundedMetric(value: number) {
+  return Math.round(value * 1000) / 1000
+}
+
+export function effectiveTerminalZoomedProfileOptions(
+  sessionID: string,
+  profile: TerminalZoomProfileMetrics,
+): TerminalZoomedProfileOptions {
+  const baseFontSize = clampTerminalFontSize(profile.fontSize)
+  const fontSize = effectiveTerminalFontSizeForSession(sessionID, baseFontSize)
+  const ratio = fontSize / baseFontSize
+  return {
+    fontSize,
+    lineHeight: roundedMetric(profile.lineHeight * ratio),
+    letterSpacing: roundedMetric(profile.letterSpacing * ratio),
+    fontWeight: 'normal',
+    fontWeightBold: 'bold',
+  }
+}
+
 export function clearTerminalZoomDelta(sessionID: string) {
   terminalFontZoomDeltaBySessionID.delete(sessionID)
 }
@@ -56,6 +85,30 @@ export function applyTerminalFontSizeOption(terminal: { options?: unknown }, fon
     options.fontSize = fontSize
   } else {
     terminal.options = { fontSize }
+  }
+
+  const refresh = (terminal as { refresh?: (start: number, end: number) => void }).refresh
+  const rows = (terminal as { rows?: number }).rows
+  if (typeof refresh === 'function' && typeof rows === 'number' && Number.isFinite(rows) && rows > 0) {
+    refresh.call(terminal, 0, rows - 1)
+  }
+}
+
+export function applyTerminalZoomedProfileOptions(
+  terminal: { options?: unknown },
+  sessionID: string,
+  profile: TerminalZoomProfileMetrics,
+) {
+  const next = effectiveTerminalZoomedProfileOptions(sessionID, profile)
+  if (typeof terminal.options === 'object' && terminal.options !== null) {
+    const options = terminal.options as Record<string, unknown>
+    options.fontSize = next.fontSize
+    options.lineHeight = next.lineHeight
+    options.letterSpacing = next.letterSpacing
+    options.fontWeight = next.fontWeight
+    options.fontWeightBold = next.fontWeightBold
+  } else {
+    terminal.options = { ...next }
   }
 
   const refresh = (terminal as { refresh?: (start: number, end: number) => void }).refresh

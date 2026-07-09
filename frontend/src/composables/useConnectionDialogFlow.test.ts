@@ -153,6 +153,36 @@ describe('useConnectionDialogFlow', () => {
     expect(ctx.pendingPaneOpenTarget.value).toBeNull()
   })
 
+  it('reconnects the current failed terminal tab after editing and save-and-connect instead of opening a new tab', async () => {
+    const saved = connection({ id: 7, name: 'fixed server' })
+    const openTerminalForSavedConnection = vi.fn(async () => ({ sessionId: 'ssh-new' }))
+    const reconnectTerminalForSavedConnection = vi.fn(async () => ({ sessionId: 'ssh-failed', status: 'online' }))
+    const ctx = createFlow({
+      saveConnectionConfig: vi.fn(async () => ({ connection: saved, connectAfterSave: true })),
+      terminalTabByConnection: vi.fn(() => ({
+        sessionId: 'ssh-failed',
+        connectionId: 7,
+        status: 'error',
+        code: 'SSH_HANDSHAKE_FAILED',
+      })),
+      reconnectTerminalForSavedConnection,
+      openTerminalForSavedConnection,
+      connectionState: () => runtimeState({ status: 'offline' }),
+      hasWorkspace: () => true,
+    })
+    await ctx.flow.editServerFromTab(7)
+
+    await ctx.flow.saveConnection(saveRequest({
+      connection: { ...saveRequest().connection, id: 7 },
+      connectAfterSave: true,
+    }))
+
+    expect(reconnectTerminalForSavedConnection).toHaveBeenCalledWith('ssh-failed', 7, emptyAuth())
+    expect(openTerminalForSavedConnection).not.toHaveBeenCalled()
+    expect(ctx.paneTargetAssignment.value).toBeNull()
+    expect(ctx.activeView.value).toBe('terminals')
+  })
+
   it('cleans the pending add-server target on dialog close', async () => {
     const ctx = createFlow()
     await ctx.flow.openCreateForPane('pane-a')

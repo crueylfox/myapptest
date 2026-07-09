@@ -33,9 +33,8 @@ import {
   terminalContextMenuTriggerMatches,
 } from '../utils/shortcutSettings'
 import {
-  applyTerminalFontSizeOption,
+  applyTerminalZoomedProfileOptions,
   clearTerminalZoomDelta,
-  effectiveTerminalFontSizeForSession,
   registerTerminalWheelZoomHandler,
   nextTerminalZoomDeltaForSession,
   unregisterTerminalWheelZoomHandler,
@@ -149,8 +148,11 @@ function applyCurrentProfile(profile = props.profile) {
 
 function applyZoomedFontSize(baseFontSize = props.profile.fontSize) {
   if (!terminal) return
-  const nextFontSize = effectiveTerminalFontSizeForSession(props.sessionId, baseFontSize)
-  applyTerminalFontSizeOption(terminal, nextFontSize)
+  applyTerminalZoomedProfileOptions(terminal, props.sessionId, {
+    fontSize: baseFontSize,
+    lineHeight: props.profile.lineHeight,
+    letterSpacing: props.profile.letterSpacing,
+  })
   scheduleFit(0)
 }
 
@@ -163,6 +165,7 @@ function consumeTerminalWheelZoom(event: WheelEvent) {
   if (!isWebviewZoomWheelGesture(event)) return false
   event.preventDefault()
   event.stopPropagation()
+  event.stopImmediatePropagation?.()
   applyWheelZoomDelta(event.deltaY)
   return true
 }

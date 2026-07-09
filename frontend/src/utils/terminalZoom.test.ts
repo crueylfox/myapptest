@@ -1,10 +1,12 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   applyTerminalFontSizeOption,
+  applyTerminalZoomedProfileOptions,
   clearTerminalZoomDelta,
   clampTerminalFontSize,
   dispatchTerminalWheelZoom,
   effectiveTerminalFontSizeForSession,
+  effectiveTerminalZoomedProfileOptions,
   nextTerminalZoomDelta,
   nextTerminalZoomDeltaForSession,
   registerTerminalWheelZoomHandler,
@@ -89,6 +91,44 @@ describe('terminal zoom', () => {
     const terminalWithoutOptions: { options?: unknown } = {}
     applyTerminalFontSizeOption(terminalWithoutOptions, 20)
     expect(terminalWithoutOptions.options).toEqual({ fontSize: 20 })
+  })
+
+  it('zooms terminal profile metrics proportionally instead of changing font weight', () => {
+    clearTerminalZoomDelta('ssh-proportional')
+    nextTerminalZoomDeltaForSession('ssh-proportional', 16, -100)
+    nextTerminalZoomDeltaForSession('ssh-proportional', 16, -100)
+
+    const options = effectiveTerminalZoomedProfileOptions('ssh-proportional', {
+      fontSize: 16,
+      lineHeight: 1.25,
+      letterSpacing: 0.8,
+    })
+
+    expect(options.fontSize).toBe(18)
+    expect(options.lineHeight).toBeCloseTo(1.406, 3)
+    expect(options.letterSpacing).toBeCloseTo(0.9, 3)
+    expect(options.fontWeight).toBe('normal')
+    expect(options.fontWeightBold).toBe('bold')
+
+    const terminal = {
+      options: { fontSize: 16, lineHeight: 1.25, letterSpacing: 0.8, fontWeight: 500 },
+      refresh: vi.fn(),
+      rows: 10,
+    }
+    applyTerminalZoomedProfileOptions(terminal, 'ssh-proportional', {
+      fontSize: 16,
+      lineHeight: 1.25,
+      letterSpacing: 0.8,
+    })
+    expect(terminal.options).toMatchObject({
+      fontSize: 18,
+      lineHeight: options.lineHeight,
+      letterSpacing: options.letterSpacing,
+      fontWeight: 'normal',
+      fontWeightBold: 'bold',
+    })
+    expect(terminal.refresh).toHaveBeenCalledWith(0, 9)
+    clearTerminalZoomDelta('ssh-proportional')
   })
 
   it('dispatches wheel zoom to the registered session handler only', () => {

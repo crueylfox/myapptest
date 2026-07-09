@@ -865,10 +865,18 @@ button { border: 0; cursor: pointer; background: transparent; }
 .terminal-profile-grid label, .terminal-profile-colors label { display: grid; gap: 6px; min-width: 0; color: var(--muted); font-size: 12px; }
 .terminal-profile-grid .checkbox { display: flex; align-items: center; gap: 8px; color: var(--text); }
 .terminal-profile-grid .checkbox input { width: auto; }
-.terminal-profile-number-input { font-variant-numeric: tabular-nums; }
-.app-shell.platform-macos .terminal-profile-number-input { min-height: 38px; padding-right: 18px; }
-.app-shell.platform-macos .terminal-profile-number-input::-webkit-inner-spin-button,
-.app-shell.platform-macos .terminal-profile-number-input::-webkit-outer-spin-button { width: 18px; min-height: 30px; opacity: 1; }
+.terminal-profile-number-stepper { display: grid; grid-template-columns: minmax(0, 1fr) 32px; align-items: stretch; min-width: 0; border: 1px solid var(--border); border-radius: 9px; background: var(--input); overflow: hidden; }
+.terminal-profile-number-stepper:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-focus); }
+.terminal-profile-number-stepper .terminal-profile-number-input { width: 100%; min-width: 0; height: 40px; border: 0; border-radius: 0; background: transparent; font-variant-numeric: tabular-nums; }
+.terminal-profile-number-stepper .terminal-profile-number-input:focus { outline: none; box-shadow: none; }
+.terminal-profile-number-input::-webkit-inner-spin-button,
+.terminal-profile-number-input::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; appearance: none; }
+.terminal-profile-number-input { appearance: textfield; -moz-appearance: textfield; }
+.terminal-profile-number-stepper-buttons { display: grid; grid-template-rows: 1fr 1fr; border-left: 1px solid var(--border); background: var(--panel-soft); }
+.terminal-profile-number-stepper-button { min-width: 32px; min-height: 19px; height: 20px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--text); font-size: 13px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.terminal-profile-number-stepper-button + .terminal-profile-number-stepper-button { border-top: 1px solid var(--border); }
+.terminal-profile-number-stepper-button:hover { background: var(--state-hover-bg); color: var(--accent-text); }
+.terminal-profile-number-stepper-button:active { background: var(--state-active-bg); color: var(--text); }
 .terminal-profile-preview { display: grid; gap: 4px; min-width: 0; padding: 14px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: 13px; }
 .terminal-profile-preview span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .terminal-profile-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -1563,8 +1571,6 @@ button { border: 0; cursor: pointer; background: transparent; }
 .terminal-command-button:hover:not(:disabled) { border-color: #79a7ff; background: color-mix(in srgb, var(--panel-2) 92%, transparent); color: var(--text); }
 .terminal-command-button.dragging { cursor: grabbing; transition: none; box-shadow: 0 12px 28px var(--shadow-strong); }
 .terminal-command-button:disabled { cursor: default; opacity: .48; }
-.terminal-scroll-bottom { position: absolute; z-index: 5; right: 18px; bottom: 56px; padding: 6px 10px; border: 1px solid var(--accent-border); border-radius: 999px; background: #17243aea; color: #dce6f3; font-size: 11px; box-shadow: 0 5px 16px #0008; }
-.terminal-scroll-bottom:hover { border-color: #79a7ff; background: #203250; }
 .terminal-completion { position: absolute; z-index: 6; left: 18px; top: 52px; width: min(500px, calc(100% - 24px)); max-height: min(330px, calc(100% - 70px)); display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; overflow: hidden; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-popover-bg); box-shadow: 0 20px 60px var(--shadow-strong); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); }
 .terminal-completion header, .terminal-completion footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 11px; }
 .terminal-completion header strong { color: var(--text); font-size: 13px; }

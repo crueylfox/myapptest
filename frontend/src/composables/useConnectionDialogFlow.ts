@@ -12,6 +12,12 @@ import type { PendingPaneOpenTarget, PaneTargetAssignment } from './usePaneTarge
 
 type AppView = 'terminals' | 'monitor' | 'logs' | 'settings'
 type ToastType = 'success' | 'error' | 'info'
+type TerminalTabLike = {
+  sessionId: string
+  connectionId: number
+  status?: string
+  code?: string
+}
 type ConfirmDialogOptions = {
   title: string
   message: string
@@ -53,10 +59,16 @@ export interface ConnectionDialogFlowOptions {
   connectionState: (connectionId: number) => ConnectionRuntimeState
   hasWorkspace: (connectionId: number) => boolean
   sessionsByServerId: (connectionId: number) => unknown[]
+  terminalTabByConnection?: (connectionId: number) => TerminalTabLike | null | undefined
   openTerminalForSavedConnection: (
     connection: Connection,
     auth: AuthRequest,
   ) => Promise<{ sessionId: string }>
+  reconnectTerminalForSavedConnection?: (
+    sessionId: string,
+    connectionId: number,
+    auth: AuthRequest,
+  ) => Promise<unknown>
   showToast: (message: string, type: ToastType, detail?: string, code?: string) => void
   run: (action: () => Promise<void>, fallback: string) => Promise<void>
 }
@@ -141,8 +153,19 @@ export function useConnectionDialogFlow(options: ConnectionDialogFlowOptions) {
         paneTargetHandled = true
         return
       }
-      const terminal = await options.openTerminalForSavedConnection(result.connection, { ...request.auth })
-      options.publishPaneTargetAssignment(paneTarget, 'ssh', terminal.sessionId)
+      const reconnectTarget = request.connection.id > 0
+        ? options.terminalTabByConnection?.(request.connection.id)
+        : null
+      if (
+        reconnectTarget?.sessionId &&
+        reconnectTarget.status === 'error' &&
+        options.reconnectTerminalForSavedConnection
+      ) {
+        await options.reconnectTerminalForSavedConnection(reconnectTarget.sessionId, result.connection.id, { ...request.auth })
+      } else {
+        const terminal = await options.openTerminalForSavedConnection(result.connection, { ...request.auth })
+        options.publishPaneTargetAssignment(paneTarget, 'ssh', terminal.sessionId)
+      }
       paneTargetHandled = true
       options.activeView.value = 'terminals'
       options.showToast('服务器已保存并连接', 'success')

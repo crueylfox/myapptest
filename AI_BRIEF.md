@@ -6,10 +6,10 @@ Updated: 2026-07-09
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.52`.
-- Recommended delivery version: `0.5.0-beta.52` user-smoke-required.
-- Current round: beta52 no-server sidebar dash removal and horizontal empty-pane action layout after beta51 default-empty workspace polish and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.51` -> `0.5.0-beta.52` before repackaging.
+- Current VERSION: `0.5.0-beta.53`.
+- Recommended delivery version: `0.5.0-beta.53` user-smoke-required.
+- Current round: beta53 terminal dialog/zoom and command button hotfix after beta52 empty workspace polish and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.52` -> `0.5.0-beta.53` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -87,6 +87,7 @@ Updated: 2026-07-09
 - Beta50 adjusts the visible monitor-sidebar toggle placement, removes the top-right menu chevron, accepts macOS shortcut bindings with a disable-and-save conflict fallback, stabilizes the command-history floating button size, enlarges macOS terminal Profile number spinners, and forces Ctrl/Meta wheel to terminal font-size zoom without xterm font-weight drift.
 - Beta51 keeps the default no-server workspace visually quiet by hiding empty monitor metrics/status details, uses a single adjacent-pane hairline when the monitor sidebar is collapsed, and reduces empty-pane center actions to New Server / Connect Saved with one separator.
 - Beta52 removes the no-server sidebar placeholder dash and keeps the empty-pane New Server / Connect Saved actions side-by-side with a vertical separator at normal split-pane widths.
+- Beta53 removes the SSH scroll-to-bottom button, defaults the floating command button to bottom-right dock, reconnects edited failed tabs in place, adds ConnectionDialog Escape discard prompting, uses larger terminal Profile number steppers, and makes Ctrl/Meta wheel scale terminal font metrics without font-weight drift.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `ServerPilot-macos-unsigned`.
@@ -107,13 +108,13 @@ Updated: 2026-07-09
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1717 tests, 89 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1720 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta52 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.52.exe`.
-- Beta52 Windows EXE SHA-256: `5039F91C5F54435DE240229F0434B6A6545C69C11334CFFFBE7CF953D2B09AC9`.
+- Beta53 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.53.exe`.
+- Beta53 Windows EXE SHA-256: `152FEA525829846F9F38B7F9426F1F1F4C4BB21C81A210CF15381AA2B1531407`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions beta52 `Build macOS`: pending until the beta52 code commit is pushed.
+- GitHub Actions beta53 `Build macOS`: pending until the beta53 code commit is pushed.
 - Artifact: `ServerPilot-macos-unsigned` expected from the macOS runner.
 - Artifact SHA-256: pending.
 - macOS artifact came from the GitHub Actions macOS runner.

@@ -240,6 +240,35 @@ describe('ConnectionDialog', () => {
     expect(wrapper.find('[data-testid="passphrase"]').exists()).toBe(false)
   })
 
+  it('supports Escape close and asks before discarding dirty server edits', async () => {
+    const clean = mount(ConnectionDialog, {
+      props: { open: true, connection: null, groups: [], settings },
+    })
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await flushPromises()
+    expect(clean.emitted('close')).toHaveLength(1)
+    clean.unmount()
+
+    const dirty = mount(ConnectionDialog, {
+      props: { open: true, connection: null, groups: [], settings },
+    })
+    await dirty.get('[data-testid="host"]').setValue('192.168.0.88')
+    dialogMock.confirmDialog.mockResolvedValueOnce(false)
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await flushPromises()
+    expect(dialogMock.confirmDialog).toHaveBeenCalledWith(expect.objectContaining({
+      danger: true,
+    }))
+    expect(dirty.emitted('close')).toBeUndefined()
+
+    dialogMock.confirmDialog.mockResolvedValueOnce(true)
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await flushPromises()
+    expect(dirty.emitted('close')).toHaveLength(1)
+    dirty.unmount()
+  })
+
   it('defaults remember password on and switches password/private-key fields', async () => {
     const wrapper = mount(ConnectionDialog, {
       props: { open: true, connection: null, groups: [], settings },

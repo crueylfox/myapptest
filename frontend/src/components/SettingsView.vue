@@ -9,6 +9,7 @@ import { api } from '../api/backend'
 import SettingsBackupRestoreSection from './settings/SettingsBackupRestoreSection.vue'
 import AlertNotificationSettingsSection from './settings/AlertNotificationSettingsSection.vue'
 import SettingsAppLogEntry from './settings/SettingsAppLogEntry.vue'
+import TerminalProfileNumberStepper from './settings/TerminalProfileNumberStepper.vue'
 import AppIcon from './icons/AppIcon.vue'
 import SshCommandCompletionSettings from './SshCommandCompletionSettings.vue'
 import { choiceDialog, confirmDialog } from '../composables/useAppDialog'
@@ -1196,17 +1197,15 @@ function errorMessage(reason: unknown, fallback: string) {
               <label v-if="terminalFontPreset === 'custom'">自定义字体
                 <input v-model.trim="terminalProfileForm.fontFamily" data-testid="terminal-profile-font" maxlength="120" />
               </label>
-              <label>字号
-                <input v-model.number="terminalProfileForm.fontSize" class="terminal-profile-number-input" data-testid="terminal-profile-font-size" type="number" min="10" max="28" />
-              </label>
+              <label>字号 <TerminalProfileNumberStepper v-model="terminalProfileForm.fontSize" :min="10" :max="28" :step="1" stepper-testid="terminal-profile-font-size-stepper" input-testid="terminal-profile-font-size" increment-testid="terminal-profile-font-size-increment" decrement-testid="terminal-profile-font-size-decrement" increment-label="增大字号" decrement-label="减小字号" /></label>
               <label>行高
-                <input v-model.number="terminalProfileForm.lineHeight" class="terminal-profile-number-input" data-testid="terminal-profile-line-height" type="number" min="1" max="2" step="0.05" />
+                <TerminalProfileNumberStepper v-model="terminalProfileForm.lineHeight" :min="1" :max="2" :step="0.05" stepper-testid="terminal-profile-line-height-stepper" input-testid="terminal-profile-line-height" increment-testid="terminal-profile-line-height-increment" decrement-testid="terminal-profile-line-height-decrement" increment-label="增大行高" decrement-label="减小行高" />
               </label>
               <label>字间距
-                <input v-model.number="terminalProfileForm.letterSpacing" class="terminal-profile-number-input" type="number" min="-1" max="4" step="0.1" />
+                <TerminalProfileNumberStepper v-model="terminalProfileForm.letterSpacing" :min="-1" :max="4" :step="0.1" stepper-testid="terminal-profile-letter-spacing-stepper" input-testid="terminal-profile-letter-spacing" increment-testid="terminal-profile-letter-spacing-increment" decrement-testid="terminal-profile-letter-spacing-decrement" increment-label="增大字间距" decrement-label="减小字间距" />
               </label>
               <label>滚动缓冲
-                <input v-model.number="terminalProfileForm.scrollback" class="terminal-profile-number-input" type="number" min="1000" max="50000" step="500" />
+                <TerminalProfileNumberStepper v-model="terminalProfileForm.scrollback" :min="1000" :max="50000" :step="500" stepper-testid="terminal-profile-scrollback-stepper" input-testid="terminal-profile-scrollback" increment-testid="terminal-profile-scrollback-increment" decrement-testid="terminal-profile-scrollback-decrement" increment-label="增大滚动缓冲" decrement-label="减小滚动缓冲" />
               </label>
               <label>光标样式
                 <select v-model="terminalProfileForm.cursorStyle">

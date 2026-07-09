@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import type {
   AppSettings, AuthRequest, AuthType, Connection, ConnectionMode, Group, KeyVaultEntry, PrivateKeyValidationResult, PrivateKeySource,
   SaveConnectionConfigRequest, SaveConnectionRequest, SaveKeyVaultEntryRequest, SecretUpdateMode, TerminalProfile,
 } from '../types'
 import { api } from '../api/backend'
+import { confirmDialog } from '../composables/useAppDialog'
 
 const savedPasswordMask = '********'
 const props = defineProps<{
@@ -31,6 +32,8 @@ const keyImportValidation = ref<PrivateKeyValidationResult | null>(null)
 const formElement = ref<HTMLFormElement | null>(null)
 const passwordDisplay = ref('')
 const passwordMaskActive = ref(false)
+const formBaseline = ref('')
+const escapeOwnerKey = Symbol('connection-dialog-escape-owner')
 const form = reactive<SaveConnectionRequest>({
   id: 0, groupId: null, name: '', host: '', port: 22, username: 'root',
   authType: 'password', privateKeySource: 'key_vault', privateKeyPath: '', keyVaultId: null,
@@ -53,11 +56,28 @@ const auth = reactive<AuthRequest>({
   password: '', passphrase: '', trustUnknownHost: false, rememberSecret: true, secretUpdateMode: 'unchanged',
 })
 
+function connectionDialogSnapshot() {
+  return JSON.stringify({
+    form: { ...form },
+    auth: {
+      password: auth.password,
+      passphrase: auth.passphrase,
+      trustUnknownHost: auth.trustUnknownHost,
+      rememberSecret: auth.rememberSecret,
+      secretUpdateMode: auth.secretUpdateMode,
+    },
+    passwordDisplay: passwordMaskActive.value ? savedPasswordMask : passwordDisplay.value,
+  })
+}
+
+const formDirty = computed(() => props.open && formBaseline.value !== connectionDialogSnapshot())
+
 watch(() => [props.open, props.connection] as const, () => {
   if (!props.open) {
     clearSecrets()
     return
   }
+  ;(window as Window & { __serverpilotConnectionDialogEscapeOwner?: symbol }).__serverpilotConnectionDialogEscapeOwner = escapeOwnerKey
   browseError.value = ''
   Object.assign(form, props.connection ? {
     id: props.connection.id, groupId: props.connection.groupId, name: props.connection.name,
@@ -81,6 +101,7 @@ watch(() => [props.open, props.connection] as const, () => {
   routeError.value = ''
   clearSecrets()
   auth.rememberSecret = true
+  formBaseline.value = connectionDialogSnapshot()
   if (form.authType === 'private_key') void loadKeyVaultEntries()
 }, { immediate: true })
 
@@ -190,6 +211,43 @@ function close() {
   clearSecrets()
   emit('close')
 }
+
+async function requestClose() {
+  if (!formDirty.value) {
+    close()
+    return
+  }
+  const confirmed = await confirmDialog({
+    title: '放弃服务器修改',
+    message: '当前服务器配置有未保存修改，是否放弃修改并关闭？',
+    confirmText: '放弃修改',
+    danger: true,
+  })
+  if (confirmed) close()
+}
+
+function handleGlobalKeydown(event: KeyboardEvent) {
+  if (!props.open || event.key !== 'Escape') return
+  if ((window as Window & { __serverpilotConnectionDialogEscapeOwner?: symbol }).__serverpilotConnectionDialogEscapeOwner !== escapeOwnerKey) return
+  event.preventDefault()
+  event.stopPropagation()
+  event.stopImmediatePropagation?.()
+  if (keyImportOpen.value) {
+    closeKeyImport()
+    return
+  }
+  void requestClose()
+}
+
+window.addEventListener('keydown', handleGlobalKeydown)
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleGlobalKeydown)
+  const ownerWindow = window as Window & { __serverpilotConnectionDialogEscapeOwner?: symbol }
+  if (ownerWindow.__serverpilotConnectionDialogEscapeOwner === escapeOwnerKey) {
+    delete ownerWindow.__serverpilotConnectionDialogEscapeOwner
+  }
+})
 
 function changeAuthType(event: Event) {
   const next = (event.target as HTMLSelectElement).value as AuthType
@@ -345,7 +403,7 @@ function submit(connectAfterSave: boolean) {
 </script>
 
 <template>
-  <div v-if="open" class="modal-backdrop app-material-backdrop" @pointerdown.self.stop @keydown.esc.prevent="close">
+  <div v-if="open" class="modal-backdrop app-material-backdrop" @pointerdown.self.stop @keydown.esc.prevent="requestClose">
     <form ref="formElement" class="modal connection-modal app-material-surface" @submit.prevent="submit(false)">
       <div class="connection-dialog-rail">
         <header class="connection-dialog-header">
@@ -527,7 +585,7 @@ function submit(connectAfterSave: boolean) {
         </div>
         <p class="form-note">密码和私钥口令不会写入 SQLite。密钥库私钥会经 Windows 用户级保护后存入本地数据库。</p>
         <footer class="connection-dialog-footer">
-          <button type="button" class="secondary" @click="close">取消</button>
+          <button type="button" class="secondary" @click="requestClose">取消</button>
           <button type="submit" class="secondary">保存</button>
           <button type="button" class="primary" data-testid="save-connect" @click="submit(true)">保存并连接</button>
         </footer>

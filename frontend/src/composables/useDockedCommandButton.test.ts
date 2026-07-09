@@ -26,24 +26,27 @@ describe('useDockedCommandButton', () => {
     expect(snapCommandButtonDock({ x: 112, y: 180 }, container, buttonSize)).toEqual({
       edge: 'left',
       offset: 114,
+      align: 'start',
     })
     expect(snapCommandButtonDock({ x: 300, y: 54 }, container, buttonSize)).toEqual({
       edge: 'top',
       offset: 168,
+      align: 'start',
     })
     expect(snapCommandButtonDock({ x: 580, y: 346 }, container, buttonSize)).toEqual({
       edge: 'bottom',
-      offset: 424,
+      offset: 12,
+      align: 'end',
     })
   })
 
   it('resolves a persisted dock state to an absolute button position inside the container', () => {
-    expect(dockedCommandButtonPosition({ edge: 'right', offset: 999 }, container, buttonSize)).toEqual({
+    expect(dockedCommandButtonPosition({ edge: 'right', offset: 999, align: 'start' }, container, buttonSize)).toEqual({
       left: 524,
       top: 306,
     })
-    expect(dockedCommandButtonPosition({ edge: 'bottom', offset: 18 }, container, buttonSize)).toEqual({
-      left: 118,
+    expect(dockedCommandButtonPosition({ edge: 'bottom', offset: 18, align: 'end' }, container, buttonSize)).toEqual({
+      left: 518,
       top: 306,
     })
   })
@@ -51,14 +54,14 @@ describe('useDockedCommandButton', () => {
   it('reads and writes localStorage safely without throwing on invalid values', () => {
     const storage = window.localStorage
     storage.clear()
-    expect(readCommandButtonDock(storage)).toEqual({ edge: 'bottom', offset: 18 })
+    expect(readCommandButtonDock(storage)).toEqual({ edge: 'bottom', offset: 18, align: 'end' })
 
-    writeCommandButtonDock(storage, { edge: 'top', offset: 24 })
-    expect(storage.getItem(COMMAND_BUTTON_DOCK_STORAGE_KEY)).toBe(JSON.stringify({ edge: 'top', offset: 24 }))
-    expect(readCommandButtonDock(storage)).toEqual({ edge: 'top', offset: 24 })
+    writeCommandButtonDock(storage, { edge: 'top', offset: 24, align: 'start' })
+    expect(storage.getItem(COMMAND_BUTTON_DOCK_STORAGE_KEY)).toBe(JSON.stringify({ edge: 'top', offset: 24, align: 'start' }))
+    expect(readCommandButtonDock(storage)).toEqual({ edge: 'top', offset: 24, align: 'start' })
 
     storage.setItem(COMMAND_BUTTON_DOCK_STORAGE_KEY, '{bad')
-    expect(readCommandButtonDock(storage)).toEqual({ edge: 'bottom', offset: 18 })
+    expect(readCommandButtonDock(storage)).toEqual({ edge: 'bottom', offset: 18, align: 'end' })
   })
 
   it('swallows localStorage write failures', () => {
@@ -67,7 +70,7 @@ describe('useDockedCommandButton', () => {
       setItem: vi.fn(() => { throw new Error('blocked') }),
     } as unknown as Storage
 
-    expect(() => writeCommandButtonDock(storage, { edge: 'left', offset: 12 })).not.toThrow()
+    expect(() => writeCommandButtonDock(storage, { edge: 'left', offset: 12, align: 'start' })).not.toThrow()
   })
 
   it('recomputes the docked position when the terminal viewport layout revision changes', async () => {
@@ -108,12 +111,15 @@ describe('useDockedCommandButton', () => {
 
     await nextTick()
     expect(wrapper.get('button').attributes('style')).toContain('top: 376px')
+    expect(wrapper.get('button').attributes('style')).toContain('left: 558px')
 
+    stageRect.width = 900
     stageRect.height = 220
     wrapper.vm.revision += 1
     await nextTick()
 
     expect(wrapper.get('button').attributes('style')).toContain('top: 176px')
+    expect(wrapper.get('button').attributes('style')).toContain('left: 818px')
   })
 
   it('keeps the command button from collapsing into a circular control during transient resize', async () => {

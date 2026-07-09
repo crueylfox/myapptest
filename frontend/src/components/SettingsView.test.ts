@@ -1160,6 +1160,11 @@ describe('connection settings', () => {
     await wrapper.get('[data-testid="terminal-profile-font-preset"]').setValue('consolas')
 
     await wrapper.get('[data-testid="terminal-profile-font-size"]').setValue('18')
+    expect(wrapper.get('[data-testid="terminal-profile-font-size-stepper"]').classes()).toContain('terminal-profile-number-stepper')
+    await wrapper.get('[data-testid="terminal-profile-font-size-decrement"]').trigger('click')
+    expect(wrapper.get<HTMLInputElement>('[data-testid="terminal-profile-font-size"]').element.value).toBe('17')
+    await wrapper.get('[data-testid="terminal-profile-font-size-increment"]').trigger('click')
+    expect(wrapper.get<HTMLInputElement>('[data-testid="terminal-profile-font-size"]').element.value).toBe('18')
     await wrapper.get('[data-testid="terminal-profile-theme"]').setValue('custom')
     await wrapper.get('[data-testid="terminal-profile-selection-color"]').setValue('#93c5fd88')
     await wrapper.get('[data-testid="terminal-profile-save"]').trigger('click')

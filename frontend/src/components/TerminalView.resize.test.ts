@@ -213,6 +213,8 @@ describe('TerminalView resize', () => {
 
     expect(event.defaultPrevented).toBe(true)
     expect(terminalState.options.fontSize).toBe(14)
+    expect(Number(terminalState.options.lineHeight)).toBeGreaterThan(1.2)
+    expect(terminalState.options.fontWeight).toBe('normal')
     expect(terminalState.disposeCalls).toBe(0)
     expect(window.go?.main?.App?.WriteTerminal).not.toHaveBeenCalled()
     expect(wrapper.get('[data-terminal-surface="true"]').attributes('data-terminal-kind')).toBe('ssh')
@@ -249,6 +251,7 @@ describe('TerminalView resize', () => {
 
     expect(event.defaultPrevented).toBe(true)
     expect(terminalState.options.fontSize).toBe(14)
+    expect(Number(terminalState.options.lineHeight)).toBeGreaterThan(1.2)
     expect(terminalState.disposeCalls).toBe(0)
     expect(wrapper.get('.terminal-view-host').attributes('data-terminal-surface')).toBeUndefined()
     wrapper.unmount()
@@ -298,6 +301,7 @@ describe('TerminalView resize', () => {
     expect(event.defaultPrevented).toBe(true)
     expect(stopPropagation).toHaveBeenCalled()
     expect(terminalState.options.fontSize).toBe(14)
+    expect(terminalState.options.fontWeight).toBe('normal')
     expect(terminalState.disposeCalls).toBe(0)
     wrapper.unmount()
     vi.useRealTimers()
@@ -597,11 +601,6 @@ describe('TerminalView resize', () => {
     })
     await wrapper.vm.$nextTick()
     expect(terminalState.scrollBottomCalls).toBe(1)
-    expect(wrapper.get('.terminal-scroll-bottom').text()).toBe('回到底部')
-    expect(wrapper.get('.terminal-scroll-bottom').element.closest('[data-terminal-surface="true"]')).toBeNull()
-
-    await wrapper.get('.terminal-scroll-bottom').trigger('click')
-    expect(terminalState.scrollBottomCalls).toBe(2)
     expect(wrapper.find('.terminal-scroll-bottom').exists()).toBe(false)
     wrapper.unmount()
     vi.useRealTimers()
