@@ -1668,6 +1668,7 @@ const appBlurOverlayFixture = computed(() =>
               <span class="terminal-pane-empty-message">将标签拖到这里</span>
               <div class="terminal-pane-empty-actions terminal-empty-actions terminal-empty-actions--vertical centered concept-c-action-stack">
                 <button type="button"><AppIcon name="server-plus" :size="30" /><span>新建服务器</span></button>
+                <span class="action-separator action-separator--horizontal-stack" aria-hidden="true"></span>
                 <button type="button"><AppIcon name="link" :size="30" /><span>连接已保存</span></button>
               </div>
             </div>
@@ -1692,6 +1693,7 @@ const appBlurOverlayFixture = computed(() =>
               <span class="terminal-pane-empty-message">将标签拖到这里</span>
               <div class="terminal-pane-empty-actions terminal-empty-actions terminal-empty-actions--horizontal centered concept-c-action-stack">
                 <button type="button"><AppIcon name="server-plus" :size="30" /><span>新建服务器</span></button>
+                <span class="action-separator action-separator--vertical-stack" aria-hidden="true"></span>
                 <button type="button"><AppIcon name="link" :size="30" /><span>连接已保存</span></button>
               </div>
             </div>
@@ -2278,6 +2280,15 @@ const appBlurOverlayFixture = computed(() =>
             </button>
             <button class="topbar-add" type="button">+</button>
           </div>
+          <div class="topbar-split">
+            <button type="button" class="split-mode-button" aria-expanded="false" aria-label="分屏，当前：单窗格">
+              <span class="topbar-action-inner">
+                <AppIcon name="layout-grid" :size="16" />
+                <span>分屏</span>
+              </span>
+            </button>
+          </div>
+          <span class="topbar-action-separator" aria-hidden="true"></span>
           <div class="topbar-navigation">
             <button type="button" :aria-expanded="topbarMenuOpen" @click="topbarMenuOpen = !topbarMenuOpen">
               <span class="topbar-action-inner">
@@ -2300,19 +2311,6 @@ const appBlurOverlayFixture = computed(() =>
                   <span class="topbar-menu-trailing">
                     <span v-if="item.badge > 0" class="topbar-menu-badge">{{ item.badge }}</span>
                   </span>
-                </button>
-                <button
-                  v-if="item.label === 'SSH 工作区'"
-                  type="button"
-                  class="topbar-menu-item topbar-menu-split-toggle"
-                  data-split-menu-toggle
-                >
-                  <span class="topbar-menu-leading" aria-hidden="true"></span>
-                  <span class="topbar-menu-content">
-                    <AppIcon name="layout-grid" :size="18" />
-                    <span class="topbar-menu-label">分屏</span>
-                  </span>
-                  <span class="topbar-menu-trailing">单窗格</span>
                 </button>
               </template>
             </div>

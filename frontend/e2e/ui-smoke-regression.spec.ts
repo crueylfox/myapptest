@@ -38,7 +38,7 @@ test('smoke: topbar menu uses its real compact width with complete labels', asyn
   const menu = page.locator('.topbar-menu')
   const labels = menu.locator('.topbar-menu-label')
   const items = menu.locator('.topbar-menu-item')
-  await expect(items).toHaveCount(10)
+  await expect(items).toHaveCount(9)
   await expect(menu).not.toContainText('应用日志')
 
   const menuBox = await box(menu)

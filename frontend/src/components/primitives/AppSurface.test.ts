@@ -242,13 +242,14 @@ describe('UI surface primitives', () => {
     expect(source).toContain('class="topbar-menu-item topbar-menu-badge-row"')
   })
 
-  it('moves split mode controls into the global AppPopover menu', () => {
+  it('keeps split mode controls beside the global menu using AppPopover', () => {
     const source = readFileSync('src/components/WorkspaceTabs.vue', 'utf8')
     expect(source).toContain("import AppPopover from './primitives/AppPopover.vue'")
-    expect(source).toContain('<AppPopover v-if="navigationOpen" :viewport="false" class="topbar-menu">')
-    expect(source).toContain('data-split-menu-toggle')
+    expect(source).toContain('<AppPopover v-if="splitMenuOpen" :viewport="false" class="split-mode-menu">')
     expect(source).not.toContain('<div v-if="splitMenuOpen" class="split-mode-menu">')
-    expect(source).not.toContain('class="topbar-split"')
+    expect(source).toContain('class="topbar-split"')
+    expect(source).toContain('class="topbar-action-separator"')
+    expect(source).not.toContain('data-split-menu-toggle')
     expect(source).toContain('data-split-mode="single"')
     expect(source).toContain('data-split-mode="quad"')
     expect(source).toContain('@click="resetTopbarSplitRatios"')

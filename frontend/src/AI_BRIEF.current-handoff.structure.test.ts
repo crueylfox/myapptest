@@ -13,8 +13,8 @@ describe('AI_BRIEF current handoff summary contract', () => {
   it('keeps AI_BRIEF focused on the current handoff instead of historical large-refactor records', () => {
     expect(aiBrief).toContain('# AI_BRIEF - HostDeck Current Handoff')
     expect(aiBrief).toContain('Previous delivery version: `0.5.0-beta.28` PASS')
-    expect(aiBrief).toContain('Current VERSION: `0.5.0-beta.61`')
-    expect(aiBrief).toContain('Recommended delivery version: `0.5.0-beta.61` user-smoke-required')
+    expect(aiBrief).toContain('Current VERSION: `0.5.0-beta.62`')
+    expect(aiBrief).toContain('Recommended delivery version: `0.5.0-beta.62` user-smoke-required')
     expect(aiBrief).toContain('beta31 cross-platform Key Vault backup')
     expect(aiBrief).toContain('macOS SecretStore uses Keychain')
     expect(aiBrief).toContain('macOS KeyVault protector stores the application master key in Keychain')

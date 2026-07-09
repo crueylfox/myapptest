@@ -263,7 +263,7 @@ test('split-pane 2 empty centers each selector without hint/action overlap', asy
     expectNoOverlap(messageBox, actionsBox)
     await expect(actionButtons).toHaveCount(2)
     await expect(actions.locator('.app-icon')).toHaveCount(2)
-    await expect(actionSeparators).toHaveCount(0)
+    await expect(actionSeparators).toHaveCount(1)
     expect(await empty.evaluate((element) => window.getComputedStyle(element).borderStyle)).not.toMatch(/dashed|dotted/)
   }
 })
@@ -288,7 +288,7 @@ test('split-pane 4 empty narrow keeps all selectors inside their panes', async (
     expectInside(bodyBox, actionsBox)
     expect(Math.abs(actionsCenterY - bodyCenterY)).toBeLessThanOrEqual(8)
     expect(Math.abs((actionsBox.x + actionsBox.width / 2) - (bodyBox.x + bodyBox.width / 2))).toBeLessThanOrEqual(8)
-    await expect(actions.locator('.action-separator')).toHaveCount(0)
+    await expect(actions.locator('.action-separator')).toHaveCount(1)
     const xPositions = []
     for (let actionIndex = 0; actionIndex < 2; actionIndex += 1) {
       xPositions.push((await box(actionButtons.nth(actionIndex))).x)
@@ -821,22 +821,20 @@ test('topbar menu uses icon option items without dropdown separators', async ({ 
   const labels = menu.locator('.topbar-menu-label')
   const icons = menu.locator('.app-icon')
   const separators = menu.locator('.topbar-menu-separator')
-  await expect(splitButton).toHaveCount(0)
-  await expect(splitToggle.locator('.app-icon')).toHaveCount(1)
+  await expect(splitButton).toBeVisible()
+  await expect(splitToggle).toHaveCount(0)
   await expect(menuButton.locator('.app-icon')).toHaveCount(1)
-  await expect(splitToggle).toBeVisible()
   await expect(menuInner).toBeVisible()
   await menuButton.hover()
   expect((await box(menuInner)).height).toBeLessThan((await box(menuButton)).height)
   expect((await box(menuInner)).width).toBeLessThan((await box(menuButton)).width)
   expect(await menuInner.evaluate((element) => window.getComputedStyle(element).borderRadius)).toBe('8px')
-  await expect(topbarSeparator).toHaveCount(0)
-  await expect(items).toHaveCount(10)
-  await expect(icons).toHaveCount(10)
-  await expect(centeredContent).toHaveCount(10)
+  await expect(topbarSeparator).toHaveCount(1)
+  await expect(items).toHaveCount(9)
+  await expect(icons).toHaveCount(9)
+  await expect(centeredContent).toHaveCount(9)
   await expect(labels).toHaveText([
     'SSH 工作区',
-    '分屏',
     '端口转发',
     '容器管理',
     '进程管理',
@@ -855,7 +853,6 @@ test('topbar menu uses icon option items without dropdown separators', async ({ 
   await expect(menu).toHaveCSS('min-width', '180px')
   await expect(menu).toHaveCSS('max-width', '180px')
   for (let index = 0; index < await items.count(); index += 1) {
-    if ((await labels.nth(index).textContent()) === '分屏') continue
     const itemBox = await box(items.nth(index))
     const contentBox = await box(centeredContent.nth(index))
     const label = labels.nth(index)
@@ -865,7 +862,7 @@ test('topbar menu uses icon option items without dropdown separators', async ({ 
     expect(await label.evaluate((element) => window.getComputedStyle(element).textOverflow)).not.toBe('ellipsis')
     expect(await label.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
   }
-  const alertItem = items.nth(7)
+  const alertItem = items.nth(6)
   const alertContent = alertItem.locator('.topbar-menu-content')
   const alertBadge = alertItem.locator('.topbar-menu-badge')
   expect((await box(alertBadge)).x).toBeGreaterThan((await box(alertContent)).x + (await box(alertContent)).width)

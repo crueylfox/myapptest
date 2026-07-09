@@ -6,10 +6,10 @@ Updated: 2026-07-09
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.61`.
-- Recommended delivery version: `0.5.0-beta.61` user-smoke-required.
-- Current round: beta60 bottom status connected-label polish after beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.59` -> `0.5.0-beta.61` before repackaging.
+- Current VERSION: `0.5.0-beta.62`.
+- Recommended delivery version: `0.5.0-beta.62` user-smoke-required.
+- Current round: beta62 topbar split/empty-action separator restore after HostDeck rename and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.61` -> `0.5.0-beta.62` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -109,14 +109,14 @@ Updated: 2026-07-09
 
 ## 4. Validation
 - Local `go test ./...`: passed.
-- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1728 tests, 89 Playwright tests, and frontend build.
+- Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1729 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta60 Windows EXE copied to `D:\Users\Administrator\Desktop\HostDeck-v0.5.0-beta.61.exe`.
-- Beta60 Windows EXE SHA-256: `71B93518B4AE92D321C1F9CDA4CE614E8F0BFAE331A76D83FB85636DFA4FB231`.
+- Beta62 Windows EXE copied to `D:\Users\Administrator\Desktop\HostDeck-v0.5.0-beta.62.exe`.
+- Beta62 Windows EXE SHA-256: `739A15A0BB603A9DCD5314AEF08D5ADEEC34D63832035610A18EBE7A5C548760`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions beta60 `Build macOS`: passed for commit `7222fea`, run `29026046736`.
-- Artifact: `HostDeck-macos-unsigned` produced by the macOS runner.
+- GitHub Actions beta62 `Build macOS`: triggered by push; package verification not required this round.
+- Artifact: `HostDeck-macos-unsigned` expected from the macOS runner.
 - Artifact SHA-256: pending local/user download.
 - macOS artifact came from the GitHub Actions macOS runner.
 
