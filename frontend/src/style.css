@@ -962,8 +962,9 @@ button { border: 0; cursor: pointer; background: transparent; }
 .app-shell.platform-macos.terminal-layout .workspace-shell > .workspace-topbar { padding-left: 0; }
 .app-shell.platform-macos.terminal-layout .workspace-shell.sidebar-collapsed > .workspace-topbar { padding-left: var(--macos-traffic-light-safe-left); }
 .workspace-shell > .workspace-topbar { grid-column: 3; grid-row: 1; }
-.sidebar-restore-button { grid-column: 3; grid-row: 1; z-index: 14; width: var(--workspace-sidebar-restore-size); height: var(--workspace-sidebar-restore-size); align-self: start; justify-self: start; display: inline-flex; align-items: center; justify-content: center; margin: 3px 0 0 4px; padding: 0; border: 0; border-radius: 8px; color: var(--muted); background: transparent; }
+.sidebar-restore-button { grid-column: 3; grid-row: 1; z-index: 14; width: var(--workspace-sidebar-restore-size); height: calc(100% - 3px); align-self: start; justify-self: start; display: inline-flex; align-items: center; justify-content: center; margin: 3px 0 0 4px; padding: 0; border: 0; border-radius: 8px 8px 0 0; color: var(--muted); background: transparent; }
 .sidebar-restore-button:hover, .sidebar-restore-button:focus-visible { color: var(--text); background: var(--state-hover-bg); outline: none; }
+.sidebar-restore-button .app-icon { transform: translateY(1px); }
 .app-shell.platform-macos.terminal-layout .workspace-shell.sidebar-collapsed .sidebar-restore-button { margin-left: calc(var(--macos-traffic-light-safe-left) + 5px); }
 .workspace-tabs { min-width: 0; display: flex; align-items: stretch; gap: 2px; padding: 3px 0 0; overflow-x: auto; overflow-y: hidden; }
 .workspace-shell.sidebar-collapsed .workspace-tabs { padding-left: calc(var(--workspace-sidebar-restore-size) + 8px); }
@@ -984,7 +985,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .terminal-close { flex: 0 0 auto; width: 16px; display: grid; place-items: center; border-radius: 4px; color: var(--muted); font-size: 16px; white-space: nowrap; }
 .terminal-close:hover { background: #ef5b6720; color: var(--danger); }
 .workspace-tab-dragging-active { user-select: none; cursor: grabbing; }
-.topbar-add { flex: 0 0 30px; width: 30px; border: 1px solid transparent; border-bottom: 0; border-radius: 7px 7px 0 0; color: var(--muted); font-size: 20px; }
+.topbar-add { flex: 0 0 var(--workspace-sidebar-restore-size); width: var(--workspace-sidebar-restore-size); align-self: stretch; display: inline-flex; align-items: center; justify-content: center; margin-top: 0; padding: 0; border: 0; border-radius: 8px 8px 0 0; color: var(--muted); font-size: 20px; line-height: 1; }
 .topbar-add:hover { color: var(--text); background: var(--panel-2); }
 .topbar-split .app-icon, .topbar-navigation .app-icon { width: 16px; height: 16px; color: #8fa4bf; }
 .topbar-split { position: relative; display: grid; }
