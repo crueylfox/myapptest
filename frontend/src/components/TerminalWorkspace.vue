@@ -394,10 +394,11 @@ const activeWorkspaceConnection = computed(() =>
   activeCommandTab.value
     ? connectionForTab(activeCommandTab.value.connectionId)
     : (!localTerminalActive.value ? props.connection : null))
-const hasRemoteStatusSummary = computed(() =>
-  Boolean(activeWorkspaceConnection.value || store.activeWorkspace || props.snapshot))
-const quietMonitorSidebar = computed(() => !localTerminalActive.value && Boolean(store.activeWorkspace) && !['connected', 'connecting', 'reconnecting'].includes(store.activeWorkspace?.status ?? ''))
-const monitorSidebarProps = computed(() => quietMonitorSidebar.value ? { connection: null, state: null, snapshot: null, history: [], workspaceStatus: undefined } : { connection: props.connection, state: props.state, snapshot: props.snapshot, history: props.history, workspaceStatus: store.activeWorkspace?.status })
+const hasRemoteStatusSummary = computed(() => Boolean(activeWorkspaceConnection.value || store.activeWorkspace || props.snapshot))
+const hasRecoveredRemoteMonitor = computed(() => activeCommandTab.value?.status === 'online' || props.state?.status === 'online' || props.snapshot?.status === 'online')
+const activeRemoteStatus = computed(() => hasRecoveredRemoteMonitor.value ? 'online' : props.state?.status ?? store.activeWorkspace?.status)
+const quietMonitorSidebar = computed(() => !localTerminalActive.value && Boolean(store.activeWorkspace) && !hasRecoveredRemoteMonitor.value && !['connected', 'connecting', 'reconnecting'].includes(store.activeWorkspace?.status ?? ''))
+const monitorSidebarProps = computed(() => quietMonitorSidebar.value ? { connection: null, state: null, snapshot: null, history: [], workspaceStatus: undefined } : { connection: props.connection, state: props.state, snapshot: props.snapshot, history: props.history, workspaceStatus: hasRecoveredRemoteMonitor.value ? 'connected' : store.activeWorkspace?.status })
 const activeServerId = computed(() => activeCommandTab.value?.connectionId ?? (!localTerminalActive.value ? props.connection?.id ?? null : null))
 const activeSftpTerminalSessionId = computed(() => activeCommandTab.value?.sessionId ?? '')
 const latestTransfer = computed(() => sftpStore.lastTransfer(activeServerId.value, activeSftpContextId.value))
@@ -1010,7 +1011,7 @@ onBeforeUnmount(() => {
         </button>
         <button v-else class="status-monitor-region" @click="emit('monitor')">
           <span class="status-server-name">{{ activeWorkspaceConnection?.name ?? '未连接服务器' }}</span>
-          <span v-if="hasRemoteStatusSummary" class="status-connection-state">{{ statusLabel(store.activeWorkspace?.status) }}</span>
+          <span v-if="hasRemoteStatusSummary" class="status-connection-state">{{ statusLabel(activeRemoteStatus) }}</span>
           <span v-if="hasRemoteStatusSummary" class="status-latency">延迟 {{ snapshot?.latencyAvailable ? `${snapshot.latencyMillis} ms` : '—' }}</span>
           <span v-if="hasRemoteStatusSummary" class="status-rate">↓ {{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
           <span v-if="hasRemoteStatusSummary" class="status-rate">↑ {{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</span>

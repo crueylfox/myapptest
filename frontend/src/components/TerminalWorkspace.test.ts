@@ -708,6 +708,27 @@ describe('TerminalWorkspace server states', () => {
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('connection')).toMatchObject({ id: 7 })
   })
 
+  it('restores monitor props and bottom status after a disconnected workspace reconnects', async () => {
+    const onlineState = state({
+      status: 'online',
+      monitorActive: true,
+      terminalActive: true,
+      sftpActive: true,
+      hasActiveSession: true,
+    })
+    const { wrapper, store } = mountWorkspace(onlineState)
+    store.workspaces[connection.id].status = 'disconnected'
+    store.tabs = [{ sessionId: 'term-reconnected', connectionId: 7, title: 'server', status: 'online', code: '', message: '' }]
+    store.activate('term-reconnected')
+    await wrapper.vm.$nextTick()
+
+    const sidebar = wrapper.getComponent({ name: 'CompactMonitorSidebar' })
+    expect(sidebar.props('connection')).toMatchObject({ id: 7 })
+    expect(sidebar.props('state')).toMatchObject({ status: 'online' })
+    expect(sidebar.props('workspaceStatus')).toBe('connected')
+    expect(wrapper.get('.status-connection-state').text()).toBe('已连接')
+  })
+
   it('toggles the remote SFTP panel from the left side of the bottom status bar', async () => {
     localStorage.setItem('serverpilot.sftpExpanded', 'false')
     const { wrapper } = mountWorkspace(state({

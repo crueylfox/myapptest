@@ -6,10 +6,10 @@ Updated: 2026-07-09
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.56`.
-- Recommended delivery version: `0.5.0-beta.56` user-smoke-required.
-- Current round: beta56 status bar spacing, SFTP icon control, macOS terminal proportional zoom, backup confirm dialog frosting, first-run minimum pane sizes, and failed-sidebar quiet state after beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.55` -> `0.5.0-beta.56` before repackaging.
+- Current VERSION: `0.5.0-beta.57`.
+- Recommended delivery version: `0.5.0-beta.57` user-smoke-required.
+- Current round: beta57 SFTP status icon active-state polish and reconnect monitor recovery after beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.56` -> `0.5.0-beta.57` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -88,7 +88,7 @@ Updated: 2026-07-09
 - Beta51 keeps the default no-server workspace visually quiet by hiding empty monitor metrics/status details, uses a single adjacent-pane hairline when the monitor sidebar is collapsed, and reduces empty-pane center actions to New Server / Connect Saved with one separator.
 - Beta52 removes the no-server sidebar placeholder dash and keeps the empty-pane New Server / Connect Saved actions side-by-side with a vertical separator at normal split-pane widths.
 - Beta53 removes the SSH scroll-to-bottom button, defaults the floating command button to bottom-right dock, reconnects edited failed tabs in place, adds ConnectionDialog Escape discard prompting, uses larger terminal Profile number steppers, and makes Ctrl/Meta wheel scale terminal font metrics without font-weight drift.
-- Beta56 keeps Windows WebView2 on `%APPDATA%\ServerPilot\WebView2`, tightens status bar spacing, makes the SFTP status control borderless icon-only, restores proportional terminal wheel zoom across font/line-height/tracking for macOS parity, makes AppDialogHost confirmations more frosted, and defaults first-run monitor/SFTP panes to minimum open sizes while preserving saved state.
+- Beta57 keeps the SFTP status toggle borderless/transparent even when expanded, restores monitor/sidebar status after reconnect when SSH/runtime/snapshot are online, and leaves SSH/SFTP runtime behavior unchanged.
 - Root cause note: previous blur-token/backdrop-filter changes passed computed-style checks but failed real macOS Wails visual smoke because the full-screen backdrop still washed the app into solid gray.
 - Radio checked state and KeyVault/backup import remain regression-covered; this hotfix did not rewrite those paths.
 - macOS workflow builds `darwin/universal` and uploads unsigned zip and dmg files under `ServerPilot-macos-unsigned`.
@@ -112,12 +112,12 @@ Updated: 2026-07-09
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1723 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta56 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.56.exe`.
-- Beta56 Windows EXE SHA-256: `2FCA57BDB4E99910629EBA7BF428CB66ABBAE9775D424A7BFC9772F38019B233`.
+- Beta57 Windows EXE copied to `D:\Users\Administrator\Desktop\ServerPilot-v0.5.0-beta.57.exe`.
+- Beta57 Windows EXE SHA-256: `12B4495056DC4F96E22FD7B2F9751B46E446528A487E2F4A6805C99E4CD9B513`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions beta56 `Build macOS`: passed for commit `f15db3f`, run `29006448326`.
-- Artifact: `ServerPilot-macos-unsigned` produced by the macOS runner.
-- Artifact SHA-256: pending local/user download.
+- GitHub Actions beta57 `Build macOS`: pending until the beta57 code commit is pushed.
+- Artifact: `ServerPilot-macos-unsigned` expected from the macOS runner.
+- Artifact SHA-256: pending.
 - macOS artifact came from the GitHub Actions macOS runner.
 
 ## 5. Next

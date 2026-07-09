@@ -119,8 +119,8 @@ func TestGetAppVersionReturnsCurrentReleaseVersion(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := strings.TrimSpace(string(raw))
-	if want != "0.5.0-beta.56" {
-		t.Fatalf("VERSION=%q, want %q", want, "0.5.0-beta.56")
+	if want != "0.5.0-beta.57" {
+		t.Fatalf("VERSION=%q, want %q", want, "0.5.0-beta.57")
 	}
 
 	info := app.GetAppVersion()

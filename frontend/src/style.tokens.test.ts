@@ -1598,6 +1598,7 @@ describe('theme and overlay tokens', () => {
     expect(statusbar).toContain('display: flex')
     expect(sftpToggle).toContain('border: 0')
     expect(sftpToggle).toContain('background: transparent')
+    expect(block('.status-sftp-toggle[aria-pressed="true"]')).toContain('background: transparent')
     expect(serverName).toContain('flex: 0 1 auto')
     expect(latency).toContain('min-width: max-content')
     expect(transferWrap).toContain('justify-content: flex-end')
