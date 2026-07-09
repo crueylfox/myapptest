@@ -1,6 +1,8 @@
 export const terminalZoomMinFontSize = 10
 export const terminalZoomMaxFontSize = 28
 const terminalZoomLetterSpacingPerFontPixel = 0.35
+const terminalZoomMinLineHeight = 1
+const terminalZoomMaxLineHeight = 2.4
 const terminalZoomMinLetterSpacing = -1
 const terminalZoomMaxLetterSpacing = 4
 const terminalFontZoomDeltaBySessionID = new Map<string, number>()
@@ -52,6 +54,11 @@ function clampTerminalLetterSpacing(value: number) {
   return Math.min(terminalZoomMaxLetterSpacing, Math.max(terminalZoomMinLetterSpacing, roundedMetric(value)))
 }
 
+function clampTerminalLineHeight(value: number) {
+  if (!Number.isFinite(value)) return 1.2
+  return Math.min(terminalZoomMaxLineHeight, Math.max(terminalZoomMinLineHeight, roundedMetric(value)))
+}
+
 function effectiveTerminalLetterSpacing(profile: TerminalZoomProfileMetrics, fontSize: number, baseFontSize: number, ratio: number) {
   const fontDelta = fontSize - baseFontSize
   return clampTerminalLetterSpacing(
@@ -68,7 +75,7 @@ export function effectiveTerminalZoomedProfileOptions(
   const ratio = fontSize / baseFontSize
   return {
     fontSize,
-    lineHeight: roundedMetric(profile.lineHeight),
+    lineHeight: clampTerminalLineHeight(profile.lineHeight * ratio),
     letterSpacing: effectiveTerminalLetterSpacing(profile, fontSize, baseFontSize, ratio),
     fontWeight: 'normal',
     fontWeightBold: 'bold',

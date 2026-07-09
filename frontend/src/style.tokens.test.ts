@@ -101,6 +101,17 @@ describe('theme and overlay tokens', () => {
     expect(css).toMatch(/\.app-dialog-backdrop,\s*\.app-dialog-backdrop\.danger-modal\s*\{\s*z-index: var\(--z-app-dialog\);/)
   })
 
+  it('keeps app confirmation dialogs frosted but not transparent enough to read through', () => {
+    const dialog = block('.app-dialog')
+
+    expect(dark['surface-dialog-bg']).toBe('rgba(45, 49, 56, .96)')
+    expect(macosGrayDark['surface-dialog-bg']).toBe('rgba(45, 49, 56, .96)')
+    expect(light['surface-dialog-bg']).toBe('rgba(255, 255, 255, .94)')
+    expect(dialog).toContain('background: var(--surface-dialog-bg)')
+    expect(dialog).toContain('backdrop-filter: blur(22px) saturate(1.18)')
+    expect(dialog).toContain('-webkit-backdrop-filter: blur(22px) saturate(1.18)')
+  })
+
   it('keeps remote text More menus above the remote text modal backdrop', () => {
     const editorBackdrop = block('.sftp-editor-backdrop')
     const editorMore = block('.sftp-editor-more-menu')
@@ -1577,6 +1588,7 @@ describe('theme and overlay tokens', () => {
 
   it('keeps terminal status transfer and tunnel controls grouped on the right', () => {
     const statusbar = block('.terminal-statusbar')
+    const sftpToggle = block('.status-sftp-toggle')
     const serverName = block('.status-server-name')
     const latency = block('.status-connection-state, .status-latency, .status-rate')
     const transferWrap = block('.status-transfer-wrap')
@@ -1584,7 +1596,9 @@ describe('theme and overlay tokens', () => {
     const tunnel = block('.status-tunnel')
 
     expect(statusbar).toContain('display: flex')
-    expect(serverName).toContain('flex: 1 1 8ch')
+    expect(sftpToggle).toContain('border: 0')
+    expect(sftpToggle).toContain('background: transparent')
+    expect(serverName).toContain('flex: 0 1 auto')
     expect(latency).toContain('min-width: max-content')
     expect(transferWrap).toContain('justify-content: flex-end')
     expect(transferWrap).toContain('align-items: center')

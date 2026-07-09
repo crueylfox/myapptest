@@ -94,6 +94,7 @@
   --surface-backdrop-bg: rgba(3, 7, 18, .08);
   --surface-window-bg: rgba(45, 49, 56, .90);
   --surface-modal-bg: rgba(45, 49, 56, .88);
+  --surface-dialog-bg: rgba(45, 49, 56, .96);
   --surface-panel-bg: rgba(42, 45, 50, .62);
   --surface-card-bg: rgba(38, 41, 46, .74);
   --surface-popover-bg: rgba(31, 34, 39, .985);
@@ -246,6 +247,7 @@
   --surface-backdrop-bg: rgba(3, 7, 18, .08);
   --surface-window-bg: rgba(45, 49, 56, .90);
   --surface-modal-bg: rgba(45, 49, 56, .88);
+  --surface-dialog-bg: rgba(45, 49, 56, .96);
   --surface-panel-bg: rgba(42, 45, 50, .62);
   --surface-card-bg: rgba(38, 41, 46, .74);
   --surface-popover-bg: rgba(31, 34, 39, .985);
@@ -386,6 +388,7 @@
   --surface-backdrop-bg: rgba(226, 232, 240, .08);
   --surface-window-bg: rgba(255, 255, 255, .90);
   --surface-modal-bg: rgba(255, 255, 255, .86);
+  --surface-dialog-bg: rgba(255, 255, 255, .94);
   --surface-panel-bg: rgba(255, 255, 255, .72);
   --surface-card-bg: rgba(248, 250, 252, .86);
   --surface-popover-bg: rgba(248, 250, 252, .985);
@@ -593,6 +596,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .app-dialog-backdrop,
 .app-dialog-backdrop.danger-modal { z-index: var(--z-app-dialog); }
 .modal { width: min(540px, calc(100vw - 40px)); border: 1px solid var(--surface-border); border-radius: 13px; background: var(--surface-modal-bg); backdrop-filter: var(--surface-blur); -webkit-backdrop-filter: var(--surface-blur); box-shadow: var(--surface-shadow); padding: 20px; }
+.app-dialog { background: var(--surface-dialog-bg); backdrop-filter: blur(22px) saturate(1.18); -webkit-backdrop-filter: blur(22px) saturate(1.18); }
 .modal header, .modal footer { display: flex; justify-content: space-between; align-items: center; }
 .modal h2 { margin: 0 0 18px; font-size: 19px; }
 .modal footer { justify-content: flex-end; gap: 8px; margin-top: 20px; }
@@ -1615,12 +1619,12 @@ button { border: 0; cursor: pointer; background: transparent; }
 .workspace-actions { display: flex; gap: 9px; margin-top: 8px; }
 .terminal-statusbar { grid-row: 4; position: relative; display: flex; align-items: center; gap: 10px; padding: 0 10px; overflow: visible; white-space: nowrap; border-top: 1px solid var(--border); background: var(--sidebar); color: var(--muted); font-size: var(--ui-font-size-small); text-align: left; }
 .right-workspace.bottom-panel-collapsed .terminal-statusbar { border-top: 0; }
-.status-sftp-toggle { flex: 0 0 auto; width: 28px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 1px solid var(--border); border-radius: 7px; background: color-mix(in srgb, var(--panel) 70%, transparent); color: var(--muted); line-height: 1; }
-.status-sftp-toggle:hover { border-color: var(--state-selected-border); background: var(--state-hover-bg); color: var(--text); }
-.status-sftp-toggle[aria-pressed="true"] { border-color: var(--state-info-border); background: var(--state-selected-bg); color: var(--state-info-text); }
-.status-monitor-region { min-width: 0; flex: 1 1 auto; display: flex; align-items: center; gap: 10px; overflow: hidden; color: inherit; text-align: left; }
+.status-sftp-toggle { flex: 0 0 auto; width: 28px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 7px; background: transparent; color: var(--muted); line-height: 1; }
+.status-sftp-toggle:hover { background: var(--state-hover-bg); color: var(--text); }
+.status-sftp-toggle[aria-pressed="true"] { background: var(--state-selected-bg); color: var(--state-info-text); }
+.status-monitor-region { min-width: 0; flex: 0 1 auto; display: flex; align-items: center; gap: 10px; overflow: hidden; color: inherit; text-align: left; }
 .status-monitor-region span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.status-server-name { flex: 1 1 8ch; max-width: 18ch; }
+.status-server-name { flex: 0 1 auto; max-width: 18ch; }
 .status-connection-state, .status-latency, .status-rate { flex: 0 0 auto; min-width: max-content; }
 .status-monitor-region:hover { color: var(--text); }
 .status-transfer-wrap { position: relative; flex: 0 1 340px; min-width: 150px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-left: auto; }

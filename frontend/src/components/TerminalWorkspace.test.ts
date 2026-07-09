@@ -519,10 +519,10 @@ describe('TerminalWorkspace server states', () => {
   it('keeps the sidebar separate from the right terminal, SFTP, and status regions', () => {
     const { wrapper } = mountWorkspace(state())
     const shell = wrapper.find('.workspace-shell')
-    expect(shell.attributes('style')).toContain('300px')
+    expect(shell.attributes('style')).toContain('230px')
     expect(shell.element.children[0].tagName.toLowerCase()).toContain('compact')
     const right = wrapper.find('.right-workspace')
-    expect(right.attributes('style')).toContain('minmax(180px, 1fr) 0 180px 28px')
+    expect(right.attributes('style')).toContain('minmax(180px, 1fr) 0 140px 28px')
     expect(right.find('.terminal-stage').exists()).toBe(true)
     expect(right.find('.terminal-stage .terminal-command-button').exists()).toBe(true)
     expect(right.find('.terminal-statusbar .terminal-command-button').exists()).toBe(false)
@@ -664,7 +664,7 @@ describe('TerminalWorkspace server states', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('expanded')).toBe(true)
-    expect(wrapper.get('.right-workspace').attributes('style')).toContain('0 180px 28px')
+    expect(wrapper.get('.right-workspace').attributes('style')).toContain('0 140px 28px')
 
     localStorage.setItem('serverpilot.sftpExpanded', 'false')
     const collapsed = mountWorkspace(state()).wrapper
@@ -688,6 +688,23 @@ describe('TerminalWorkspace server states', () => {
     expect(sidebar.props('history')).toEqual([])
     expect(sidebar.props('workspaceStatus')).toBeUndefined()
     expect(wrapper.get('.workspace-state').text()).toContain('SSH authentication failed')
+    expect(wrapper.getComponent({ name: 'SftpPanel' }).props('connection')).toMatchObject({ id: 7 })
+  })
+
+  it('keeps the monitor sidebar visually default for disconnected failed workspaces', async () => {
+    const { wrapper, store } = mountWorkspace(state({
+      status: 'offline',
+      terminalActive: true,
+      hasActiveSession: false,
+    }))
+    store.workspaces[connection.id].status = 'disconnected'
+    await wrapper.vm.$nextTick()
+
+    const sidebar = wrapper.getComponent({ name: 'CompactMonitorSidebar' })
+    expect(sidebar.props('connection')).toBeNull()
+    expect(sidebar.props('state')).toBeNull()
+    expect(sidebar.props('snapshot')).toBeNull()
+    expect(sidebar.props('history')).toEqual([])
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('connection')).toMatchObject({ id: 7 })
   })
 
