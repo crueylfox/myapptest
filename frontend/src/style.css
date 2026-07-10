@@ -1300,6 +1300,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .monitor-pane-splitter.restore-splitter:hover { background: transparent; }
 .sftp-panel { grid-row: 3; min-height: 0; overflow: hidden; border-top: 1px solid var(--splitter-line); background: var(--sidebar); }
 .sftp-panel { display: grid; grid-template-rows: 38px minmax(0, 1fr); color: var(--text); }
+.sftp-panel.empty-state { grid-template-rows: minmax(0, 1fr); }
 .sftp-panel:not(.expanded) { grid-template-rows: 0; border-top: 0; background: var(--terminal-bg); }
 .sftp-toolbar { min-width: 0; display: flex; align-items: center; gap: 4px; padding: 4px 8px; overflow: hidden; border-top: 0; border-bottom: 1px solid var(--border); background: var(--panel); }
 .sftp-toolbar button, .sftp-toolbar select { flex: 0 0 auto; padding: 5px 8px; font-size: 11px; }
@@ -1352,7 +1353,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .sftp-filter-status { flex: 0 1 auto; max-width: 72px; overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .sftp-filter-clear { flex: 0 0 auto; padding: 5px 7px; font-size: 11px; }
 .sftp-inline-transfer { flex: 0 1 230px; max-width: 230px; overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-.sftp-empty { display: grid; place-content: center; gap: 6px; min-height: 0; color: var(--muted); text-align: center; font-size: 12px; }
+.sftp-empty { width: 100%; height: 100%; display: grid; place-content: center; gap: 6px; min-height: 0; color: var(--muted); text-align: center; font-size: 12px; }
 .sftp-empty strong { color: var(--text); }
 .sftp-content { position: relative; min-height: 0; display: grid; overflow: hidden; background: var(--sftp-surface); --wails-drop-target: drop; }
 .sftp-content.wails-drop-target-active, .sftp-content.drop-active { outline: 2px solid #65a7ff; outline-offset: -2px; }
@@ -1629,6 +1630,18 @@ button { border: 0; cursor: pointer; background: transparent; }
 .workspace-state summary { cursor: pointer; color: var(--muted); }
 .workspace-state code { display: block; margin-top: 9px; overflow-wrap: anywhere; white-space: pre-wrap; color: var(--text); font-size: 11px; }
 .workspace-actions { display: flex; gap: 9px; margin-top: 8px; }
+.workspace-state.compact { gap: 7px; padding: 16px; }
+.workspace-state.compact h2 { font-size: 18px; }
+.workspace-state.compact > strong { font-size: 15px; }
+.workspace-state.compact .workspace-actions { flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 5px; }
+.workspace-state.compact .workspace-actions button { min-height: 30px; padding: 4px 10px; font-size: 11px; }
+@media (max-width: 900px), (max-height: 650px) {
+  .workspace-state.compact { gap: 5px; padding: 10px; }
+  .workspace-state.compact h2 { font-size: 16px; }
+  .workspace-state.compact > strong { font-size: 13px; }
+  .workspace-state.compact .workspace-actions { gap: 4px; margin-top: 3px; }
+  .workspace-state.compact .workspace-actions button { min-height: 26px; padding: 3px 7px; font-size: 10px; }
+}
 .terminal-statusbar { grid-row: 4; position: relative; display: flex; align-items: center; gap: 6px; padding: 0 8px; overflow: visible; white-space: nowrap; border-top: 1px solid var(--border); background: var(--sidebar); color: var(--muted); font-size: var(--ui-font-size-small); text-align: left; }
 .right-workspace.bottom-panel-collapsed .terminal-statusbar { border-top: 0; }
 .status-sftp-toggle { flex: 0 0 auto; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--muted); line-height: 1; }

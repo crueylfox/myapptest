@@ -898,6 +898,52 @@ describe('TerminalWorkspace server states', () => {
     expect(window.go?.main?.App?.WriteTerminal).not.toHaveBeenCalled()
   })
 
+  it('renders failed split terminals with compact recovery actions and no error detail', async () => {
+    const { wrapper, store } = mountWorkspace(state({
+      status: 'auth_failed',
+      terminalActive: true,
+      hasActiveSession: true,
+      lastError: connectionError,
+    }))
+    store.tabs = [{
+      sessionId: 'term-failed',
+      connectionId: 7,
+      title: 'server',
+      status: 'error',
+      code: 'AUTH_FAILED',
+      message: 'SSH 握手失败，服务器可能不支持当前算法或协议。',
+      connectionError,
+    }]
+    store.workspaces[7].status = 'failed'
+    store.workspaces[7].message = connectionError.userMessage
+    store.workspaces[7].error = connectionError
+    store.activate('term-failed')
+    await wrapper.vm.$nextTick()
+
+    await setSplitMode(wrapper, 'vertical')
+
+    const pane = wrapper.get('[data-pane-id="pane-1"]')
+    const failure = pane.get('.workspace-state.compact')
+    expect(failure.text()).toContain('server')
+    expect(failure.text()).toContain('连接失败')
+    expect(failure.text()).toContain('重新连接')
+    expect(failure.text()).toContain('编辑凭据')
+    expect(failure.text()).toContain('断开此服务器')
+    expect(failure.text()).not.toContain('SSH 握手失败')
+    expect(failure.text()).not.toContain(connectionError.userMessage)
+    expect(failure.text()).not.toContain(connectionError.technicalMessage)
+    expect(failure.find('details').exists()).toBe(false)
+    expect(failure.findAll('.workspace-actions button')).toHaveLength(3)
+
+    await failure.get('.workspace-actions .primary').trigger('click')
+    await failure.get('.workspace-actions .secondary').trigger('click')
+    await failure.get('.workspace-actions .danger').trigger('click')
+
+    expect(wrapper.emitted('reconnect')).toEqual([['term-failed', 7, 'AUTH_FAILED']])
+    expect(wrapper.emitted('editWorkspace')).toEqual([[7]])
+    expect(wrapper.emitted('disconnectServer')).toEqual([[7]])
+  })
+
   it('keeps monitor and SFTP empty when the active split pane has no server', async () => {
     const runtimeState = state({
       status: 'online',

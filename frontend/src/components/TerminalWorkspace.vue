@@ -70,6 +70,7 @@ import TerminalPane from './TerminalPane.vue'
 import TerminalPaneSelector from './TerminalPaneSelector.vue'
 import TerminalSplitWorkspace from './TerminalSplitWorkspace.vue'
 import TerminalView from './TerminalView.vue'
+import WorkspaceStatePanel from './WorkspaceStatePanel.vue'
 import { usePaneDragDrop } from '../composables/usePaneDragDrop'
 import { usePaneResizeBridge } from '../composables/usePaneResizeBridge'
 
@@ -526,22 +527,24 @@ function profileForConnection(connection: Connection | null) {
   return effectiveDefaultProfile.value
 }
 
-function workspaceHeading(workspace: ServerWorkspace) {
-  if (workspace.status === 'failed') return '连接失败'
-  if (workspace.status === 'connecting') return '正在建立 SSH 连接…'
-  if (workspace.status === 'reconnecting') return '正在重新连接…'
-  if (workspace.status === 'disconnected') return '连接已断开'
-  return '尚未连接'
-}
-
 function reconnectWorkspace(workspace: ServerWorkspace, tab: TerminalSessionInfo | null) {
   if (tab) emit('reconnect', tab.sessionId, tab.connectionId, tab.code)
   else emit('connectWorkspace', workspace.serverId)
 }
 
-function isHostKeyWorkspaceError(workspace: ServerWorkspace | null | undefined) {
-  const code = workspace?.error?.code ?? ''
-  return code === 'HOST_KEY_MISMATCH' || code === 'HOST_KEY_UNKNOWN'
+function workspaceForTab(tab: TerminalSessionInfo | null) {
+  if (!tab || tab.status === 'online') return null
+  const status: ServerWorkspace['status'] = tab.status === 'error'
+    ? 'failed'
+    : tab.status === 'connecting' ? 'connecting' : 'disconnected'
+  return {
+    serverId: tab.connectionId,
+    serverName: connectionForTab(tab.connectionId)?.name ?? tab.title,
+    status,
+    message: tab.connectionError?.userMessage || tab.message || '连接失败',
+    error: tab.connectionError,
+    updatedAt: '',
+  } satisfies ServerWorkspace
 }
 
 function bumpLayout() {
@@ -880,6 +883,18 @@ onBeforeUnmount(() => {
                 @command-skip="(message) => emit('notify', message, 'info')"
                 @close="closeTerminalSession(paneTab(paneId)!.sessionId)"
               />
+              <WorkspaceStatePanel
+                v-if="workspaceForTab(paneTab(paneId))"
+                :workspace="workspaceForTab(paneTab(paneId))!"
+                :tab="paneTab(paneId)"
+                compact
+                :show-message="false"
+                :show-technical="false"
+                @reconnect="reconnectWorkspace"
+                @trust-host-key="emit('trustHostKey', $event)"
+                @edit-workspace="emit('editWorkspace', $event)"
+                @disconnect-server="emit('disconnectServer', $event)"
+              />
             </template>
             <template #local>
               <LocalTerminalView
@@ -936,35 +951,15 @@ onBeforeUnmount(() => {
             @close="closeTerminalSession(tab.sessionId)"
           />
         </template>
-        <div
+        <WorkspaceStatePanel
           v-if="!splitEnabled && !localTerminalActive && store.activeWorkspace && (!store.activeTab || store.activeTab.status !== 'online')"
-          class="terminal-overlay workspace-state"
-        >
-          <span class="status-dot workspace-status-dot" :class="store.activeWorkspace.status"></span>
-          <h2>{{ store.activeWorkspace.serverName }}</h2>
-          <strong>{{ workspaceHeading(store.activeWorkspace) }}</strong>
-          <span>{{ store.activeWorkspace.message }}</span>
-          <details v-if="store.activeWorkspace.error?.technicalMessage">
-            <summary>技术详情</summary>
-            <code>{{ store.activeWorkspace.error.technicalMessage }}</code>
-          </details>
-          <div v-if="!['connecting', 'reconnecting'].includes(store.activeWorkspace.status)" class="workspace-actions">
-            <button class="primary" @click="reconnectWorkspace(store.activeWorkspace, store.activeTab)">
-              {{ store.activeWorkspace.status === 'offline' ? '连接' : '重新连接' }}
-            </button>
-            <button
-              v-if="isHostKeyWorkspaceError(store.activeWorkspace)"
-              class="secondary"
-              @click="emit('trustHostKey', store.activeWorkspace.serverId)"
-            >信任并更新后连接</button>
-            <button
-              v-else
-              class="secondary"
-              @click="emit('editWorkspace', store.activeWorkspace.serverId)"
-            >编辑凭据</button>
-            <button class="danger" @click="emit('disconnectServer', store.activeWorkspace.serverId)">断开此服务器</button>
-          </div>
-        </div>
+          :workspace="store.activeWorkspace"
+          :tab="store.activeTab"
+          @reconnect="reconnectWorkspace"
+          @trust-host-key="emit('trustHostKey', $event)"
+          @edit-workspace="emit('editWorkspace', $event)"
+          @disconnect-server="emit('disconnectServer', $event)"
+        />
         <button
           v-if="activeLocalCommandSession || (!localTerminalActive && (splitEnabled || store.activeWorkspace))"
           ref="commandButtonRef"

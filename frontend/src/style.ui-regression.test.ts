@@ -14,6 +14,7 @@ const settingsBackupSource = readFileSync(new URL('./components/settings/Setting
 const settingsAlertSource = readFileSync(new URL('./components/settings/AlertNotificationSettingsSection.vue', import.meta.url), 'utf8')
 const terminalWorkspaceSource = readFileSync(new URL('./components/TerminalWorkspace.vue', import.meta.url), 'utf8')
 const compactMonitorSource = readFileSync(new URL('./components/CompactMonitorSidebar.vue', import.meta.url), 'utf8')
+const sftpPanelSource = readFileSync(new URL('./components/SftpPanel.vue', import.meta.url), 'utf8')
 
 function block(selector: string) {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -207,6 +208,11 @@ describe('first-batch UI regression contracts', () => {
     expect(css).not.toContain('.settings-header-action-separator')
     expect(block('.terminal-profile-section')).toContain('border-top: 1px solid var(--border)')
     expect(css).not.toContain('.network-stat-row {')
+    expect(sftpPanelSource).toContain("'empty-state': expanded && !online")
+    expect(block('.sftp-panel.empty-state')).toContain('grid-template-rows: minmax(0, 1fr)')
+    expect(block('.sftp-empty')).toContain('width: 100%')
+    expect(block('.sftp-empty')).toContain('height: 100%')
+    expect(block('.sftp-empty')).toContain('place-content: center')
   })
 
   it('keeps modal, menu, settings, and radio styles visible in macOS WebView dark mode', () => {

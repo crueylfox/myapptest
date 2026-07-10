@@ -2247,6 +2247,7 @@ describe('SftpPanel', () => {
 
   it('hides the remote path toolbar until SFTP is online', () => {
     const unbound = mount(SftpPanel, { props: { connection: null, expanded: true } })
+    expect(unbound.get('.sftp-panel').classes()).toContain('empty-state')
     expect(unbound.find('.sftp-toolbar').exists()).toBe(false)
     expect(unbound.text()).toContain('没有活动服务器工作区')
     expect(unbound.text()).not.toContain('远程路径')
@@ -2272,6 +2273,7 @@ describe('SftpPanel', () => {
       updatedAt: '',
     }
     const failed = mountPanel(true)
+    expect(failed.get('.sftp-panel').classes()).toContain('empty-state')
     expect(failed.find('.sftp-toolbar').exists()).toBe(false)
     expect(failed.text()).toContain('没有活动服务器工作区')
     expect(failed.text()).not.toContain('SFTP subsystem unavailable')
