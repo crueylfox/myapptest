@@ -396,6 +396,7 @@ const activeRemoteState = computed(() => activeWorkspaceConnection.value?.id ? p
 const activeRemoteSnapshot = computed(() => props.connection?.id === activeWorkspaceConnection.value?.id ? props.snapshot : null)
 const hasRemoteStatusSummary = computed(() => Boolean(activeWorkspaceConnection.value || activeRemoteState.value || activeRemoteSnapshot.value))
 const hasRecoveredRemoteMonitor = computed(() => activeCommandTab.value?.status === 'online' || activeRemoteState.value?.status === 'online' || activeRemoteSnapshot.value?.status === 'online')
+const showRemoteMetrics = computed(() => hasRemoteStatusSummary.value && hasRecoveredRemoteMonitor.value)
 const activeRemoteStatus = computed(() => hasRecoveredRemoteMonitor.value ? 'online' : activeRemoteState.value?.status ?? store.activeWorkspace?.status); const showRemoteStatusLabel = computed(() => !['connected', 'online'].includes(activeRemoteStatus.value ?? ''))
 const quietMonitorSidebar = computed(() => !localTerminalActive.value && (!activeWorkspaceConnection.value || (Boolean(store.activeWorkspace) && !hasRecoveredRemoteMonitor.value && !['connected', 'connecting', 'reconnecting'].includes(store.activeWorkspace?.status ?? ''))))
 const monitorSidebarProps = computed(() => quietMonitorSidebar.value ? { connection: null, state: null, snapshot: null, history: [], workspaceStatus: undefined } : { connection: activeWorkspaceConnection.value, state: activeRemoteState.value, snapshot: activeRemoteSnapshot.value, history: props.connection?.id === activeWorkspaceConnection.value?.id ? props.history : [], workspaceStatus: hasRecoveredRemoteMonitor.value ? 'connected' : store.activeWorkspace?.status })
@@ -1006,9 +1007,9 @@ onBeforeUnmount(() => {
         <button v-else class="status-monitor-region" @click="emit('monitor')">
           <span class="status-server-name">{{ activeWorkspaceConnection?.name ?? '未连接服务器' }}</span>
           <span v-if="hasRemoteStatusSummary && showRemoteStatusLabel" class="status-connection-state">{{ statusLabel(activeRemoteStatus) }}</span>
-          <span v-if="hasRemoteStatusSummary" class="status-latency">延迟 {{ snapshot?.latencyAvailable ? `${snapshot.latencyMillis} ms` : '—' }}</span>
-          <span v-if="hasRemoteStatusSummary" class="status-rate">↓ {{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
-          <span v-if="hasRemoteStatusSummary" class="status-rate">↑ {{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</span>
+          <span v-if="showRemoteMetrics" class="status-latency">延迟 {{ snapshot?.latencyAvailable ? `${snapshot.latencyMillis} ms` : '—' }}</span>
+          <span v-if="showRemoteMetrics" class="status-rate">↓ {{ formatRate(snapshot?.downloadBytesPerSecond ?? null) }}</span>
+          <span v-if="showRemoteMetrics" class="status-rate">↑ {{ formatRate(snapshot?.uploadBytesPerSecond ?? null) }}</span>
         </button>
         <div class="status-transfer-wrap">
           <button ref="transferButton" class="status-transfer" :title="transferSummary(latestTransfer)" @click.stop="openTransferPopover">

@@ -728,6 +728,11 @@ describe('TerminalWorkspace server states', () => {
     expect(sidebar.props('workspaceStatus')).toBeUndefined()
     expect(wrapper.get('.workspace-state').text()).toContain('SSH authentication failed')
     expect(wrapper.getComponent({ name: 'SftpPanel' }).props('connection')).toMatchObject({ id: 7 })
+    const statusbar = wrapper.get('.terminal-statusbar')
+    expect(statusbar.text()).toContain('连接失败')
+    expect(statusbar.text()).not.toContain('延迟')
+    expect(statusbar.text()).not.toContain('↓')
+    expect(statusbar.text()).not.toContain('↑')
   })
 
   it('keeps the monitor sidebar visually default for disconnected failed workspaces', async () => {

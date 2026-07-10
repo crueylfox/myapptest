@@ -1274,7 +1274,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="sftp-panel" :class="{ expanded, 'empty-state': expanded && !online }">
+  <section class="sftp-panel" :class="{ expanded, 'sftp-empty-state': expanded && !online }">
     <template v-if="expanded">
       <SftpToolbar
         v-if="online"

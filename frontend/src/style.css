@@ -1300,7 +1300,7 @@ button { border: 0; cursor: pointer; background: transparent; }
 .monitor-pane-splitter.restore-splitter:hover { background: transparent; }
 .sftp-panel { grid-row: 3; min-height: 0; overflow: hidden; border-top: 1px solid var(--splitter-line); background: var(--sidebar); }
 .sftp-panel { display: grid; grid-template-rows: 38px minmax(0, 1fr); color: var(--text); }
-.sftp-panel.empty-state { grid-template-rows: minmax(0, 1fr); }
+.sftp-panel.sftp-empty-state { grid-template-rows: minmax(0, 1fr); border-radius: 0; box-shadow: none; }
 .sftp-panel:not(.expanded) { grid-template-rows: 0; border-top: 0; background: var(--terminal-bg); }
 .sftp-toolbar { min-width: 0; display: flex; align-items: center; gap: 4px; padding: 4px 8px; overflow: hidden; border-top: 0; border-bottom: 1px solid var(--border); background: var(--panel); }
 .sftp-toolbar button, .sftp-toolbar select { flex: 0 0 auto; padding: 5px 8px; font-size: 11px; }

@@ -6,10 +6,10 @@ Updated: 2026-07-10
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.66`.
-- Recommended delivery version: `0.5.0-beta.66` user-smoke-required.
-- Current round: beta66 centered empty SFTP and split-pane failure recovery UI after HostDeck rename and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.65` -> `0.5.0-beta.66` before repackaging.
+- Current VERSION: `0.5.0-beta.67`.
+- Recommended delivery version: `0.5.0-beta.67` user-smoke-required.
+- Current round: beta67 straight SFTP empty-state boundaries and failed-connection status-bar cleanup after HostDeck rename and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.66` -> `0.5.0-beta.67` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -112,10 +112,10 @@ Updated: 2026-07-10
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1731 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta66 Windows EXE target: `D:\Users\Administrator\Desktop\HostDeck-v0.5.0-beta.66.exe`.
-- Beta66 Windows EXE SHA-256: `03E7AA476967675A181CB4B76EA643CEB052285766840A92F55DE7E3B45B2426`.
+- Beta67 Windows EXE target: `D:\Users\Administrator\Desktop\HostDeck-v0.5.0-beta.67.exe`.
+- Beta67 Windows EXE SHA-256: `C0857CA33AD04B460DA42861D82B8A5DED50BF1476195E26F0A0D9B61F956A23`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions beta66 `Build macOS`: pending push trigger; package verification not required this round.
+- GitHub Actions beta67 `Build macOS`: pending push trigger; artifact download not required this round.
 - Artifact: `HostDeck-macos-unsigned` expected from the macOS runner.
 - Artifact SHA-256: pending local/user download.
 - macOS artifact came from the GitHub Actions macOS runner.
