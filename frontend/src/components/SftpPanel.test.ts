@@ -2245,13 +2245,21 @@ describe('SftpPanel', () => {
     expect(hidden().classes()).not.toContain('active')
   })
 
-  it('keeps unbound and failed status text out of the expanded toolbar', () => {
+  it('hides the remote path toolbar until SFTP is online', () => {
     const unbound = mount(SftpPanel, { props: { connection: null, expanded: true } })
-    expect(unbound.text()).not.toContain('未绑定服务器')
-    expect(unbound.get('.sftp-toolbar').text()).not.toContain('未绑定服务器')
-    expect(unbound.get('.sftp-toolbar').find('.sftp-pathbar').exists()).toBe(true)
-    expect(unbound.get('.sftp-toolbar').findAll('button').slice(0, 6).map((button) => button.text()))
-      .toEqual(['重新连接', '后退', '前进', '刷新', '向上', 'Home'])
+    expect(unbound.find('.sftp-toolbar').exists()).toBe(false)
+    expect(unbound.text()).toContain('没有活动服务器工作区')
+    expect(unbound.text()).not.toContain('远程路径')
+    expect(unbound.text()).not.toContain('重新连接')
+    expect(unbound.text()).not.toContain('后退')
+    expect(unbound.text()).not.toContain('前进')
+    expect(unbound.text()).not.toContain('刷新')
+    expect(unbound.text()).not.toContain('向上')
+    expect(unbound.text()).not.toContain('Home')
+    expect(unbound.text()).not.toContain('收藏')
+    expect(unbound.text()).not.toContain('收藏夹')
+    expect(unbound.text()).not.toContain('打开')
+    expect(unbound.text()).not.toContain('更多')
     unbound.unmount()
 
     const store = useSftpStore()
@@ -2264,8 +2272,9 @@ describe('SftpPanel', () => {
       updatedAt: '',
     }
     const failed = mountPanel(true)
-    expect(failed.get('.sftp-toolbar').text()).not.toContain('连接失败')
-    expect(failed.get('.sftp-toolbar').text()).not.toContain('SFTP subsystem unavailable')
+    expect(failed.find('.sftp-toolbar').exists()).toBe(false)
+    expect(failed.text()).toContain('没有活动服务器工作区')
+    expect(failed.text()).not.toContain('SFTP subsystem unavailable')
   })
 
   it('double-clicking parent entry returns to parent without selecting it', async () => {

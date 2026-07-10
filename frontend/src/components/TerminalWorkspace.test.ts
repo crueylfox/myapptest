@@ -9,7 +9,7 @@ import { useCommandStore } from '../stores/commands'
 import { useSftpStore } from '../stores/sftp'
 import { useTunnelStore } from '../stores/tunnels'
 import { resolveAppDialog, useAppDialog } from '../composables/useAppDialog'
-import type { Connection, ConnectionError, ConnectionRuntimeState, LocalTerminalState, TerminalProfile, TerminalSessionInfo, TunnelRuntime } from '../types'
+import type { Connection, ConnectionError, ConnectionRuntimeState, LocalTerminalState, MonitorSnapshot, TerminalProfile, TerminalSessionInfo, TunnelRuntime } from '../types'
 import TerminalWorkspace from './TerminalWorkspace.vue'
 
 const terminalRegistryMock = vi.hoisted(() => ({
@@ -165,6 +165,44 @@ function localState(sessionId: string, overrides: Partial<LocalTerminalState> = 
     startedAt: '2026-06-17T00:00:00Z',
     endedAt: '',
     ...overrides,
+  }
+}
+
+function monitorSnapshot(values: Partial<MonitorSnapshot> = {}): MonitorSnapshot {
+  return {
+    connectionId: 7,
+    status: 'online',
+    timestamp: '2026-07-10T00:00:00Z',
+    latencyMillis: 42,
+    latencyAvailable: true,
+    cpuPercent: 12,
+    memoryTotal: 1024,
+    memoryAvailable: 512,
+    memoryUsedPercent: 50,
+    swapTotal: 0,
+    swapFree: 0,
+    diskTotal: 1000,
+    diskUsed: 400,
+    diskUsedPercent: 40,
+    mounts: [],
+    processes: [],
+    processStatus: 'empty',
+    processMessage: '',
+    loadOne: 0.1,
+    loadFive: 0.2,
+    loadFifteen: 0.3,
+    uptimeSeconds: 3600,
+    defaultInterface: 'eth0',
+    downloadBytesPerSecond: 1024,
+    uploadBytesPerSecond: 2048,
+    osName: 'Linux',
+    kernel: '6.1',
+    architecture: 'x86_64',
+    errors: [],
+    errorCode: '',
+    message: 'online',
+    monitorActive: true,
+    ...values,
   }
 }
 
@@ -858,6 +896,40 @@ describe('TerminalWorkspace server states', () => {
     expect(store.activeSessionId).toBe('term-1')
     expect(window.go?.main?.App?.CloseTerminal).not.toHaveBeenCalled()
     expect(window.go?.main?.App?.WriteTerminal).not.toHaveBeenCalled()
+  })
+
+  it('keeps monitor and SFTP empty when the active split pane has no server', async () => {
+    const runtimeState = state({
+      status: 'online',
+      monitorActive: true,
+      terminalActive: true,
+      sftpActive: true,
+      hasActiveSession: true,
+    })
+    const { wrapper, store } = mountWorkspace(runtimeState)
+    store.tabs = [
+      { sessionId: 'term-1', connectionId: 7, title: 'server #1', status: 'online', code: '', message: '' },
+    ]
+    store.workspaces[7].status = 'connected'
+    store.activate('term-1')
+    await wrapper.setProps({ snapshot: monitorSnapshot(), history: [monitorSnapshot()] })
+    await setSplitMode(wrapper, 'vertical')
+
+    expect(wrapper.getComponent({ name: 'CompactMonitorSidebar' }).props('connection')).toMatchObject({ id: 7 })
+    expect(wrapper.getComponent({ name: 'SftpPanel' }).props('connection')).toMatchObject({ id: 7 })
+
+    await wrapper.get('[data-pane-id="pane-2"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    const sidebar = wrapper.getComponent({ name: 'CompactMonitorSidebar' })
+    expect(sidebar.props('connection')).toBeNull()
+    expect(sidebar.props('state')).toBeNull()
+    expect(sidebar.props('snapshot')).toBeNull()
+    expect(sidebar.props('history')).toEqual([])
+    expect(sidebar.props('workspaceStatus')).toBeUndefined()
+    expect(wrapper.getComponent({ name: 'SftpPanel' }).props('connection')).toBeNull()
+    expect(wrapper.get('.terminal-statusbar').text()).toContain('未连接服务器')
+    expect(wrapper.get('.terminal-statusbar').text()).not.toContain('延迟')
   })
 
   it('switches to horizontal and quad split layouts without closing sessions', async () => {

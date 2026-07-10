@@ -390,16 +390,15 @@ const activeLocalCommandSession = computed(() => {
   }
   return localTerminalActive.value ? localTerminalStore.activeSession : null
 })
-const activeWorkspaceConnection = computed(() =>
-  activeCommandTab.value
-    ? connectionForTab(activeCommandTab.value.connectionId)
-    : (!localTerminalActive.value ? props.connection : null))
-const hasRemoteStatusSummary = computed(() => Boolean(activeWorkspaceConnection.value || store.activeWorkspace || props.snapshot))
-const hasRecoveredRemoteMonitor = computed(() => activeCommandTab.value?.status === 'online' || props.state?.status === 'online' || props.snapshot?.status === 'online')
-const activeRemoteStatus = computed(() => hasRecoveredRemoteMonitor.value ? 'online' : props.state?.status ?? store.activeWorkspace?.status); const showRemoteStatusLabel = computed(() => !['connected', 'online'].includes(activeRemoteStatus.value ?? ''))
-const quietMonitorSidebar = computed(() => !localTerminalActive.value && Boolean(store.activeWorkspace) && !hasRecoveredRemoteMonitor.value && !['connected', 'connecting', 'reconnecting'].includes(store.activeWorkspace?.status ?? ''))
-const monitorSidebarProps = computed(() => quietMonitorSidebar.value ? { connection: null, state: null, snapshot: null, history: [], workspaceStatus: undefined } : { connection: props.connection, state: props.state, snapshot: props.snapshot, history: props.history, workspaceStatus: hasRecoveredRemoteMonitor.value ? 'connected' : store.activeWorkspace?.status })
-const activeServerId = computed(() => activeCommandTab.value?.connectionId ?? (!localTerminalActive.value ? props.connection?.id ?? null : null))
+const activeWorkspaceConnection = computed(() => activeCommandTab.value ? connectionForTab(activeCommandTab.value.connectionId) : (!localTerminalActive.value && !splitEnabled.value ? props.connection : null))
+const activeRemoteState = computed(() => activeWorkspaceConnection.value?.id ? props.connectionStates?.[activeWorkspaceConnection.value.id] ?? (props.connection?.id === activeWorkspaceConnection.value.id ? props.state : null) : null)
+const activeRemoteSnapshot = computed(() => props.connection?.id === activeWorkspaceConnection.value?.id ? props.snapshot : null)
+const hasRemoteStatusSummary = computed(() => Boolean(activeWorkspaceConnection.value || activeRemoteState.value || activeRemoteSnapshot.value))
+const hasRecoveredRemoteMonitor = computed(() => activeCommandTab.value?.status === 'online' || activeRemoteState.value?.status === 'online' || activeRemoteSnapshot.value?.status === 'online')
+const activeRemoteStatus = computed(() => hasRecoveredRemoteMonitor.value ? 'online' : activeRemoteState.value?.status ?? store.activeWorkspace?.status); const showRemoteStatusLabel = computed(() => !['connected', 'online'].includes(activeRemoteStatus.value ?? ''))
+const quietMonitorSidebar = computed(() => !localTerminalActive.value && (!activeWorkspaceConnection.value || (Boolean(store.activeWorkspace) && !hasRecoveredRemoteMonitor.value && !['connected', 'connecting', 'reconnecting'].includes(store.activeWorkspace?.status ?? ''))))
+const monitorSidebarProps = computed(() => quietMonitorSidebar.value ? { connection: null, state: null, snapshot: null, history: [], workspaceStatus: undefined } : { connection: activeWorkspaceConnection.value, state: activeRemoteState.value, snapshot: activeRemoteSnapshot.value, history: props.connection?.id === activeWorkspaceConnection.value?.id ? props.history : [], workspaceStatus: hasRecoveredRemoteMonitor.value ? 'connected' : store.activeWorkspace?.status })
+const activeServerId = computed(() => activeCommandTab.value?.connectionId ?? activeWorkspaceConnection.value?.id ?? null)
 const activeSftpTerminalSessionId = computed(() => activeCommandTab.value?.sessionId ?? '')
 const latestTransfer = computed(() => sftpStore.lastTransfer(activeServerId.value, activeSftpContextId.value))
 const activeTunnelCount = computed(() => tunnelStore.runningCount(activeServerId.value))

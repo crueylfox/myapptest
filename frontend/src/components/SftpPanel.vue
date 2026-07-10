@@ -1277,6 +1277,7 @@ onBeforeUnmount(() => {
   <section class="sftp-panel" :class="{ expanded }">
     <template v-if="expanded">
       <SftpToolbar
+        v-if="online"
         ref="sftpToolbarRef"
         :actions="toolbarActions"
         :current-path="currentPath"
@@ -1300,16 +1301,7 @@ onBeforeUnmount(() => {
         @jump-bookmark="jumpBookmark"
         @delete-bookmark="deleteBookmark"
       />
-      <div v-if="!connection" class="sftp-empty">没有活动服务器工作区。</div>
-      <div v-else-if="state?.status !== 'online'" class="sftp-empty">
-        <strong>{{ statusText }}</strong>
-        <span>{{ state?.message || '连接后显示真实远程目录，不使用伪文件列表。' }}</span>
-        <button
-          v-if="state?.status === 'error' || state?.status === 'offline'"
-          class="secondary"
-          @click="retrySftp"
-        >重试 SFTP</button>
-      </div>
+      <div v-if="!connection || state?.status !== 'online'" class="sftp-empty">没有活动服务器工作区。</div>
       <div v-else-if="scpLimitedMode" class="sftp-empty sftp-compat">
         <strong>SCP 兼容模式</strong>
         <span>当前服务器不支持 SFTP，正在使用 SCP 传输。当前服务器无法递归列出目录，暂不支持文件夹下载。</span>

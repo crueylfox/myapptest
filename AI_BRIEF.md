@@ -6,10 +6,10 @@ Updated: 2026-07-09
 - Repo: `D:\Users\Administrator\Documents\GitHub\myapptest`.
 - Branch: `main`.
 - Previous delivery version: `0.5.0-beta.28` PASS.
-- Current VERSION: `0.5.0-beta.64`.
-- Recommended delivery version: `0.5.0-beta.64` user-smoke-required.
-- Current round: beta64 collapsed monitor restore button bottom-edge alignment after HostDeck rename and beta31 cross-platform Key Vault backup.
-- Version bump this packaging round: yes; `0.5.0-beta.63` -> `0.5.0-beta.64` before repackaging.
+- Current VERSION: `0.5.0-beta.65`.
+- Recommended delivery version: `0.5.0-beta.65` user-smoke-required.
+- Current round: beta65 empty SFTP and split-pane monitor polish after HostDeck rename and beta31 cross-platform Key Vault backup.
+- Version bump this packaging round: yes; `0.5.0-beta.64` -> `0.5.0-beta.65` before repackaging.
 
 ## 1. Beta28 Pass Lock
 - User smoke passed for beta28.
@@ -112,10 +112,10 @@ Updated: 2026-07-09
 - Local `cd frontend && npm run verify:frontend`: passed, including type-check, 186 Vitest files / 1729 tests, 89 Playwright tests, and frontend build.
 - Local `git diff --check`: passed.
 - Local Windows `wails build`: passed and produced the Windows EXE only.
-- Beta64 Windows EXE copied to `D:\Users\Administrator\Desktop\HostDeck-v0.5.0-beta.64.exe`.
-- Beta64 Windows EXE SHA-256: `6DCD8D3488FEB7B31D2AB8D6CA5DA0AD06FD77FB9A0C9071F7457035051EE17A`.
+- Beta65 Windows EXE copied to `D:\Users\Administrator\Desktop\HostDeck-v0.5.0-beta.65.exe`.
+- Beta65 Windows EXE SHA-256: `2331AE86FF8E102CA80BFFC69491121D4B78634C7EFC4047BD5B41D8F32E5CB2`.
 - Local Windows `wails build -platform darwin/universal` was not run and did not produce a macOS app.
-- GitHub Actions beta64 `Build macOS`: pending push trigger; package verification not required this round.
+- GitHub Actions beta65 `Build macOS`: pending push trigger; package verification not required this round.
 - Artifact: `HostDeck-macos-unsigned` expected from the macOS runner.
 - Artifact SHA-256: pending local/user download.
 - macOS artifact came from the GitHub Actions macOS runner.
